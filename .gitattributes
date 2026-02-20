@@ -1,0 +1,1 @@
+*.psd*.zip*.mp4*.unitypackage*.dll filter=lfs diff=lfs merge=lfs -text
