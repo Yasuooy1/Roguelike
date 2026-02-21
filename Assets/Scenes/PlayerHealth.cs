@@ -25,6 +25,19 @@ public class PlayerHealth : MonoBehaviour
         currentHealth = maxHealth;
         spriteRenderer = GetComponent<SpriteRenderer>(); // ดึงภาพตัวละครมาเพื่อสั่งกะพริบ
         UpdateHealthUI();
+        /*GameObject healthUIObject = GameObject.Find("HealthUI");
+
+        if (healthUIObject != null)
+        {
+            // 2. ดึงรูปหัวใจทั้งหมดที่ซ่อนอยู่ใน HealthUI มาใส่ในช่องอัตโนมัติ
+            // ⚠️ สำคัญ: เปลี่ยนคำว่า "heartImages" ให้ตรงกับชื่อตัวแปรอาเรย์ของคุณในโค้ดนะครับ
+            heartImages = healthUIObject.GetComponentsInChildren<UnityEngine.UI.Image>();
+            Debug.Log("เชื่อมต่อหลอดเลือดสำเร็จ!");
+        }
+        else
+        {
+            Debug.LogWarning("หา HealthUI ไม่เจอครับ ลองเช็กชื่อในฉากดูนะ");
+        }*/
     }
 
     public void TakeDamage(int damage)
@@ -100,7 +113,33 @@ public class PlayerHealth : MonoBehaviour
     public void Die()
     {
         Debug.Log("Player Died!");
-        // โหลดฉากปัจจุบันใหม่ (ชื่อฉากต้องตรงกับใน Unity)
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        if (GameManager.instance != null)
+        {
+            // 1. ล้างประวัติด่าน
+            GameManager.instance.ResetRoguelike();
+            // 2. สุ่มเริ่มด่านแรกใหม่
+            GameManager.instance.LoadNextRandomMap();
+        }
+    }
+    // ฟังก์ชันสำหรับเพิ่มเลือด
+    public void Heal(int healAmount)
+    {
+        // ถ้าเลือดเต็มอยู่แล้ว ให้เด้งออกไปเลย ไม่ต้องฮีล
+        if (currentHealth >= maxHealth)
+        {
+            Debug.Log("เลือดเต็มแล้วจ้า!");
+            return;
+        }
+
+        currentHealth += healAmount;
+
+        // กันเลือดทะลุหลอด
+        if (currentHealth > maxHealth)
+        {
+            currentHealth = maxHealth;
+        }
+
+        UpdateHealthUI(); // อัปเดตหน้าจอ
+        Debug.Log("ฮีลแล้ว! เลือดตอนนี้: " + currentHealth);
     }
 }
