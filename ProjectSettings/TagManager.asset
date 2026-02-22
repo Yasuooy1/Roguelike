@@ -6,15 +6,17 @@ TagManager:
   tags:
   - Enemy
   - SpawnPoint
+  - BossTP
+  - BossPillarSpawn
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Enemy
   - Water
   - UI
   - Ground
-  - 
+  - MinimapIcon
   - 
   - 
   - 

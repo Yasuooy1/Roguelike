@@ -1,4 +1,5 @@
 using UnityEngine;
+using static PlayerCombat;
 
 public class Bullet : MonoBehaviour
 {
@@ -40,9 +41,16 @@ public class Bullet : MonoBehaviour
             pillar.TakeDamage(damage, bulletElement);
         }
 
+        // 🦇 3.5 เพิ่มระบบเช็กมอนสเตอร์บินตรงนี้ครับ!
+        FlyingEnemy flyingEnemy = hitInfo.GetComponent<FlyingEnemy>();
+        if (flyingEnemy != null)
+        {
+            flyingEnemy.TakeDamage(damage, bulletElement);
+        }
+
         // 4. สั่งทำลายกระสุนเมื่อชนสิ่งมีชีวิต หรือชนพื้น/กำแพง
-        // ถ้าสิ่งที่ชนมีสคริปต์ Enemy, Boss, BossPillar หรือเป็นเลเยอร์ Ground กระสุนจะหายไป
-        if (enemy != null || boss != null || pillar != null || hitInfo.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        // ⚠️ อัปเดตเงื่อนไข: เพิ่ม || flyingEnemy != null เข้าไปด้วย กระสุนจะได้หายไปตอนยิงโดนนก
+        if (enemy != null || boss != null || pillar != null || flyingEnemy != null || hitInfo.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
             Destroy(gameObject);
         }

@@ -113,13 +113,41 @@ public class PlayerHealth : MonoBehaviour
     public void Die()
     {
         Debug.Log("Player Died!");
+
+        // พอตายปุ๊บ ให้เรียกใช้งานระบบหน่วงเวลาตาย
+        StartCoroutine(DeathRoutine());
+    }
+
+    // ระบบหน่วงเวลาตอนตาย
+    private IEnumerator DeathRoutine()
+    {
+        // 1. เปิดโหมดอมตะจะได้ไม่โดนดาเมจซ้ำซ้อนตอนกำลังจะตาย
+        isInvincible = true;
+
+        // 2. ปิดกล่องชน (Collider2D) ศัตรูจะได้เดินทะลุไปเลย ไม่มาดันศพเรา
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null) col.enabled = false;
+
+        // 3. ปิดสคริปต์ควบคุมการเดิน (เพื่อให้ตัวละครยืนนิ่งๆ)
+        // ⚠️ สำคัญ: ถ้าสคริปต์เดินของคุณออยไม่ได้ชื่อ PlayerMovement ให้แก้ชื่อตรงสีส้มนี้ให้ตรงกันนะครับ
+        MonoBehaviour movementScript = GetComponent("PlayerMovement") as MonoBehaviour;
+        if (movementScript != null) movementScript.enabled = false;
+
+        // 4. เปลี่ยนสีตัวละครเป็นสีดำ/เทา ให้ดูเหมือนวิญญาณหลุดร่าง
+        spriteRenderer.color = Color.black;
+
+        // 5. ⏳ หน่วงเวลาให้ผู้เล่นช็อกแป๊บนึง (1.5 วินาที)
+        yield return new WaitForSeconds(1.5f);
+
+        // 6. ล้างประวัติและโหลดเริ่มรันใหม่
         if (GameManager.instance != null)
         {
-            // 1. ล้างประวัติด่าน
             GameManager.instance.ResetRoguelike();
-            // 2. สุ่มเริ่มด่านแรกใหม่
             GameManager.instance.LoadNextRandomMap();
         }
+
+        // 7. ทำลายศพตัวละครนี้ทิ้ง
+        Destroy(gameObject);
     }
     // ฟังก์ชันสำหรับเพิ่มเลือด
     public void Heal(int healAmount)

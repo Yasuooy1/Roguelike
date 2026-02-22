@@ -7,20 +7,28 @@ public class Enemy : MonoBehaviour
     public float patrolSpeed = 1.5f;
     public float chaseSpeed = 3.5f;
     public float detectRange = 5f;
-    public float changeDirectionTime = 3f;
+
+    [Header("เซนเซอร์ส่องพื้น & กำแพง")]
+    public Transform edgeCheck;
+    public float edgeCheckDistance = 1f;
+    public LayerMask groundLayer;
 
     [Header("Attack System (พุ่งกระโจน)")]
-    public float attackRange = 2f;       // ระยะที่จะเริ่มกระโจนใส่
-    public float dashForce = 8f;         // ความแรงตอนพุ่ง
-    public float attackCooldown = 2f;    // รอหลังพุ่งเสร็จ
+    public float attackRange = 3f;       // ระยะที่จะเริ่มกระโจน (ปรับให้ไกลขึ้นได้)
+    public float dashForce = 12f;        // ความแรงพุ่งไปข้างหน้า (ความไกล)
+    public float jumpForce = 15f;        // ความแรงกระโดดขึ้นข้างบน (ความสูง)
+    public float dashTime = 0.35f;       // ⏳ ระยะเวลาลอยตัว (ยิ่งนานยิ่งพุ่งไปได้ไกล)
+    public float attackCooldown = 2f;
 
     private bool isAttacking = false;
     private bool isOnCooldown = false;
 
-    private float patrolTimer;
     private Transform player;
     private Rigidbody2D rb;
     private bool isChasing = false;
+
+    // 🛑 เพิ่มตัวแปรความจำว่าข้างหน้าไปต่อได้ไหม
+    private bool canMoveForward = true;
 
     [Header("Health & Shield")]
     public int maxHealth = 30;
@@ -47,19 +55,30 @@ public class Enemy : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
 
-        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-        if (playerObj != null) player = playerObj.transform;
+        // สุ่มความเร็วตอนเกิด มอนสเตอร์จะได้ไม่เดินซ้อนทับกันเป็นก้อนเดียว
+        patrolSpeed = Random.Range(1.2f, 2.0f);
 
-        patrolTimer = changeDirectionTime;
         UpdateColor();
     }
 
     void Update()
     {
-        // ถ้าเกราะแตก หรือ "กำลังกระโจนโจมตี" ให้หยุดคิดเรื่องเดินปกติไปเลย
         if (isBroken || isAttacking) return;
 
-        if (player == null) return;
+        // ระบบค้นหาผู้เล่นแบบปลอดภัย
+        if (player == null)
+        {
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null) player = playerObj.transform;
+            return;
+        }
+
+        // 🔍 ส่องเลเซอร์ตลอดเวลา ไม่ว่าจะเดินเล่นหรือวิ่งไล่!
+        RaycastHit2D groundInfo = Physics2D.Raycast(edgeCheck.position, Vector2.down, edgeCheckDistance, groundLayer);
+        RaycastHit2D wallInfo = Physics2D.Raycast(edgeCheck.position, transform.right, 0.2f, groundLayer);
+
+        // อัปเดตความจำว่าข้างหน้ามีพื้นให้เหยียบ และไม่ติดกำแพง
+        canMoveForward = (groundInfo.collider != null && wallInfo.collider == null);
 
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
@@ -81,60 +100,71 @@ public class Enemy : MonoBehaviour
         else
         {
             isChasing = false;
-            patrolTimer -= Time.deltaTime;
-            if (patrolTimer <= 0)
+            // 🛑 ถ้าเดินลาดตระเวนอยู่แล้วเจอเหว ให้หมุนตัวหันหลังกลับ
+            if (!canMoveForward)
             {
                 if (transform.eulerAngles.y == 0) transform.eulerAngles = new Vector3(0, 180f, 0);
                 else transform.eulerAngles = new Vector3(0, 0, 0);
-
-                patrolTimer = changeDirectionTime;
             }
         }
     }
 
     void FixedUpdate()
     {
-        // ถ้าเกราะแตก หรือ กำลังพุ่งโจมตี ไม่ต้องสั่งเดินปกติ (เพราะตอนพุ่งเราจะใช้แรงส่งแทน)
+        // ถ้าพุ่งโจมตีอยู่ หรือเกราะแตก ปล่อยให้มันลอยไปตามฟิสิกส์
         if (isBroken || isAttacking) return;
+
+        // 🛑 ถ้าวิ่งไล่ผู้เล่นอยู่ แต่ข้างหน้าเป็นเหวหรือกำแพง ให้ "เบรกเอี๊ยด" รอที่ขอบเหว!
+        if (isChasing && !canMoveForward)
+        {
+            rb.velocity = new Vector2(0, rb.velocity.y);
+            return; // หยุดการทำงานเดินหน้าไปเลย
+        }
 
         float currentSpeed = isChasing ? chaseSpeed : patrolSpeed;
         rb.velocity = new Vector2(transform.right.x * currentSpeed, rb.velocity.y);
     }
 
-    // ฟังก์ชันกระโจนโจมตี!
+    // --- ท่ากระโจน (มีระบบ Anti-Camp กระโดดตะปบคนบนแท่น) ---
     IEnumerator AttackRoutine()
     {
         isAttacking = true;
         isOnCooldown = true;
 
-        // 1. ชะงัก (Wind-up) ให้ผู้เล่นรู้ตัว 0.4 วินาที 
+        // 1. ย่อตัวชาร์จ
         rb.velocity = new Vector2(0, rb.velocity.y);
-
-        // (กิมมิค: ให้มันย่อตัวลงนิดนึงตอนชาร์จพุ่ง จะได้ดูไม่แข็ง)
         transform.localScale = new Vector3(transform.localScale.x, 0.8f, 1f);
         yield return new WaitForSeconds(0.4f);
 
-        // 2. กระโจน! (Dash) คืนร่างเดิมแล้วพุ่งไปข้างหน้า
+        // 2. กระโจน!
         transform.localScale = new Vector3(transform.localScale.x, 1f, 1f);
         float dashDirection = (transform.eulerAngles.y == 0) ? 1f : -1f;
-        rb.velocity = new Vector2(dashDirection * dashForce, rb.velocity.y);
 
-        // ปล่อยให้ตัวลอยพุ่งไป 0.2 วินาที
-        yield return new WaitForSeconds(0.2f);
+        float currentJumpForce = rb.velocity.y; // แรงโน้มถ่วงปกติ
 
-        // 3. เบรก หยุดการพุ่ง
+        // ถ้าผู้เล่นอยู่สูงกว่า ให้ใช้แรง jumpForce ที่ตั้งไว้
+        if (player != null && player.position.y > transform.position.y + 1f)
+        {
+            currentJumpForce = jumpForce;
+        }
+
+        // อัดแรงส่งตัว
+        rb.velocity = new Vector2(dashDirection * dashForce, currentJumpForce);
+
+        // ⏳ ใช้เวลาลอยตัวตามที่เราตั้งค่าไว้ในหน้าต่าง Inspector
+        yield return new WaitForSeconds(dashTime);
+
+        // 3. เบรกกลางอากาศ
         rb.velocity = new Vector2(0, rb.velocity.y);
         isAttacking = false;
 
-        // 4. รอคูลดาวน์ก่อนจะโจมตีรอบต่อไปได้
         yield return new WaitForSeconds(attackCooldown);
         isOnCooldown = false;
     }
 
     // ==========================================
-    // ด้านล่างคือระบบต่อสู้ ตีเกราะแตก และโดนตัว (เหมือนเดิม)
+    // ระบบโดนตีและเกราะแตก (เหมือนเดิมเป๊ะ)
     // ==========================================
-
     void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Player") && !isBroken)
@@ -216,13 +246,18 @@ public class Enemy : MonoBehaviour
 
     void Die() { Destroy(gameObject); }
 
-    // วาดวงกลมดูระยะการพุ่ง (สีแดง) และระยะสายตา (สีเหลือง)
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, detectRange);
-
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
+
+        if (edgeCheck != null)
+        {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(edgeCheck.position, edgeCheck.position + Vector3.down * edgeCheckDistance);
+            Gizmos.DrawLine(edgeCheck.position, edgeCheck.position + transform.right * 0.2f);
+        }
     }
 }
