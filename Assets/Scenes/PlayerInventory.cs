@@ -1,16 +1,24 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using TMPro; // 🌟 เพิ่มบรรทัดนี้เพื่อใช้ Text
 
 public class PlayerInventory : MonoBehaviour
 {
-    [Header("UI กรอบกระเป๋า")]
-    public Image itemSlotUI;       // ลากกรอบ UI ที่สร้างบนหน้าจอมาใส่ช่องนี้
-    public Sprite emptySlotSprite; // รูปรองพื้นเวลาที่กระเป๋าว่างเปล่า (ไม่มีของ)
+    [Header("UI กระเป๋า (Elden Ring Style)")]
+    public Image itemSlotUI;
+    public Sprite emptySlotSprite;
+    public TextMeshProUGUI countText; // 🌟 ช่องสำหรับลาก Text ตัวเลขมาใส่
+    public Image cooldownImage;       // 🌟 ช่องสำหรับลากแผ่นวงกลมสีดำมาใส่
+    public Image itemIconImage;
+
 
     [Header("ของที่มีในกระเป๋า")]
     public List<ItemData> inventoryList = new List<ItemData>();
-    private int currentIndex = 0; // ตัวบอกว่าตอนนี้กำลังเลือกไอเทมชิ้นไหนอยู่
+    private int currentIndex = 0;
+
+    private float currentCooldown = 0f; // 🌟 เวลานับถอยหลังคูลดาวน์
+    private float maxCooldown = 0f;     // 🌟 เวลาคูลดาวน์เต็มๆ ของไอเทมชิ้นนั้น
 
     void Start()
     {
@@ -19,109 +27,173 @@ public class PlayerInventory : MonoBehaviour
 
     void Update()
     {
-        // 🔄 กดปุ่ม E เพื่อ "หมุนเปลี่ยนไอเทม" (แบบ Elden Ring)
-        if (Input.GetKeyDown(KeyCode.E))
+        // 🔄 กดปุ่ม E เพื่อ "หมุนเปลี่ยนไอเทม"
+        if (Input.GetKeyDown(KeyCode.R) && currentCooldown <= 0) // 🌟 หมุนได้เฉพาะตอนที่ไม่ได้ติดคูลดาวน์
         {
             CycleItem();
         }
 
-        // 💥 กดปุ่ม Q เพื่อ "ใช้งานไอเทม" ที่เลือกอยู่
+        // 💥 กดปุ่ม F เพื่อ "ใช้งานไอเทม" (เปลี่ยนปุ่มตามชอบ)
         if (Input.GetKeyDown(KeyCode.F))
         {
             UseCurrentItem();
         }
+
+        // ⏳ ระบบจัดการ Cooldown แถบวงกลม
+        if (currentCooldown > 0)
+        {
+            currentCooldown -= Time.deltaTime;
+
+            if (cooldownImage != null)
+            {
+                cooldownImage.fillAmount = currentCooldown / maxCooldown;
+            }
+        }
+        else if (cooldownImage != null)
+        {
+            cooldownImage.fillAmount = 0; // ล้างแถบดำออกเมื่อคูลดาวน์เสร็จ
+        }
     }
 
-    // ฟังก์ชันสำหรับหมุนไอเทม
     void CycleItem()
     {
-        if (inventoryList.Count == 0) return; // ถ้ากระเป๋าว่าง ไม่ต้องสลับ
+        if (inventoryList.Count == 0) return;
 
-        currentIndex++; // เลื่อนไปชิ้นถัดไป
+        currentIndex++;
 
-        // ถ้าเลื่อนจนสุดรายการแล้ว ให้วนกลับมาที่ชิ้นแรกใหม่ (0)
         if (currentIndex >= inventoryList.Count)
         {
             currentIndex = 0;
         }
 
-        UpdateUI(); // อัปเดตหน้าจอ
+        UpdateUI();
         Debug.Log("หมุนมาที่ไอเทม: " + inventoryList[currentIndex].itemName);
     }
 
-    // ฟังก์ชันสำหรับใช้ไอเทม
     void UseCurrentItem()
     {
-        if (inventoryList.Count == 0) return; // ไม่มีของให้ใช้
+        if (inventoryList.Count == 0 || currentCooldown > 0) return; // 🌟 ถ้ากระเป๋าว่าง หรือติดคูลดาวน์อยู่ ห้ามใช้!
 
         ItemData itemToUse = inventoryList[currentIndex];
 
         // ----------------------------------------------------
-        // 🧪 เช็กว่าของที่กดใช้คืออะไร (พิมพ์ชื่อให้ตรงกับที่ตั้งไว้ใน Inspector นะครับ)
+        // 🩸 1. ยาเพิ่มเลือด
         if (itemToUse.itemName == "HealPotion")
         {
-            PlayerHealth health = GetComponent<PlayerHealth>(); // ดึงสคริปต์เลือดมา
+            PlayerHealth health = GetComponent<PlayerHealth>();
 
             if (health != null)
             {
-                // เช็กก่อนว่าเลือดเต็มไหม ถ้าเต็มไม่ให้ใช้ (จะได้ไม่เสียของฟรี)
                 if (health.currentHealth >= health.maxHealth)
                 {
-                    Debug.Log("เลือดเต็มอยู่แล้ว เก็บยาไว้ใช้ตอนเจ็บดีกว่า!");
-                    return; // สั่งหยุดการทำงานตรงนี้เลย จะได้ไม่โดนหักยา
+                    Debug.Log("เลือดเต็มอยู่แล้ว!");
+                    return;
                 }
 
-                health.Heal(1); // สั่งเพิ่มเลือด 1 ดวง (เปลี่ยนตัวเลขได้)
+                health.Heal(1);
                 Debug.Log("ซดยาเพิ่มเลือดเรียบร้อย!");
+                StartCooldown(itemToUse.cooldownTime); // 🌟 เริ่มนับคูลดาวน์
             }
         }
-        // ----------------------------------------------------
-
-        // ใช้เสร็จแล้ว ลบของชิ้นนั้นออกจากกระเป๋า
-        inventoryList.RemoveAt(currentIndex);
-
-        // ปรับลำดับหน้าจอให้ถูกต้อง
-        if (currentIndex >= inventoryList.Count)
+        // 💧 2. ยาเพิ่มมานา
+        else if (itemToUse.itemName == "ManaPotion")
         {
-            currentIndex = 0;
+            PlayerMana mana = GetComponent<PlayerMana>();
+
+            if (mana != null)
+            {
+                if (mana.currentMana >= mana.maxMana)
+                {
+                    Debug.Log("มานาเต็มอยู่แล้ว เก็บไว้ก่อน!");
+                    return;
+                }
+
+                mana.AddMana(1); // 👈 เติมมานา 1 ดวง (ถ้าอยากให้ยาระดับสูงเติม 2 ดวงก็เปลี่ยนเลขได้)
+                Debug.Log("เติมมานา 1 ดวง!");
+                StartCooldown(itemToUse.cooldownTime);
+            }
+        }
+
+        // 🌟 ลดจำนวนไอเทมลง 1 ชิ้น
+        itemToUse.amount--;
+
+        // 🌟 ถ้าใช้จนหมดเกลี้ยง (เหลือ 0) ค่อยลบออกจากกระเป๋า
+        if (itemToUse.amount <= 0)
+        {
+            inventoryList.RemoveAt(currentIndex);
+
+            if (currentIndex >= inventoryList.Count)
+            {
+                currentIndex = 0;
+            }
         }
 
         UpdateUI();
     }
 
-    // ฟังก์ชันสำหรับเสกของเข้ากระเป๋าเวลาเดินชน (เดี๋ยวเราค่อยเรียกใช้)
+    // 🌟 ฟังก์ชันเปิดระบบคูลดาวน์
+    void StartCooldown(float time)
+    {
+        maxCooldown = time;
+        currentCooldown = time;
+    }
+
     public void AddItem(ItemData newItem)
     {
-        inventoryList.Add(newItem);
+        // 🌟 ระบบซ้อนไอเทม (Stacking)
+        // เช็กก่อนว่ามีไอเทมชื่อนี้อยู่ในกระเป๋าหรือยัง
+        ItemData existingItem = inventoryList.Find(x => x.itemName == newItem.itemName);
+
+        if (existingItem != null)
+        {
+            // ถ้ามีแล้ว ให้บวกจำนวนเพิ่มเข้าไป
+            existingItem.amount += newItem.amount;
+        }
+        else
+        {
+            // ถ้ายังไม่มี ค่อยสร้างช่องใหม่
+            ItemData clonedItem = new ItemData
+            {
+                itemName = newItem.itemName,
+                itemIcon = newItem.itemIcon,
+                amount = newItem.amount,
+                cooldownTime = newItem.cooldownTime
+            };
+            inventoryList.Add(clonedItem);
+        }
+
         UpdateUI();
         Debug.Log("เก็บได้: " + newItem.itemName);
     }
 
-    // ฟังก์ชันวาดรูปไอเทมบนหน้าจอ
     void UpdateUI()
     {
         if (itemSlotUI == null) return;
 
         if (inventoryList.Count > 0)
         {
-            // ถ้ามีของ ให้เอารูปไอเทมชิ้นนั้นมาแสดง
-            itemSlotUI.sprite = inventoryList[currentIndex].itemIcon;
-            itemSlotUI.color = Color.white; // ทำให้สีสว่างชัดเจน
+            ItemData currentItem = inventoryList[currentIndex];
+
+            // 🌟 สั่งเปิดรูปขวดยาและอัปเดตรูป
+            if (itemIconImage != null)
+            {
+                itemIconImage.sprite = currentItem.itemIcon;
+                itemIconImage.enabled = true;
+            }
+
+            if (countText != null)
+            {
+                countText.text = currentItem.amount.ToString();
+                countText.enabled = true; // โชว์ตัวเลข
+            }
         }
         else
         {
-            // ถ้ากระเป๋าว่างเปล่า ให้โชว์กรอบเปล่าๆ
-            itemSlotUI.sprite = emptySlotSprite;
-            // ถ้าไม่มีรูปกรอบเปล่า ให้ปรับให้มันโปร่งใสแทน
-            if (emptySlotSprite == null) itemSlotUI.color = new Color(1, 1, 1, 0.2f);
+            // 🌟 กรณีไม่มีของ: ให้ "ปิด" รูปขวดยาและตัวเลขไปเลย (เหลือแต่กรอบดำเปล่าๆ)
+            if (itemIconImage != null) itemIconImage.enabled = false;
+            if (countText != null) countText.enabled = false;
         }
     }
-}
 
-// โครงสร้างข้อมูลไอเทม (เพื่อให้เราสร้างไอเทมได้หลากหลาย)
-[System.Serializable]
-public class ItemData
-{
-    public string itemName;  // ชื่อไอเทม
-    public Sprite itemIcon;  // รูปไอคอนของไอเทม
+    
 }

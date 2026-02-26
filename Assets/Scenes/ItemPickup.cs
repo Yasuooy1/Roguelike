@@ -1,5 +1,6 @@
 using UnityEngine;
 
+
 public class ItemPickup : MonoBehaviour
 {
     [Header("ข้อมูลของชิ้นนี้ (ตั้งค่าให้ตรงกับรูปร่าง)")]

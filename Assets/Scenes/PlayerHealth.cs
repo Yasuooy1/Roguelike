@@ -22,6 +22,15 @@ public class PlayerHealth : MonoBehaviour
 
     void Start()
     {
+        maxHealth += GlobalStats.BonusMaxHealth;
+        currentHealth = maxHealth;
+        UpdateHealthUI();
+
+        int bonusHealth = PlayerPrefs.GetInt("Upgrade_Health", 0);
+        maxHealth += bonusHealth; // สมมติว่าอัป 1 เวล = เลือดเพิ่ม 1 ดวง
+        currentHealth = maxHealth;
+        UpdateHealthUI();
+
         currentHealth = maxHealth;
         spriteRenderer = GetComponent<SpriteRenderer>(); // ดึงภาพตัวละครมาเพื่อสั่งกะพริบ
         UpdateHealthUI();
@@ -169,5 +178,20 @@ public class PlayerHealth : MonoBehaviour
 
         UpdateHealthUI(); // อัปเดตหน้าจอ
         Debug.Log("ฮีลแล้ว! เลือดตอนนี้: " + currentHealth);
+    }
+    // ฟังก์ชันสำหรับเรียกใช้อัปเดต UI ทันทีเมื่อมีการอัปเกรด
+    public void RefreshHealthStat()
+    {
+        // 1. ดึงค่าที่เพิ่งอัปเกรดมาสดๆ ร้อนๆ
+        int bonusHealth = PlayerPrefs.GetInt("Upgrade_Health", 0);
+
+        // 2. คำนวณเลือดสูงสุดใหม่ (สมมติเลือดเริ่มต้นคือ 3 ดวง)
+        maxHealth = 3 + bonusHealth;
+
+        // 3. เติมเลือดให้เต็ม
+        currentHealth = maxHealth;
+
+        // 4. สั่งวาดรูปหัวใจบนหน้าจอใหม่ทันที!
+        UpdateHealthUI();
     }
 }

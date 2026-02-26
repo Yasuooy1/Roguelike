@@ -470,7 +470,7 @@ GameObject:
   - component: {fileID: 255435222}
   m_Layer: 0
   m_Name: spawnpoint (2)
-  m_TagString: Untagged
+  m_TagString: BossPillarSpawn
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -501,7 +501,7 @@ GameObject:
   - component: {fileID: 362646409}
   m_Layer: 0
   m_Name: spawnpoint (1)
-  m_TagString: Untagged
+  m_TagString: BossPillarSpawn
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -791,7 +791,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 2147483647
+    m_Bits: 192
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 8400000, guid: e664449e79084db41a95736f9c9f0ff0, type: 2}
   m_TargetDisplay: 0
@@ -1157,7 +1157,7 @@ GameObject:
   - component: {fileID: 660241710}
   m_Layer: 0
   m_Name: BTP (1)
-  m_TagString: Untagged
+  m_TagString: BossTP
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1170,7 +1170,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 660241709}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 74.9, y: 7.1, z: -10.022081}
+  m_LocalPosition: {x: 34.6, y: 2.9, z: -10.022081}
   m_LocalScale: {x: 1, y: 1, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1418,7 +1418,7 @@ GameObject:
   - component: {fileID: 787158236}
   m_Layer: 0
   m_Name: BTP (4)
-  m_TagString: Untagged
+  m_TagString: BossTP
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1560,7 +1560,7 @@ GameObject:
   - component: {fileID: 1103121567}
   m_Layer: 0
   m_Name: BTP (2)
-  m_TagString: Untagged
+  m_TagString: BossTP
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1653,7 +1653,7 @@ GameObject:
   - component: {fileID: 1173781581}
   m_Layer: 0
   m_Name: BTP (3)
-  m_TagString: Untagged
+  m_TagString: BossTP
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1993,6 +1993,8 @@ MonoBehaviour:
   itemInfo:
     itemName: HealPotion
     itemIcon: {fileID: 21300000, guid: d0b9b0379821fc54fa2cf2ccf79bfbb7, type: 3}
+    amount: 1
+    cooldownTime: 2
 --- !u!61 &1345090153
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2097,7 +2099,7 @@ GameObject:
   - component: {fileID: 1365371090}
   m_Layer: 0
   m_Name: BTP
-  m_TagString: Untagged
+  m_TagString: BossTP
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2110,7 +2112,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1365371089}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 34.6, y: 1.6, z: -10.022081}
+  m_LocalPosition: {x: 75, y: 6.3, z: -10.022081}
   m_LocalScale: {x: 1, y: 1, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2325,7 +2327,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f11b6f88ff91af4fbd242c94e72403e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  totalWaves: 5
+  totalWaves: 1
   enemyPrefabs:
   - {fileID: 268529905895412915, guid: 90b7a6b5027851d4aa89b745156b1164, type: 3}
   - {fileID: 5564072473057486055, guid: cc2fa863e867b85439f94e7aaed4d5d7, type: 3}
@@ -2432,7 +2434,7 @@ GameObject:
   - component: {fileID: 1684004974}
   m_Layer: 0
   m_Name: spawnpoint
-  m_TagString: Untagged
+  m_TagString: BossPillarSpawn
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2860,6 +2862,8 @@ MonoBehaviour:
   itemInfo:
     itemName: ManaPotion
     itemIcon: {fileID: 21300000, guid: 1fcf30c91bae8c84c96c991d571eaebd, type: 3}
+    amount: 1
+    cooldownTime: 2
 --- !u!61 &1971618241
 BoxCollider2D:
   m_ObjectHideFlags: 0

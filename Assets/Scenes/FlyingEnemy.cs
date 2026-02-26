@@ -1,49 +1,75 @@
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
 
 public class FlyingEnemy : MonoBehaviour
 {
     [Header("Movement & AI")]
-    public float flySpeed = 2.5f;      // ความเร็วในการบิน
-    public float detectRange = 20f;    // ระยะมองเห็น (ตั้งไว้กว้างๆ เลย)
+    public float flySpeed = 2.5f;
+    public float detectRange = 20f;
 
     private Transform player;
     private Rigidbody2D rb;
 
-    [Header("Health & Shield")]
-    public int maxHealth = 15;         // เลือดน้อยกว่าตัวบนดินนิดนึง
+    [Header("Health & Armor")]
+    public int maxHealth = 15;
     private int currentHealth;
-    public int maxShield = 5;
-    private int currentShield;
 
-    [Header("Break System")]
     public bool isBroken = false;
     public float breakDuration = 3f;
 
-    [Header("Element Setup")]
-    public PlayerCombat.Element enemyElement;
+    [Header("🧩 Puzzle System (รหัสผ่านนก)")]
+    public string requiredRecipe;
     private SpriteRenderer spriteRenderer;
+
+    [Header("UI ลูกแก้วบนหัวนก")]
+    public GameObject puzzleCanvas;
+    public Image[] puzzleSlots;
+    public Sprite fireSprite;
+    public Sprite waterSprite;
+    public Sprite lightningSprite;
 
     [Header("UI")]
     public GameObject damagePopupPrefab;
 
+    [Header("Drop System")]
+    public GameObject[] dropItems;
+    [Range(0, 100)] public int dropChance = 30;
+
     void Start()
     {
         currentHealth = maxHealth;
-        currentShield = maxShield;
-
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
+        rb.gravityScale = 0f; // ปิดแรงโน้มถ่วงให้ลอยได้
 
-        // 🌟 ปิดแรงโน้มถ่วงให้เป็น 0 เพื่อให้มันลอยได้!
-        rb.gravityScale = 0f;
+        GenerateRandomPuzzle();
+    }
 
-        UpdateColor();
+    void GenerateRandomPuzzle()
+    {
+        string[] elements = { "Fire", "Water", "Lightning" };
+        List<string> puzzleList = new List<string>();
+
+        puzzleList.Add(elements[Random.Range(0, 3)]);
+        puzzleList.Add(elements[Random.Range(0, 3)]);
+        puzzleList.Add(elements[Random.Range(0, 3)]);
+        puzzleList.Sort();
+        requiredRecipe = puzzleList[0] + puzzleList[1] + puzzleList[2];
+
+        for (int i = 0; i < puzzleSlots.Length; i++)
+        {
+            if (puzzleList[i] == "Fire") puzzleSlots[i].sprite = fireSprite;
+            else if (puzzleList[i] == "Water") puzzleSlots[i].sprite = waterSprite;
+            else if (puzzleList[i] == "Lightning") puzzleSlots[i].sprite = lightningSprite;
+        }
+
+        if (puzzleCanvas != null) puzzleCanvas.SetActive(true);
     }
 
     void Update()
     {
-        // ค้นหาผู้เล่น
         if (player == null)
         {
             GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
@@ -51,11 +77,9 @@ public class FlyingEnemy : MonoBehaviour
             return;
         }
 
-        // หันหน้าหาผู้เล่น
-        if (player.position.x > transform.position.x)
-            transform.eulerAngles = new Vector3(0, 0, 0);
-        else
-            transform.eulerAngles = new Vector3(0, 180f, 0);
+        // หันหน้าหันหลังตาม Player
+        if (player.position.x > transform.position.x) transform.eulerAngles = new Vector3(0, 0, 0);
+        else transform.eulerAngles = new Vector3(0, 180f, 0);
     }
 
     void FixedUpdate()
@@ -63,22 +87,13 @@ public class FlyingEnemy : MonoBehaviour
         if (isBroken || player == null) return;
 
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
-
         if (distanceToPlayer <= detectRange)
         {
-            // 🦇 บินตรงดิ่งไปหาผู้เล่นเลย (คำนวณเวกเตอร์ทิศทาง)
             Vector2 direction = (player.position - transform.position).normalized;
             rb.velocity = direction * flySpeed;
         }
-        else
-        {
-            rb.velocity = Vector2.zero; // อยู่นอกระยะก็บินลอยโง่ๆ อยู่กับที่
-        }
+        else rb.velocity = Vector2.zero;
     }
-
-    // ==========================================
-    // ระบบต่อสู้และการโดนตี (เหมือนตัวบนดินเป๊ะ)
-    // ==========================================
 
     void OnCollisionEnter2D(Collision2D collision)
     {
@@ -95,18 +110,10 @@ public class FlyingEnemy : MonoBehaviour
         }
     }
 
-    void UpdateColor()
-    {
-        if (isBroken) { spriteRenderer.color = Color.gray; return; }
-        switch (enemyElement)
-        {
-            case PlayerCombat.Element.Red: spriteRenderer.color = Color.red; break;
-            case PlayerCombat.Element.Green: spriteRenderer.color = Color.green; break;
-            case PlayerCombat.Element.Blue: spriteRenderer.color = Color.blue; break;
-        }
-    }
-
-    public void TakeDamage(int damage, PlayerCombat.Element hitElement)
+    // =====================================
+    // 💥 ระบบเจาะเกราะนก!
+    // =====================================
+    public void TakeDamage(int damage)
     {
         if (isBroken)
         {
@@ -114,29 +121,35 @@ public class FlyingEnemy : MonoBehaviour
             ShowDamagePopup(damage, Color.white, 4f);
             if (currentHealth <= 0) Die();
         }
+        else ShowDamagePopup(0, Color.gray, 3f);
+    }
+
+    // 🌟 เพิ่ม int damage เข้ามารับค่า
+    public void CheckPuzzleBullet(string playerRecipe, int damage)
+    {
+        if (isBroken) return;
+
+        if (playerRecipe == requiredRecipe)
+        {
+            Debug.Log("🎯 รหัสนกถูกต้อง! ปีกหัก พร้อมโดนดาเมจ!");
+
+            BreakArmor();          // 1. สั่งเกราะแตก (ปีกหักร่วงพื้น)
+            TakeDamage(damage);    // 2. 🌟 อัดดาเมจเข้าเลือดต่อทันที!
+        }
         else
         {
-            bool isWeakness = false;
-            if (hitElement == PlayerCombat.Element.Red && enemyElement == PlayerCombat.Element.Green) isWeakness = true;
-            else if (hitElement == PlayerCombat.Element.Green && enemyElement == PlayerCombat.Element.Blue) isWeakness = true;
-            else if (hitElement == PlayerCombat.Element.Blue && enemyElement == PlayerCombat.Element.Red) isWeakness = true;
-
-            if (isWeakness)
-            {
-                currentShield -= damage;
-                ShowDamagePopup(damage, Color.yellow, 5f);
-                if (currentShield <= 0) BreakArmor();
-            }
-            else ShowDamagePopup(0, Color.gray, 3f);
+            Debug.Log("❌ รหัสผิด!");
+            ShowDamagePopup(0, Color.red, 3f);
         }
     }
 
     void BreakArmor()
     {
         isBroken = true;
-        UpdateColor();
+        spriteRenderer.color = Color.gray;
+        if (puzzleCanvas != null) puzzleCanvas.SetActive(false);
 
-        // 💥 ลูกเล่นสะใจ: เกราะแตกปุ๊บ เปิดแรงโน้มถ่วงให้ร่วงลงพื้น!
+        // 🌟 ไฮไลต์: นกโดนยิงเกราะแตก เปิดแรงโน้มถ่วงให้ร่วงกระแทกพื้น!
         rb.gravityScale = 3f;
 
         StartCoroutine(RecoverShieldRoutine());
@@ -148,14 +161,13 @@ public class FlyingEnemy : MonoBehaviour
         if (currentHealth > 0)
         {
             isBroken = false;
-            currentShield = maxShield;
-            UpdateColor();
-
-            // ฟื้นตัวแล้ว ปิดแรงโน้มถ่วงให้ลอยขึ้นไปใหม่
-            rb.gravityScale = 0f;
+            spriteRenderer.color = Color.white;
+            rb.gravityScale = 0f; // กลับมาบินได้เหมือนเดิม
+            GenerateRandomPuzzle();
         }
     }
 
+    // ... ฟังก์ชัน ShowDamagePopup และ Die เหมือนเดิมเลยครับ ...
     void ShowDamagePopup(int damageAmount, Color textColor, float fontSize)
     {
         if (damagePopupPrefab != null)
@@ -166,11 +178,13 @@ public class FlyingEnemy : MonoBehaviour
         }
     }
 
-    void Die() { Destroy(gameObject); }
-
-    private void OnDrawGizmosSelected()
+    void Die()
     {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, detectRange);
+        if (Random.Range(0, 100) <= dropChance && dropItems.Length > 0)
+        {
+            int randomItem = Random.Range(0, dropItems.Length);
+            Instantiate(dropItems[randomItem], transform.position, Quaternion.identity);
+        }
+        Destroy(gameObject);
     }
 }

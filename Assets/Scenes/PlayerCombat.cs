@@ -1,87 +1,107 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class PlayerCombat : MonoBehaviour
 {
-    [Header("Shooting Setup")]
-    public Transform firePoint;     // จุดยิง (ลาก FirePoint มาใส่)
-    public GameObject bulletPrefab;  
-    private SpriteRenderer playerSprite; // กระสุน (ลาก Prefab Bullet มาใส่)
+    [Header("จุดปล่อยพลัง")]
+    public Transform firePoint;
 
-    [Header("Element System")]
-    public Element currentElement = Element.Red; // เริ่มต้นที่สีแดง
+    [Header("กระสุนผสมธาตุ (คลิกซ้าย)")]
+    public GameObject bulletPrefab;
 
-    // สร้างรายชื่อธาตุทั้ง 3 สี
+    [Header("ท่าไม้ตาย (คลิกขวา / เสียมานา)")]
+    public GameObject ultimatePrefab;
+    public int ultimateManaCost = 2;
+
+    // 🌟 ตัวแปรธาตุเก่าเอาไว้ให้บอส/นก ไม่ด่า
     public enum Element { Red, Green, Blue }
+    [HideInInspector] public Element currentElement = Element.Red;
 
-
-    void Update()
-    {
-        // 1. กดยิง (คลิกซ้าย หรือ ปุ่ม J)
-        if (Input.GetButtonDown("Fire1"))
-        {
-            Shoot();
-        }
-
-        // 2. กดปุ่มเพื่อสลับธาตุ (เช่น กด Q เพื่อสลับ)
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            SwitchElement();
-        }
-    }
-
-    void Shoot()
-    {
-        // 1. สร้างกระสุน
-        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
-
-        // 2. ส่งค่า "ธาตุปัจจุบัน" ไปให้กระสุน
-        Bullet bulletScript = bullet.GetComponent<Bullet>();
-        bulletScript.bulletElement = currentElement;
-
-        // 3. เปลี่ยนสีกระสุน
-        SpriteRenderer bulletSprite = bullet.GetComponent<SpriteRenderer>();
-        switch (currentElement)
-        {
-            case Element.Red: bulletSprite.color = Color.red; break;
-            case Element.Green: bulletSprite.color = Color.green; break;
-            case Element.Blue: bulletSprite.color = Color.blue; break;
-        }
-    }
-
-    void SwitchElement()
-    {
-        // สลับธาตุวนลูป แดง -> เขียว -> ฟ้า -> แดง
-        if (currentElement == Element.Red) currentElement = Element.Green;
-        else if (currentElement == Element.Green) currentElement = Element.Blue;
-        else if (currentElement == Element.Blue) currentElement = Element.Red;
-
-        Debug.Log("Current Element: " + currentElement); // พิมพ์บอกใน Console
-        switch (currentElement)
-        {
-            case Element.Red: playerSprite.color = Color.red; break;
-            case Element.Green: playerSprite.color = Color.green; break;
-            case Element.Blue: playerSprite.color = Color.blue; break;
-        }
-    }
-    // เพิ่มตัวแปรนี้ไว้ด้านบน
-  
+    private PlayerMana playerMana;
+    private SpellMixer spellMixer;
 
     void Start()
     {
-        playerSprite = GetComponent<SpriteRenderer>();
+        playerMana = GetComponent<PlayerMana>();
+        spellMixer = GetComponent<SpellMixer>();
     }
 
-    // ในฟังก์ชันที่ใช้สลับธาตุ (ที่กดปุ่ม Q) ให้เพิ่มส่วนนี้:
-    void ChangeElement()
+    void Update()
     {
-        // ... โค้ดสลับ Element เดิมของคุณ ...
-
-        // อัปเดตสีที่ตัวละคร
-        switch (currentElement)
+        // 🧩 1. คลิกซ้าย (Fire1) = ยิงกระสุนผสมธาตุ
+        if (Input.GetButtonDown("Fire1"))
         {
-            case Element.Red: playerSprite.color = Color.red; break;
-            case Element.Green: playerSprite.color = Color.green; break;
-            case Element.Blue: playerSprite.color = Color.blue; break;
+            TryCastPuzzleSpell();
+        }
+
+        // 💥 2. คลิกขวา (Fire2) = ใช้ท่าไม้ตายใหญ่
+        if (Input.GetButtonDown("Fire2"))
+        {
+            CastUltimateSkill();
+        }
+    }
+
+    // ==========================================
+    // 🧩 คลิกซ้าย: ระบบกระสุนผสมธาตุ (ตีแตกทำดาเมจเลย)
+    // ==========================================
+    void TryCastPuzzleSpell()
+    {
+        if (spellMixer == null || spellMixer.currentOrbs.Count < 3)
+        {
+            Debug.Log("ลูกแก้วยังไม่ครบ 3 ลูก ยิงไม่ได้!");
+            return;
+        }
+
+        // 🌟 แปลงเป็นตัวหนังสือ (String) ก่อนแล้วค่อย Sort มันจะเรียง A-Z เหมือนมอนสเตอร์
+        List<string> sortedOrbs = new List<string>();
+        foreach (var orb in spellMixer.currentOrbs)
+        {
+            sortedOrbs.Add(orb.ToString());
+        }
+        sortedOrbs.Sort();
+        string recipe = sortedOrbs[0] + sortedOrbs[1] + sortedOrbs[2];
+
+        if (bulletPrefab != null)
+        {
+            GameObject puzzleBullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+
+            int damageUpgradeLevel = PlayerPrefs.GetInt("Upgrade_Damage", 0);
+            float finalDamage = 10f + (damageUpgradeLevel * 2f);
+
+            Bullet bulletScript = puzzleBullet.GetComponent<Bullet>();
+            if (bulletScript != null)
+            {
+                bulletScript.puzzleRecipe = recipe;
+                bulletScript.isPuzzleBullet = true;
+                bulletScript.damage = finalDamage;
+
+                SpriteRenderer sr = puzzleBullet.GetComponent<SpriteRenderer>();
+                if (sr != null) sr.color = Color.cyan;
+            }
+        }
+
+        spellMixer.ClearOrbs();
+    }
+
+    // ==========================================
+    // 💥 คลิกขวา: ระบบท่าไม้ตาย (เสียมานา)
+    // ==========================================
+    void CastUltimateSkill()
+    {
+        if (playerMana != null && !playerMana.UseMana(ultimateManaCost))
+        {
+            Debug.Log("❌ มานาไม่พอใช้ท่าไม้ตาย!");
+            return;
+        }
+
+        if (ultimatePrefab != null)
+        {
+            Instantiate(ultimatePrefab, firePoint.position, firePoint.rotation);
+            Debug.Log("🔥 ใช้ท่าไม้ตายใหญ่ (คลิกขวา)!!");
+        }
+        else
+        {
+            Debug.Log("⚠️ ยังไม่ได้ใส่ Prefab ท่าไม้ตายครับ");
         }
     }
 }
