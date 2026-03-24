@@ -5,31 +5,42 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Movement Settings")]
     public float moveSpeed = 8f;
-    public float jumpForce = 15f;
+    public float jumpForce = 17.3f; // ปรับตามความสูง 5 หรือ 6 บล็อกได้เลยครับ
+
+    [Header("Jump UX (ความสมูทระดับโปร)")]
+    public float fallMultiplier = 3.5f;
+    public float lowJumpMultiplier = 4f;
+    public float coyoteTime = 0.15f;
+    private float coyoteTimeCounter;
+    public float jumpBufferTime = 0.15f;
+    private float jumpBufferCounter;
 
     [Header("Ground Detection")]
     public Transform groundCheck;
     public float groundCheckRadius = 0.2f;
     public LayerMask groundLayer;
 
+    // 🌟 เอากลับมาแล้ว! ระบบ Knockback
     [Header("Knockback System")]
     public float knockbackForceX = 10f;
     public float knockbackForceY = 5f;
     public float knockbackDuration = 0.2f;
     private bool isKnockedBack = false;
 
+    // 🌟 เอากลับมาแล้ว! ระบบ Teleport
     [Header("Magic Teleport (Blink)")]
-    public float teleportDistance = 4f;     // ระยะทางที่จะวาร์ปไป
-    public float teleportCooldown = 1f;     // ดีเลย์ก่อนจะวาร์ปครั้งต่อไปได้
-    private float nextTeleportTime = 0f;    // ตัวจับเวลา Cooldown
+    public float teleportDistance = 4f;
+    public float teleportCooldown = 1f;
+    private float nextTeleportTime = 0f;
+
+    // 🌟 เอากลับมาแล้ว! ตัวแปรอมตะ
+    [Header("I-Frames Status")]
+    public bool isInvincible = false;
 
     private Rigidbody2D rb;
     private float horizontalInput;
     private bool isGrounded;
-    public Animator anim; // สร้างตัวแปรไว้เรียกใช้แอนิเมชัน
-
-
-
+    public Animator anim;
 
     void Start()
     {
@@ -38,75 +49,89 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        // ถ้าโดนตีปลิวกระเด็นอยู่ ห้ามขยับตัว
         if (isKnockedBack) return;
 
-        // 1. เดินซ้ายขวา
+        // 1. รับค่าการเดินแนวนอน
         horizontalInput = Input.GetAxisRaw("Horizontal");
+        if (anim != null) anim.SetFloat("Speed", Mathf.Abs(horizontalInput));
 
-        // 🌟 เพิ่มโค้ดบรรทัดนี้ลงไป เพื่อส่งค่าความเร็วไปให้ Animator 🌟
-        // (ใช้ Mathf.Abs เพื่อแปลงค่าติดลบตอนเดินซ้าย ให้กลายเป็นบวกเสมอ อนิเมชันจะได้ทำงานทั้ง 2 ฝั่งครับ)
-        if (anim != null)
-        {
-            anim.SetFloat("Speed", Mathf.Abs(horizontalInput));
-        }
-
-        // โค้ดหันหน้าซ้ายขวา (ของเดิม)
+        // หันหน้าซ้ายขวา
         if (horizontalInput > 0) transform.eulerAngles = new Vector3(0, 0, 0);
         else if (horizontalInput < 0) transform.eulerAngles = new Vector3(0, 180f, 0);
 
-        // 2. กระโดด
+        // 2. เช็กพื้น
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
-        if (Input.GetButtonDown("Jump") && isGrounded)
+
+        // 3. ระบบ Coyote Time (เดินพ้นขอบเหวไปนิดนึงก็ยังโดดได้)
+        if (isGrounded)
+        {
+            coyoteTimeCounter = coyoteTime;
+        }
+        else
+        {
+            coyoteTimeCounter -= Time.deltaTime;
+        }
+
+        // 4. ระบบ Jump Buffer (กดโดดล่วงหน้าได้)
+        if (Input.GetButtonDown("Jump"))
+        {
+            jumpBufferCounter = jumpBufferTime;
+        }
+        else
+        {
+            jumpBufferCounter -= Time.deltaTime;
+        }
+
+        // 5. คำสั่งกระโดด
+        if (jumpBufferCounter > 0f && coyoteTimeCounter > 0f)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            jumpBufferCounter = 0f; // ตัด Buffer ทิ้งเพื่อไม่ให้โดดเบิ้ล
         }
 
-        // 3. ระบบวาร์ป (กดปุ่ม Left Shift)
-        // 3. ระบบวาร์ป (กดปุ่ม Left Shift)
+        // 6. ตัดจังหวะลอยค้าง (ปล่อยปุ่มแล้วร่วงทันที)
+        if (Input.GetButtonUp("Jump") && rb.velocity.y > 0f)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
+            coyoteTimeCounter = 0f; // กันบั๊กโดดเบิ้ล
+        }
+
+        // 7. ระบบร่วงตกพื้นแบบมีน้ำหนัก
+        if (rb.velocity.y < 0)
+        {
+            rb.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
+        }
+
+        // 8. ระบบวาร์ป (ของเดิม)
         if (Input.GetKeyDown(KeyCode.LeftShift) && Time.time >= nextTeleportTime)
         {
-            // เรียกใช้ระบบวาร์ปแบบหน่วงเวลา
             StartCoroutine(TeleportSequence());
-        
-        if (Input.GetKeyDown(KeyCode.LeftShift))
-            {
-                // สั่งให้เล่นท่า Dash!
-                if (anim != null)
-                {
-                    anim.SetTrigger("Dash");
-                }
-
-                // ... โค้ดพุ่งตัว (เพิ่มความเร็ว) เดิมของคุณอาร์ม ...
-            }
         }
-        
     }
 
     void FixedUpdate()
     {
         if (isKnockedBack) return;
         rb.velocity = new Vector2(horizontalInput * moveSpeed, rb.velocity.y);
-        
     }
 
-    // ฟังก์ชันวาร์ปของพ่อมด!
-    // ฟังก์ชันวาร์ปแบบสมูท (รอจังหวะอนิเมชัน)
+    // ==========================================
+    // 🌟 ระบบวาร์ป และ Knockback ของเดิมของคุณอาร์ม (ห้ามลบ!)
+    // ==========================================
+
     System.Collections.IEnumerator TeleportSequence()
     {
-        // 1. เริ่มนับ Cooldown
         nextTeleportTime = Time.time + teleportCooldown;
+        isInvincible = true;
 
-        // 2. สั่งเล่นท่า Dash (ให้ตัวจางหายไป)
         if (anim != null) anim.SetTrigger("Dash");
 
-        // 3. หยุดตัวละครไม่ให้เดินได้ชั่วคราวตอนกำลังร่ายวาร์ป
         float originalSpeed = moveSpeed;
         moveSpeed = 0f;
 
-        // 4. ⏳ รอเวลาให้ภาพจางจนสุด (ปรับเลข 0.2f ให้ตรงกับความเร็วอนิเมชันคุณอาร์มได้เลย)
         yield return new WaitForSeconds(0.2f);
 
-        // --- 5. เริ่มทำการวาร์ป ---
         Vector2 facingDirection = (transform.eulerAngles.y == 0) ? Vector2.right : Vector2.left;
         RaycastHit2D hit = Physics2D.Raycast(transform.position, facingDirection, teleportDistance, groundLayer);
         Vector2 targetPosition;
@@ -120,16 +145,15 @@ public class PlayerController : MonoBehaviour
             targetPosition = (Vector2)transform.position + (facingDirection * teleportDistance);
         }
 
-        // ย้ายตำแหน่งทันที (คนเล่นจะไม่เห็นการวาร์ปขัดตา เพราะภาพมันล่องหนอยู่พอดี!)
         transform.position = targetPosition;
         rb.velocity = new Vector2(0, rb.velocity.y);
 
-        // 6. ⏳ รอให้อนิเมชันกลับมาปรากฏตัวจนจบ ค่อยคืนค่าให้เดินได้ปกติ
-        yield return new WaitForSeconds(0.7f);
         moveSpeed = originalSpeed;
+
+        yield return new WaitForSeconds(0.2f);
+        isInvincible = false;
     }
 
-    // ระบบกระเด็น (ของเดิม)
     public void Knockback(Transform enemyTransform)
     {
         isKnockedBack = true;

@@ -9,7 +9,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{AE833499-7FD3-C65E-1FC3-07A6D25A62D6}</ProjectGuid>
+    <ProjectGuid>{CF0420D1-E2E6-2A9B-86E6-6C13C393D90E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -75,14 +75,17 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\EnvMapAnimator.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_UiFrameRateCounter.cs" />
     <Compile Include="Assets\Scenes\PlayerController.cs" />
+    <Compile Include="Assets\Scenes\SoulUI.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\CameraController.cs" />
     <Compile Include="Assets\Scenes\MapWarp.cs" />
     <Compile Include="Assets\Scenes\GlobalStats.cs" />
+    <Compile Include="Assets\Scenes\SpawnIndicator.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMPro_InstructionOverlay.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_ExampleScript_01.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextConsoleSimulator.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ObjectSpin.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextInfoDebugTool.cs" />
+    <Compile Include="Assets\Scenes\BossCutscene.cs" />
     <Compile Include="Assets\Scenes\Boss.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextEventCheck.cs" />
     <Compile Include="Assets\Scenes\PlayerCombat.cs" />
@@ -91,9 +94,13 @@
     <Compile Include="Assets\Scenes\GameManager.cs" />
     <Compile Include="Assets\Scenes\LevelManager.cs" />
     <Compile Include="Assets\Scenes\ItemData.cs" />
+    <Compile Include="Assets\Scenes\LaserDamage.cs" />
     <Compile Include="Assets\Scenes\FlyingEnemy.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\WarpTextExample.cs" />
+    <Compile Include="Assets\Scenes\UltimateSkill.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_DigitValidator.cs" />
+    <Compile Include="Assets\Scenes\GameFeelManager.cs" />
+    <Compile Include="Assets\Scenes\Soul.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark02.cs" />
     <Compile Include="Assets\Scenes\DamagePopup.cs" />
     <Compile Include="Assets\Scenes\ItemPickup.cs" />
@@ -102,15 +109,20 @@
     <Compile Include="Assets\Scenes\PlayerMana.cs" />
     <Compile Include="Assets\Scenes\SpellMixer.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_FrameRateCounter.cs" />
+    <Compile Include="Assets\Scenes\UpgradeShrine.cs" />
+    <Compile Include="Assets\Scenes\EnergyOrb.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexJitter.cs" />
+    <Compile Include="Assets\Scenes\BuffManager.cs" />
+    <Compile Include="Assets\Scenes\BossFightUI.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextEventHandler.cs" />
     <Compile Include="Assets\Scenes\PlayerHealth.cs" />
-    <Compile Include="Assets\Scenes\BossPillar.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextSelector_B.cs" />
     <Compile Include="Assets\Scenes\MainMenuController.cs" />
     <Compile Include="Assets\Scenes\LevelGenerator.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\DropdownSample.cs" />
+    <Compile Include="Assets\Scenes\ParallaxBackground.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_PhoneNumberValidator.cs" />
+    <Compile Include="Assets\Scenes\BossSkillManager.cs" />
     <Compile Include="Assets\Scenes\BossBullet.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexColorCycler.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TeleType.cs" />
@@ -118,6 +130,7 @@
     <Compile Include="Assets\Scenes\BossHealthUI.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01.cs" />
     <Compile Include="Assets\Scenes\UpgradeManager.cs" />
+    <Compile Include="Assets\Scenes\TutorialPopup.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
@@ -734,79 +747,79 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Unity.2D.Tilemap.Extras.Player.csproj">
-      <Project>{CEF8141A-6C88-FBB5-5835-1832B96BBBD9}</Project>
+      <Project>{052A18A7-0226-54BF-4E3D-96C8596197FA}</Project>
       <Name>Unity.2D.Tilemap.Extras.Player</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.InternalAPIEngineBridge.001.Player.csproj">
-      <Project>{B3B73C6D-B101-27D0-9FFB-BA040A5FFF7D}</Project>
+      <Project>{3166381D-E6D7-9274-37B0-DB1289C9AFC8}</Project>
       <Name>Unity.InternalAPIEngineBridge.001.Player</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.2D.PixelPerfect.Player.csproj">
-      <Project>{6E40E3FD-5B2C-7EA7-89E0-218B5FC4D344}</Project>
+      <Project>{1C09C2CC-E3F6-5B37-D147-C3FCD61152A7}</Project>
       <Name>Unity.2D.PixelPerfect.Player</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.Timeline.Player.csproj">
-      <Project>{3CC4F7E1-93F5-E006-F965-721ECE53A703}</Project>
+      <Project>{95A1C5EB-C91C-55A8-9964-35EEE4584321}</Project>
       <Name>Unity.Timeline.Player</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.TextMeshPro.Player.csproj">
-      <Project>{85F73A48-75D3-E886-2718-44F13DC80AE9}</Project>
+      <Project>{D9FB2722-4A7A-F057-E3B6-B0F824FA7F9D}</Project>
       <Name>Unity.TextMeshPro.Player</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.VisualScripting.Flow.Player.csproj">
-      <Project>{5F9E58B6-EC36-8EAE-C9E8-D61EC086F653}</Project>
+      <Project>{61D553CE-336B-7CD4-6536-785037B978F7}</Project>
       <Name>Unity.VisualScripting.Flow.Player</Name>
     </ProjectReference>
     <ProjectReference Include="UnityEngine.UI.Player.csproj">
-      <Project>{7EB2981D-A98B-5640-B713-EF233459172B}</Project>
+      <Project>{43C55732-5583-0E50-2A12-F682A9DBFE01}</Project>
       <Name>UnityEngine.UI.Player</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.Services.Core.Player.csproj">
-      <Project>{10EE3157-0A81-2451-54C1-503EC1841D49}</Project>
+      <Project>{83B51179-36A9-E14B-4F52-A82CC82B71D4}</Project>
       <Name>Unity.Services.Core.Player</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.VisualScripting.Core.Player.csproj">
-      <Project>{1A5BF3D1-C75F-3407-A0F4-36F642FC09E9}</Project>
+      <Project>{3809C111-DD05-3261-0591-1A2131B36E94}</Project>
       <Name>Unity.VisualScripting.Core.Player</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.Mathematics.Player.csproj">
-      <Project>{28DE2248-B29E-B14E-72D4-B3466838B60C}</Project>
+      <Project>{6B41C503-9B4D-BE90-0C5A-B4C876DBEA94}</Project>
       <Name>Unity.Mathematics.Player</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.2D.IK.Runtime.Player.csproj">
-      <Project>{57DA17D4-CABD-6846-9AC8-0B5863FA2F51}</Project>
+      <Project>{334E48C3-5DD6-F78A-D093-9AD7D2637B3D}</Project>
       <Name>Unity.2D.IK.Runtime.Player</Name>
     </ProjectReference>
     <ProjectReference Include="Cinemachine.Player.csproj">
-      <Project>{4ED74030-CE48-2BFD-1E27-2B03AFB359A1}</Project>
+      <Project>{F1CB4BC1-954D-955D-5ABC-2D446A0A403B}</Project>
       <Name>Cinemachine.Player</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.Services.Core.Analytics.Player.csproj">
-      <Project>{6F76F6E2-6DBC-3427-D4A7-EA82ECF245EB}</Project>
+      <Project>{58B6F6CA-59EE-0A96-75B6-5350FB32FB25}</Project>
       <Name>Unity.Services.Core.Analytics.Player</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.Burst.Player.csproj">
-      <Project>{87A09229-C349-95F0-0B58-49E3D0F6946E}</Project>
+      <Project>{38684F46-EAA1-9957-A4A0-1E2BFC1A8187}</Project>
       <Name>Unity.Burst.Player</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.Services.Core.Environments.Player.csproj">
-      <Project>{03959131-3499-00E1-1F98-8602AD8812C4}</Project>
+      <Project>{AB9C228D-85A4-8E30-4FF2-EF3E231AEF39}</Project>
       <Name>Unity.Services.Core.Environments.Player</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.2D.Animation.Runtime.Player.csproj">
-      <Project>{F2825469-0C25-65B5-530B-365AFD69D6E7}</Project>
+      <Project>{A5C524EF-7369-C43F-E833-C43D1106CBAD}</Project>
       <Name>Unity.2D.Animation.Runtime.Player</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.2D.Common.Runtime.Player.csproj">
-      <Project>{99BA7BB1-BC47-03A9-BE18-038B7AFEBF7C}</Project>
+      <Project>{6E33412F-3452-D075-8AEB-7CAF498136AE}</Project>
       <Name>Unity.2D.Common.Runtime.Player</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.2D.SpriteShape.Runtime.Player.csproj">
-      <Project>{2591ED44-B146-98D7-A724-E11BB94FE4A7}</Project>
+      <Project>{58446150-A954-073A-5584-AC91593B1DBF}</Project>
       <Name>Unity.2D.SpriteShape.Runtime.Player</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.VisualScripting.State.Player.csproj">
-      <Project>{28EA1460-FD46-A6F7-E253-10DDB649F936}</Project>
+      <Project>{9B2FA39F-3368-27FC-E85F-829593CDE6E2}</Project>
       <Name>Unity.VisualScripting.State.Player</Name>
     </ProjectReference>
   </ItemGroup>

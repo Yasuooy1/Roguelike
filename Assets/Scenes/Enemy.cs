@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.UI; // 🌟 สำคัญมาก ต้องมีเพื่อใช้คำสั่ง Image และ Canvas
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -41,11 +41,11 @@ public class Enemy : MonoBehaviour
     private SpriteRenderer spriteRenderer;
 
     [Header("UI ลูกแก้วบนหัวมอนสเตอร์")]
-    public GameObject puzzleCanvas;   // ตัวปิดเปิด Canvas บนหัว
-    public Image[] puzzleSlots;       // ช่องใส่รูป 3 ช่อง (ลาก Orb_1, 2, 3 มาใส่)
-    public Sprite fireSprite;         // รูปธาตุไฟ (แดง)
-    public Sprite waterSprite;        // รูปธาตุน้ำ (ฟ้า)
-    public Sprite lightningSprite;    // รูปธาตุสายฟ้า (เหลือง)
+    public GameObject puzzleCanvas;
+    public Image[] puzzleSlots;
+    public Sprite fireSprite;
+    public Sprite waterSprite;
+    public Sprite lightningSprite;
 
     [Header("UI Damage")]
     public GameObject damagePopupPrefab;
@@ -53,36 +53,81 @@ public class Enemy : MonoBehaviour
     [Header("Drop System")]
     public GameObject[] dropItems;
     [Range(0, 100)] public int dropChance = 30;
+    public GameObject soulPrefab;
+    public int soulAmount = 3;
+
+    private bool isDead = false;
+    private Animator anim;
+
+    // 🌟 ตัวแปรใหม่ เอาไว้จำว่าตัวเองอยู่ในเวฟไหน และเกิดเป็นคิวที่เท่าไหร่
+    private int currentWaveMode = 0;
+    private int mySpawnIndex = 0;
 
     void Start()
     {
         currentHealth = maxHealth;
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
+        anim = GetComponent<Animator>();
+
         patrolSpeed = Random.Range(1.2f, 2.0f);
 
-        // สุ่มรหัสผ่านเกราะและแสดงผลบนหัวทันทีตอนเกิด
+        // ตอนเริ่มเกมก็ให้มันสร้างเกราะตามเวฟของตัวเอง
         GenerateRandomPuzzle();
     }
 
     // ==========================================
-    // 🧩 ฟังก์ชันสุ่มรหัสผ่าน & วาด UI บนหัว
+    // 🌟 1. ฟังก์ชันรับคำสั่งจาก WaveManager (รับค่าคิวมาด้วย)
+    // ==========================================
+    public void SetTutorialWave(int waveNumber, int spawnIndex)
+    {
+        currentWaveMode = waveNumber;
+        mySpawnIndex = spawnIndex; // จำคิวตัวเองไว้
+        GenerateRandomPuzzle();
+    }
+
+    // ==========================================
+    // 🌟 2. อัปเกรดระบบสุ่มรหัส (ล็อกคิวสำหรับเวฟ 1)
     // ==========================================
     void GenerateRandomPuzzle()
     {
-        string[] elements = { "Fire", "Water", "Lightning" };
+        // ลำดับธาตุ: 0=ไฟ(แดง), 1=สายฟ้า(เหลือง), 2=น้ำ(ฟ้า)
+        string[] elements = { "Fire", "Lightning", "Water" };
         List<string> puzzleList = new List<string>();
 
-        // สุ่มมา 3 ลูก
-        puzzleList.Add(elements[Random.Range(0, 3)]);
-        puzzleList.Add(elements[Random.Range(0, 3)]);
-        puzzleList.Add(elements[Random.Range(0, 3)]);
+        if (currentWaveMode == 1)
+        {
+            // เวฟ 1: สีเดียวล้วน และ ล็อกสีตามคิวการเกิดเป๊ะๆ!
+            string singleElement = elements[mySpawnIndex % 3];
+            puzzleList.Add(singleElement);
+            puzzleList.Add(singleElement);
+            puzzleList.Add(singleElement);
+        }
+        else if (currentWaveMode == 2)
+        {
+            // เวฟ 2: สองสีผสมกัน (เช่น ฟ้า ฟ้า แดง)
+            string elementA = elements[Random.Range(0, 3)];
+            string elementB;
+            do { elementB = elements[Random.Range(0, 3)]; } while (elementB == elementA);
 
-        // เรียงลำดับให้ตรงกัน
+            puzzleList.Add(elementA);
+            puzzleList.Add(elementA);
+            puzzleList.Add(elementB);
+        }
+        else
+        {
+            // เวฟ 3 ขึ้นไป: สุ่มมั่ว 3 ลูกตามปกติ
+            string[] allElements = { "Fire", "Water", "Lightning" };
+            puzzleList.Add(allElements[Random.Range(0, 3)]);
+            puzzleList.Add(allElements[Random.Range(0, 3)]);
+            puzzleList.Add(allElements[Random.Range(0, 3)]);
+        }
+
+        // เรียงตัวอักษร A-Z ให้ตรงกับระบบ
         puzzleList.Sort();
         requiredRecipe = puzzleList[0] + puzzleList[1] + puzzleList[2];
 
-        // 🌟 วาดรูปลูกแก้วบนหัวมอนสเตอร์ให้ผู้เล่นเห็น
+        // อัปเดตรูปลูกแก้วบนหัวมอนสเตอร์
         for (int i = 0; i < puzzleSlots.Length; i++)
         {
             if (puzzleList[i] == "Fire") puzzleSlots[i].sprite = fireSprite;
@@ -90,15 +135,12 @@ public class Enemy : MonoBehaviour
             else if (puzzleList[i] == "Lightning") puzzleSlots[i].sprite = lightningSprite;
         }
 
-        // เปิด Canvas ให้โชว์
         if (puzzleCanvas != null) puzzleCanvas.SetActive(true);
-
-        Debug.Log(gameObject.name + " รหัสเกราะ: " + requiredRecipe);
     }
 
     void Update()
     {
-        if (isBroken || isAttacking) return;
+        if (isBroken || isAttacking || isDead) return;
 
         if (player == null)
         {
@@ -139,7 +181,7 @@ public class Enemy : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (isBroken || isAttacking) return;
+        if (isBroken || isAttacking || isDead) return;
 
         if (isChasing && !canMoveForward)
         {
@@ -159,6 +201,8 @@ public class Enemy : MonoBehaviour
         rb.velocity = new Vector2(0, rb.velocity.y);
         transform.localScale = new Vector3(transform.localScale.x, 0.8f, 1f);
         yield return new WaitForSeconds(0.4f);
+
+        if (isDead) yield break;
 
         transform.localScale = new Vector3(transform.localScale.x, 1f, 1f);
         float dashDirection = (transform.eulerAngles.y == 0) ? 1f : -1f;
@@ -181,7 +225,7 @@ public class Enemy : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Player") && !isBroken)
+        if (collision.gameObject.CompareTag("Player") && !isBroken && !isDead)
         {
             PlayerHealth playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
             PlayerController playerController = collision.gameObject.GetComponent<PlayerController>();
@@ -194,11 +238,10 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    // ==========================================
-    // 💥 ระบบโดนโจมตี
-    // ==========================================
     public void TakeDamage(int damage)
     {
+        if (isDead) return;
+
         if (isBroken)
         {
             currentHealth -= damage;
@@ -211,21 +254,17 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    // 🌟 เพิ่ม int damage เข้ามารับค่าจากกระสุน
     public void CheckPuzzleBullet(string playerRecipe, int damage)
     {
-        if (isBroken) return;
+        if (isBroken || isDead) return;
 
         if (playerRecipe == requiredRecipe)
         {
-            Debug.Log("🎯 รหัสเกราะถูกต้อง! เกราะแตก พร้อมโดนดาเมจ!");
-
-            BreakArmor();          // 1. สั่งเกราะแตก (ตัวซีด)
-            TakeDamage(damage);    // 2. 🌟 อัดดาเมจเข้าเลือดต่อทันที! (จะเด้งเลขสีขาวขึ้นมา)
+            BreakArmor();
+            TakeDamage(damage);
         }
         else
         {
-            Debug.Log("❌ รหัสผิด!");
             ShowDamagePopup(0, Color.red, 3f);
         }
     }
@@ -235,7 +274,6 @@ public class Enemy : MonoBehaviour
         isBroken = true;
         spriteRenderer.color = Color.gray;
 
-        // 🌟 ปิด UI ลูกแก้วบนหัวทิ้งไปเลย (เพราะเกราะแตกแล้ว)
         if (puzzleCanvas != null) puzzleCanvas.SetActive(false);
 
         StartCoroutine(RecoverShieldRoutine());
@@ -244,12 +282,10 @@ public class Enemy : MonoBehaviour
     IEnumerator RecoverShieldRoutine()
     {
         yield return new WaitForSeconds(breakDuration);
-        if (currentHealth > 0)
+        if (currentHealth > 0 && !isDead)
         {
             isBroken = false;
             spriteRenderer.color = Color.white;
-
-            // 🌟 เกราะฟื้นปุ๊บ สุ่มรหัสใหม่ และเปิด UI ลูกแก้วบนหัวใหม่
             GenerateRandomPuzzle();
         }
     }
@@ -266,12 +302,40 @@ public class Enemy : MonoBehaviour
 
     void Die()
     {
+        if (isDead) return;
+        isDead = true;
+
+        if (puzzleCanvas != null) puzzleCanvas.SetActive(false);
+
+        if (soulPrefab != null)
+        {
+            for (int i = 0; i < soulAmount; i++)
+            {
+                GameObject soul = Instantiate(soulPrefab, transform.position, Quaternion.identity);
+                Rigidbody2D soulRb = soul.GetComponent<Rigidbody2D>();
+                if (soulRb != null)
+                {
+                    Vector2 randomDir = new Vector2(Random.Range(-1f, 1f), Random.Range(0.5f, 1.5f));
+                    soulRb.AddForce(randomDir * 5f, ForceMode2D.Impulse);
+                }
+            }
+        }
+
         if (Random.Range(0, 100) <= dropChance && dropItems.Length > 0)
         {
             int randomItem = Random.Range(0, dropItems.Length);
             Instantiate(dropItems[randomItem], transform.position, Quaternion.identity);
         }
-        Destroy(gameObject);
+
+        if (anim != null)
+        {
+            anim.SetTrigger("Die");
+        }
+
+        rb.velocity = Vector2.zero;
+        rb.gravityScale = 3f;
+
+        Destroy(gameObject, 1f);
     }
 
     private void OnDrawGizmosSelected()

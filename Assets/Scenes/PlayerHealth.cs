@@ -1,4 +1,4 @@
-using System.Collections; // ต้องมีบรรทัดนี้เพื่อใช้ระบบหน่วงเวลา
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -14,45 +14,44 @@ public class PlayerHealth : MonoBehaviour
     public Sprite fullHeart;
 
     [Header("I-Frames (อมตะชั่วคราว)")]
-    public float iFrameDuration = 1.5f; // ระยะเวลาที่เป็นอมตะ (วินาที)
-    public int numberOfFlashes = 5;     // จำนวนครั้งที่ตัวกะพริบ
+    public float iFrameDuration = 1.5f;
+    public int numberOfFlashes = 5;
 
-    private bool isInvincible = false;  // ตัวแปรเช็กว่าตอนนี้เป็นอมตะอยู่ไหม
+    private bool isInvincible = false;
     private SpriteRenderer spriteRenderer;
+    public bool hasShield = false;
+
+    // 🌟 1. เพิ่มตัวแปร Animator ของผู้เล่น
+    private Animator anim;
 
     void Start()
     {
-        maxHealth += GlobalStats.BonusMaxHealth;
-        currentHealth = maxHealth;
-        UpdateHealthUI();
-
+        // --- 🌟 จัดระเบียบโค้ดตอนเริ่มเกมให้กระชับขึ้น ---
         int bonusHealth = PlayerPrefs.GetInt("Upgrade_Health", 0);
-        maxHealth += bonusHealth; // สมมติว่าอัป 1 เวล = เลือดเพิ่ม 1 ดวง
-        currentHealth = maxHealth;
-        UpdateHealthUI();
 
+        // (ถ้าในโปรเจกต์ไม่ได้ใช้ GlobalStats แล้ว สามารถลบ + GlobalStats.BonusMaxHealth ทิ้งได้ครับ)
+        maxHealth = 5 + bonusHealth;
         currentHealth = maxHealth;
-        spriteRenderer = GetComponent<SpriteRenderer>(); // ดึงภาพตัวละครมาเพื่อสั่งกะพริบ
-        UpdateHealthUI();
-        /*GameObject healthUIObject = GameObject.Find("HealthUI");
 
-        if (healthUIObject != null)
-        {
-            // 2. ดึงรูปหัวใจทั้งหมดที่ซ่อนอยู่ใน HealthUI มาใส่ในช่องอัตโนมัติ
-            // ⚠️ สำคัญ: เปลี่ยนคำว่า "heartImages" ให้ตรงกับชื่อตัวแปรอาเรย์ของคุณในโค้ดนะครับ
-            heartImages = healthUIObject.GetComponentsInChildren<UnityEngine.UI.Image>();
-            Debug.Log("เชื่อมต่อหลอดเลือดสำเร็จ!");
-        }
-        else
-        {
-            Debug.LogWarning("หา HealthUI ไม่เจอครับ ลองเช็กชื่อในฉากดูนะ");
-        }*/
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        anim = GetComponent<Animator>(); // 🌟 ดึง Animator มาเตรียมไว้เล่นท่าตาย
+
+        UpdateHealthUI();
     }
 
     public void TakeDamage(int damage)
     {
-        // 🛑 ถ้าเป็นอมตะอยู่ ให้หยุดการทำงานตรงนี้เลย (ไม่เสียเลือด)
+        if (hasShield)
+        {
+            hasShield = false;
+            Debug.Log("💥 เกราะแตก! รอดตัวไปที ไม่เสียเลือด!");
+            return;
+        }
+
         if (isInvincible) return;
+
+        PlayerController pc = GetComponent<PlayerController>();
+        if (pc != null && pc.isInvincible) return;
 
         currentHealth -= damage;
         if (currentHealth < 0) currentHealth = 0;
@@ -66,34 +65,25 @@ public class PlayerHealth : MonoBehaviour
         }
         else
         {
-            // ถ้ายังไม่ตาย ให้เริ่มระบบอมตะและกะพริบ
             StartCoroutine(InvincibilityRoutine());
         }
     }
 
-    // ระบบจับเวลาและกะพริบตัว
     private IEnumerator InvincibilityRoutine()
     {
-        isInvincible = true; // เปิดโหมดอมตะ
-
-        // คำนวณเวลาที่ต้องใช้ในการกะพริบ 1 จังหวะ (มืดสลับสว่าง)
+        isInvincible = true;
         float flashDuration = iFrameDuration / (numberOfFlashes * 2f);
 
         for (int i = 0; i < numberOfFlashes; i++)
         {
-            // 1. ทำให้ตัวโปร่งแสง 50% (ค่า Alpha = 0.5f)
             spriteRenderer.color = new Color(1, 1, 1, 0.5f);
             yield return new WaitForSeconds(flashDuration);
 
-            // 2. ทำให้ตัวกลับมาสว่างปกติ 100%
             spriteRenderer.color = Color.white;
             yield return new WaitForSeconds(flashDuration);
         }
-
-        // ทำให้แน่ใจว่าตอนจบ สีกลับมาเป็นปกติ 100% เสมอ
         spriteRenderer.color = Color.white;
-
-        isInvincible = false; // ปิดโหมดอมตะ โดนตีเข้าแล้ว
+        isInvincible = false;
     }
 
     void UpdateHealthUI()
@@ -121,47 +111,56 @@ public class PlayerHealth : MonoBehaviour
 
     public void Die()
     {
-        Debug.Log("Player Died!");
-
-        // พอตายปุ๊บ ให้เรียกใช้งานระบบหน่วงเวลาตาย
+        Debug.Log("💀 Player Died!");
         StartCoroutine(DeathRoutine());
     }
 
-    // ระบบหน่วงเวลาตอนตาย
     private IEnumerator DeathRoutine()
     {
-        // 1. เปิดโหมดอมตะจะได้ไม่โดนดาเมจซ้ำซ้อนตอนกำลังจะตาย
         isInvincible = true;
 
-        // 2. ปิดกล่องชน (Collider2D) ศัตรูจะได้เดินทะลุไปเลย ไม่มาดันศพเรา
+        // 🌟 2. สั่งเล่นแอนิเมชันตาย! (อย่าลืมไปตั้งค่า Trigger "Die" ใน Animator ด้วยนะครับ)
+        if (anim != null)
+        {
+            anim.SetTrigger("Die");
+        }
+
+        // 🌟 3. ปิดกล่องชน ศัตรูจะได้เดินทะลุไปเลย ไม่มาเดินดันศพเรากระเด็น
         Collider2D col = GetComponent<Collider2D>();
         if (col != null) col.enabled = false;
 
-        // 3. ปิดสคริปต์ควบคุมการเดิน (เพื่อให้ตัวละครยืนนิ่งๆ)
-        // ⚠️ สำคัญ: ถ้าสคริปต์เดินของคุณออยไม่ได้ชื่อ PlayerMovement ให้แก้ชื่อตรงสีส้มนี้ให้ตรงกันนะครับ
-        MonoBehaviour movementScript = GetComponent("PlayerMovement") as MonoBehaviour;
-        if (movementScript != null) movementScript.enabled = false;
+        // 🌟 4. ล็อกตัวละครให้อยู่กับที่! (สำคัญมาก ไม่งั้นพอปิดกล่องชน ตัวละครจะร่วงทะลุพื้นตกแมพ)
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            rb.velocity = Vector2.zero; // หยุดความเร็วทั้งหมด
+            rb.gravityScale = 0f;       // ปิดแรงโน้มถ่วงให้ศพลอยแตะพื้นตรงนั้นเลย
+        }
 
-        // 4. เปลี่ยนสีตัวละครเป็นสีดำ/เทา ให้ดูเหมือนวิญญาณหลุดร่าง
-        spriteRenderer.color = Color.black;
+        // 🌟 5. ปิดสคริปต์ควบคุมการเดินทั้งหมด (เพื่อไม่ให้ผู้เล่นกดปุ่มเดินหรือยิงต่อได้)
+        PlayerController playerController = GetComponent<PlayerController>();
+        if (playerController != null) playerController.enabled = false;
 
-        // 5. ⏳ หน่วงเวลาให้ผู้เล่นช็อกแป๊บนึง (1.5 วินาที)
-        yield return new WaitForSeconds(1.5f);
+        PlayerCombat playerCombat = GetComponent<PlayerCombat>();
+        if (playerCombat != null) playerCombat.enabled = false;
 
-        // 6. ล้างประวัติและโหลดเริ่มรันใหม่
+        // เปลี่ยนสีตัวละครเป็นสีดำ/เทา (ถ้าคุณอาร์มวาดแอนิเมชันตายแยกไว้แล้ว ลบส่วนนี้ทิ้งได้เลยครับ ภาพจะได้ไม่ดำ)
+        
+
+        // 🌟 6. ⏳ หน่วงเวลาเพิ่มเป็น 2 วินาที เพื่อให้คนเล่นได้ดูแอนิเมชันตอนตายจนจบ
+        yield return new WaitForSeconds(2f);
+
         if (GameManager.instance != null)
         {
             GameManager.instance.ResetRoguelike();
             GameManager.instance.LoadNextRandomMap();
         }
 
-        // 7. ทำลายศพตัวละครนี้ทิ้ง
         Destroy(gameObject);
     }
-    // ฟังก์ชันสำหรับเพิ่มเลือด
+
     public void Heal(int healAmount)
     {
-        // ถ้าเลือดเต็มอยู่แล้ว ให้เด้งออกไปเลย ไม่ต้องฮีล
         if (currentHealth >= maxHealth)
         {
             Debug.Log("เลือดเต็มแล้วจ้า!");
@@ -169,29 +168,17 @@ public class PlayerHealth : MonoBehaviour
         }
 
         currentHealth += healAmount;
+        if (currentHealth > maxHealth) currentHealth = maxHealth;
 
-        // กันเลือดทะลุหลอด
-        if (currentHealth > maxHealth)
-        {
-            currentHealth = maxHealth;
-        }
-
-        UpdateHealthUI(); // อัปเดตหน้าจอ
+        UpdateHealthUI();
         Debug.Log("ฮีลแล้ว! เลือดตอนนี้: " + currentHealth);
     }
-    // ฟังก์ชันสำหรับเรียกใช้อัปเดต UI ทันทีเมื่อมีการอัปเกรด
+
     public void RefreshHealthStat()
     {
-        // 1. ดึงค่าที่เพิ่งอัปเกรดมาสดๆ ร้อนๆ
         int bonusHealth = PlayerPrefs.GetInt("Upgrade_Health", 0);
-
-        // 2. คำนวณเลือดสูงสุดใหม่ (สมมติเลือดเริ่มต้นคือ 3 ดวง)
-        maxHealth = 3 + bonusHealth;
-
-        // 3. เติมเลือดให้เต็ม
+        maxHealth = 5 + bonusHealth; // แก้ให้ฐานเลือดเริ่มต้นเป็น 5 ให้ตรงกับด้านบน
         currentHealth = maxHealth;
-
-        // 4. สั่งวาดรูปหัวใจบนหน้าจอใหม่ทันที!
         UpdateHealthUI();
     }
 }

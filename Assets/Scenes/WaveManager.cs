@@ -1,112 +1,204 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class WaveManager : MonoBehaviour
 {
-    [Header("ตั้งค่าเวฟ (Wave Settings)")]
-    public int totalWaves = 5;         // จำนวนเวฟทั้งหมด
-    private int currentWave = 0;       // ตอนนี้อยู่เวฟที่เท่าไหร่
+    [Header("UI แสดงผลบนหน้าจอ")]
+    public TextMeshProUGUI waveCountText;
+    public TextMeshProUGUI warningDirectionText;
 
-    [Header("ศัตรูและบอส (Prefabs)")]
-    public GameObject[] enemyPrefabs;  // ใส่ตัวศัตรูได้หลายๆ แบบ (ระบบจะสุ่มเสก)
-    public GameObject bossPrefab;      // ใส่ Prefab ของบอส
+    [Header("ตั้งค่าเวฟ (Wave Settings)")]
+    public int totalWaves = 5;
+    private int currentWave = 0;
+
+    // ==========================================
+    // 🌟 ระบบแยกมอนสเตอร์ตามเวฟ (Tutorial System)
+    // ==========================================
+    [Header("ศัตรูแยกตามเวฟ (Tutorial)")]
+    public GameObject[] wave1Enemies; // ใส่เฉพาะมอนธาตุเดียว (เช่น แดงล้วน, ฟ้าล้วน)
+    public GameObject[] wave2Enemies; // ใส่เฉพาะมอนธาตุผสม (เช่น แดงแดงฟ้า)
+    public GameObject[] wave3Enemies; // ใส่ตัวบิน หรือตัวที่อยากให้สอนในเวฟ 3
+    public GameObject[] normalEnemies; // ใส่ศัตรู "ทุกแบบ" รวมกัน (ใช้ตั้งแต่เวฟ 4 ขึ้นไป)
+
+    [Header("บอส")]
+    public GameObject bossPrefab;
 
     [Header("จุดเกิดศัตรู (Spawn Points)")]
-    public Transform[] spawnPoints;    // ใส่จุดที่อยากให้ศัตรูโผล่มา
+    public Transform[] spawnPoints;
 
     [Header("สถานะปัจจุบัน (ห้ามแก้)")]
     public List<GameObject> aliveEnemies = new List<GameObject>();
     private bool isBossSpawned = false;
     private bool isRoomCleared = false;
-    private bool isSpawning = false; // ตัวล็อกไม่ให้เสกซ้อนกัน
+    private bool isSpawning = false;
+
+    private bool isWaitingForReward = false;
+
+    [Header("ระบบแท่นอัปเกรด & แจ้งเตือน")]
+    public GameObject upgradeShrinePrefab;
+    public Transform spawnPoint;
+    public GameObject warningPrefab;
 
     void Start()
     {
-        // เริ่มเกมปุ๊บ หน่วงเวลาแป๊บนึงแล้วเริ่มเวฟ 1
+        if (warningDirectionText != null) warningDirectionText.gameObject.SetActive(false);
+        UpdateWaveUI();
         StartCoroutine(StartNextWave());
     }
 
     void Update()
     {
-        // ถ้าห้องเคลียร์แล้ว หรือกำลังยืนเสกมอนสเตอร์อยู่ ไม่ต้องทำอะไร
         if (isRoomCleared || isSpawning) return;
 
-        // 💡 ทริคเด็ด: อัปเดตรายชื่อศัตรู (ถ้าศัตรูโดนตีตาย มันจะกลายเป็น null เราก็เตะมันออกจาก List)
         aliveEnemies.RemoveAll(item => item == null);
 
-        // เช็กว่า "ศัตรูตายหมดเกลี้ยงแล้วใช่ไหม?"
-        if (aliveEnemies.Count == 0 && currentWave > 0)
+        if (aliveEnemies.Count == 0 && currentWave > 0 && !isWaitingForReward)
         {
-            if (currentWave < totalWaves)
-            {
-                // ยังไม่ครบ 5 เวฟ -> เรียกเวฟต่อไป!
-                StartCoroutine(StartNextWave());
-            }
-            else if (!isBossSpawned)
-            {
-                // ครบ 5 เวฟแล้ว -> เสกบอส!
-                StartCoroutine(SpawnBoss());
-            }
+            isWaitingForReward = true;
+
+            if (currentWave < totalWaves) OnWaveClear();
+            else if (!isBossSpawned) OnWaveClear();
             else if (isBossSpawned)
             {
-                // บอสโผล่มาแล้ว และบอสก็ตายแล้วด้วย! (เคลียร์ด่าน)
                 isRoomCleared = true;
-                Debug.Log("🎉 เคลียร์ห้องแล้ว! สุดยอดดด!");
-
-                // TODO: ตรงนี้เดี๋ยวเราค่อยมาสั่งให้ "ประตูวาร์ป" โผล่มา หรือดรอปหีบสมบัติครับ
+                if (warningDirectionText != null)
+                {
+                    warningDirectionText.text = "🎉 เคลียร์ด่านสำเร็จ!";
+                    warningDirectionText.gameObject.SetActive(true);
+                }
+                OnWaveClear();
             }
         }
+    }
+
+    void UpdateWaveUI()
+    {
+        if (waveCountText != null) waveCountText.text = "Wave: " + currentWave + " / " + totalWaves;
     }
 
     IEnumerator StartNextWave()
     {
         isSpawning = true;
-        currentWave++; // อัปป้ายบอกเวฟ
-        Debug.Log("ระวัง! เวฟที่ " + currentWave + " กำลังมา!");
+        currentWave++;
+        UpdateWaveUI();
 
-        // ให้เวลาผู้เล่นหายใจเก็บเลือด 2 วินาทีก่อนศัตรูชุดใหม่จะเกิด
         yield return new WaitForSeconds(2f);
 
-        // คำนวณจำนวนศัตรู (ยิ่งเวฟลึก ศัตรูยิ่งเยอะ เช่น เวฟ 1 มา 3 ตัว, เวฟ 2 มา 4 ตัว)
         int enemiesToSpawn = currentWave + 2;
+
+        GameObject[] currentEnemyPool;
+        if (currentWave == 1) currentEnemyPool = wave1Enemies;
+        else if (currentWave == 2) currentEnemyPool = wave2Enemies;
+        else if (currentWave == 3) currentEnemyPool = wave3Enemies;
+        else currentEnemyPool = normalEnemies;
+
+        if (currentEnemyPool.Length == 0) currentEnemyPool = normalEnemies;
+
+        // 🌟 เพิ่มบรรทัดนี้: หาตำแหน่งผู้เล่นเพื่อเอามาเป็นจุดอ้างอิงตรงกลาง
+        Transform playerPos = GameObject.FindGameObjectWithTag("Player").transform;
+        float centerX = (playerPos != null) ? playerPos.position.x : 0f;
 
         for (int i = 0; i < enemiesToSpawn; i++)
         {
-            // สุ่มเลือกศัตรู 1 ตัวจากในอาเรย์
-            GameObject randomEnemy = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
+            GameObject randomEnemy = currentEnemyPool[Random.Range(0, currentEnemyPool.Length)];
+            Transform chosenPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
 
-            // สุ่มเลือกจุดเกิด 1 จุด
-            Transform randomPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
+            // 🌟 แก้ระบบหาจุดเกิดซ้าย-ขวา โดยเทียบกับตำแหน่งผู้เล่นแทน!
+            if (currentWave == 1)
+            {
+                // เวฟ 1 บังคับเกิดขวา (หาจุดที่ตำแหน่ง x มากกว่าตัวผู้เล่น)
+                foreach (Transform pt in spawnPoints) { if (pt.position.x > centerX) { chosenPoint = pt; break; } }
+            }
+            else if (currentWave == 2)
+            {
+                // เวฟ 2 บังคับเกิดซ้าย (หาจุดที่ตำแหน่ง x น้อยกว่าตัวผู้เล่น)
+                foreach (Transform pt in spawnPoints) { if (pt.position.x < centerX) { chosenPoint = pt; break; } }
+            }
 
-            // สั่งเสกศัตรูลงฉาก
-            GameObject spawnedEnemy = Instantiate(randomEnemy, randomPoint.position, Quaternion.identity);
+            // 🌟 แจ้งเตือนทิศทางให้ถูกต้องตามตัวผู้เล่น
+            if (warningDirectionText != null)
+            {
+                string direction = (chosenPoint.position.x < centerX) ? "ซ้าย" : "ขวา";
+                warningDirectionText.text = "⚠️ ระวัง! ศัตรูมาทาง" + direction + "!";
+                warningDirectionText.gameObject.SetActive(true);
+            }
 
-            // จับศัตรูตัวนี้ยัดใส่ List เพื่อเอาไว้นับจำนวนตอนมันตาย
+            GameObject warning = null;
+            if (warningPrefab != null) warning = Instantiate(warningPrefab, chosenPoint.position, Quaternion.identity);
+
+            yield return new WaitForSeconds(1.5f);
+
+            if (warningDirectionText != null) warningDirectionText.gameObject.SetActive(false);
+            if (warning != null) Destroy(warning);
+
+            GameObject spawnedEnemy = Instantiate(randomEnemy, chosenPoint.position, Quaternion.identity);
+
+            Enemy enemyScript = spawnedEnemy.GetComponent<Enemy>();
+            if (enemyScript != null)
+            {
+                enemyScript.SetTutorialWave(currentWave, i);
+            }
+
             aliveEnemies.Add(spawnedEnemy);
 
-            // หน่วงเวลา 0.5 วินาทีต่อการเสก 1 ตัว (จะได้ดูเหมือนทยอยวาร์ปมา ไม่ได้โผล่พรวดเดียว)
             yield return new WaitForSeconds(0.5f);
         }
 
-        isSpawning = false; // เสกเสร็จแล้ว ปลดล็อก
+        isSpawning = false;
     }
 
     IEnumerator SpawnBoss()
     {
         isSpawning = true;
         isBossSpawned = true;
-        Debug.Log("⚠️ คำเตือน! บอสปรากฏตัว!");
 
-        // ให้เวลาพักหายใจ 3 วินาทีก่อนบอสลง
+        if (warningDirectionText != null)
+        {
+            warningDirectionText.text = "⚠️ คำเตือน! บอสปรากฏตัว!";
+            warningDirectionText.color = Color.red;
+            warningDirectionText.gameObject.SetActive(true);
+        }
+
         yield return new WaitForSeconds(3f);
 
-        // ให้บอสเกิดที่จุดเกิดอันแรกเสมอ (จะได้จัดตำแหน่งให้อยู่กลางห้องได้)
+        if (warningDirectionText != null) warningDirectionText.gameObject.SetActive(false);
+
         Transform bossPoint = spawnPoints[0];
+        GameObject warning = null;
+        if (warningPrefab != null)
+        {
+            warning = Instantiate(warningPrefab, bossPoint.position, Quaternion.identity);
+            warning.transform.localScale = new Vector3(3f, 3f, 1f);
+        }
+
+        yield return new WaitForSeconds(1.5f);
+        if (warning != null) Destroy(warning);
 
         GameObject spawnedBoss = Instantiate(bossPrefab, bossPoint.position, Quaternion.identity);
-        aliveEnemies.Add(spawnedBoss); // จับบอสใส่ List ด้วย จะได้รู้ตอนมันตาย
+        aliveEnemies.Add(spawnedBoss);
+
+        BossCutscene cutsceneManager = FindObjectOfType<BossCutscene>();
+        if (cutsceneManager != null)
+        {
+            cutsceneManager.PlayCutscene(spawnedBoss.transform);
+        }
 
         isSpawning = false;
+    }
+
+    void OnWaveClear()
+    {
+        Instantiate(upgradeShrinePrefab, spawnPoint.position, Quaternion.identity);
+    }
+
+    public void ResumeWave()
+    {
+        if (isRoomCleared) return;
+        isWaitingForReward = false;
+
+        if (currentWave < totalWaves) StartCoroutine(StartNextWave());
+        else if (!isBossSpawned) StartCoroutine(SpawnBoss());
     }
 }

@@ -8,6 +8,7 @@ TagManager:
   - SpawnPoint
   - BossTP
   - BossPillarSpawn
+  - Boss
   layers:
   - Default
   - TransparentFX
@@ -17,9 +18,9 @@ TagManager:
   - UI
   - Ground
   - MinimapIcon
-  - 
-  - 
-  - 
+  - GhostEnemy
+  - Obstacles
+  - FlyingEnemy
   - 
   - 
   - 
@@ -42,6 +43,15 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: BackGround
+    uniqueID: 2829640955
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Foreground
+    uniqueID: 1420034509
+    locked: 0
+  - name: Enemies
+    uniqueID: 3961319803
     locked: 0

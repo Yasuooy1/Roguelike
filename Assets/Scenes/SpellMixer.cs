@@ -1,76 +1,132 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class SpellMixer : MonoBehaviour
 {
-    // กำหนดธาตุที่มีในเกม (ไฟ, น้ำ, สายฟ้า)
     public enum Element { Fire, Water, Lightning }
 
     [Header("ลูกแก้วที่กำลังผสมอยู่")]
     public List<Element> currentOrbs = new List<Element>();
 
-    [Header("UI โชว์ลูกแก้ว")]
-    public Image[] orbSlots; // ใส่ช่อง UI 3 ช่อง
-    public Sprite fireSprite;      // รูปวงกลมสีแดง
-    public Sprite waterSprite;     // รูปวงกลมสีฟ้า
-    public Sprite lightningSprite; // รูปวงกลมสีเหลือง
+    [Header("ออบเจกต์ลูกแก้วในฉาก")]
+    public SpriteRenderer[] orbRenderers;
+    // 🌟 1. เพิ่มช่องใส่ Animator เพื่อบังคับให้ภาพมันขยับ
+    public Animator[] orbAnimators;
+
+    [Header("ไฟล์อนิเมชันของแต่ละธาตุ")]
+    // 🌟 2. ใช้ RuntimeAnimatorController แทน Sprite ธรรมดา
+    public RuntimeAnimatorController fireAnimController;
+    public RuntimeAnimatorController waterAnimController;
+    public RuntimeAnimatorController lightningAnimController;
+
+    [Header("ตำแหน่งการลอยรอบตัว (แบบ Invoker)")]
+    public Vector3[] orbOffsets = new Vector3[] {
+        new Vector3(-1.2f, 1f, 0f),  // ลูกที่ 1: ไหล่ซ้าย
+        new Vector3(0f, 1.8f, 0f),   // ลูกที่ 2: เหนือหัว
+        new Vector3(1.2f, 1f, 0f)    // ลูกที่ 3: ไหล่ขวา
+    };
+    public float hoverSpeed = 3f;
+    public float hoverHeight = 0.2f;
 
     void Start()
     {
-        // เคลียร์ UI ให้ว่างเปล่าตอนเริ่มเกม
-        UpdateOrbUI();
+        UpdateOrbSprites();
     }
 
     void Update()
     {
-        // 🌟 กดคีย์บอร์ดเพื่อเรียกลูกแก้วธาตุ (แค่นี้ก็ถือว่าเก็บค่าแล้ว!)
-        if (Input.GetKeyDown(KeyCode.Q)) AddOrb(Element.Fire);
-        if (Input.GetKeyDown(KeyCode.W)) AddOrb(Element.Water);
-        if (Input.GetKeyDown(KeyCode.E)) AddOrb(Element.Lightning);
+        if (Input.GetKeyDown(KeyCode.J)) AddOrb(Element.Fire);
+        if (Input.GetKeyDown(KeyCode.K)) AddOrb(Element.Water);
+        if (Input.GetKeyDown(KeyCode.L)) AddOrb(Element.Lightning);
 
-        // ❌ ลบปุ่ม Spacebar ทิ้งไปแล้ว เพราะเราไปใช้คลิกขวาใน PlayerCombat แทน!
+        AnimateOrbs(); // ให้ลอยขึ้นลงตลอดเวลา
     }
 
-    // ฟังก์ชันเพิ่มลูกแก้วลงในหลอด
     void AddOrb(Element newOrb)
     {
-        // ถ้าลูกแก้วเต็ม 3 ลูกแล้ว ให้เตะลูกเก่าสุดทิ้ง
         if (currentOrbs.Count >= 3)
         {
             currentOrbs.RemoveAt(0);
         }
 
-        // ยัดลูกใหม่เข้าไปต่อท้าย
         currentOrbs.Add(newOrb);
-        UpdateOrbUI(); // อัปเดตภาพบนจอ
+        UpdateOrbSprites();
+
+        // 🌟 3. สั่งเล่นเอฟเฟกต์ "เด้งป๊อปอัป" เฉพาะลูกแก้วที่เพิ่งเกิดใหม่
+        int newOrbIndex = currentOrbs.Count - 1;
+        StartCoroutine(PopSpawnAnimation(orbRenderers[newOrbIndex].transform));
     }
 
-    // ❌ ลบฟังก์ชัน CastSpell() ทิ้งไปแล้ว!
-
-    // ฟังก์ชันวาดรูป UI
-    void UpdateOrbUI()
+    void UpdateOrbSprites()
     {
-        for (int i = 0; i < orbSlots.Length; i++)
+        for (int i = 0; i < orbRenderers.Length; i++)
         {
             if (i < currentOrbs.Count)
             {
-                orbSlots[i].enabled = true; // เปิดรูป
-                if (currentOrbs[i] == Element.Fire) orbSlots[i].sprite = fireSprite;
-                else if (currentOrbs[i] == Element.Water) orbSlots[i].sprite = waterSprite;
-                else if (currentOrbs[i] == Element.Lightning) orbSlots[i].sprite = lightningSprite;
+                orbRenderers[i].enabled = true;
+
+                // 🌟 4. สลับไฟล์อนิเมชันตามธาตุ (ไฟจะลุก น้ำจะเดือดตามรูปที่ทำมาเลย!)
+                if (orbAnimators.Length > i && orbAnimators[i] != null)
+                {
+                    if (currentOrbs[i] == Element.Fire) orbAnimators[i].runtimeAnimatorController = fireAnimController;
+                    else if (currentOrbs[i] == Element.Water) orbAnimators[i].runtimeAnimatorController = waterAnimController;
+                    else if (currentOrbs[i] == Element.Lightning) orbAnimators[i].runtimeAnimatorController = lightningAnimController;
+                }
             }
             else
             {
-                orbSlots[i].enabled = false; // ซ่อนรูปถ้าช่องนั้นยังว่าง
+                orbRenderers[i].enabled = false;
             }
         }
     }
 
-    // ฟังก์ชันสำหรับให้ PlayerCombat สั่งลบลูกแก้วหลังยิงเจาะเกราะเสร็จ
+    void AnimateOrbs()
+    {
+        for (int i = 0; i < orbRenderers.Length; i++)
+        {
+            if (orbRenderers[i].enabled)
+            {
+                float floatOffset = Mathf.Sin(Time.time * hoverSpeed + (i * 1.5f)) * hoverHeight;
+                Vector3 targetPos = transform.position + orbOffsets[i] + new Vector3(0, floatOffset, 0);
+                orbRenderers[i].transform.position = Vector3.Lerp(orbRenderers[i].transform.position, targetPos, Time.deltaTime * 10f);
+            }
+        }
+    }
+
+    // ==========================================
+    // 🌟 ฟังก์ชันทำเอฟเฟกต์ตอนกดลูกแก้ว (ขยายตัวเด้งดึ๋ง)
+    // ==========================================
+    IEnumerator PopSpawnAnimation(Transform orbTransform)
+    {
+        float timer = 0f;
+        orbTransform.localScale = Vector3.zero; // เริ่มต้นที่ขนาด 0 (มองไม่เห็น)
+
+        while (timer < 1f)
+        {
+            timer += Time.deltaTime * 15f; // ความเร็วในการเด้งโผล่ขึ้นมา
+
+            // ขยายเกินขนาดจริงนิดนึง (1.2f) แล้วค่อยหดกลับมา 1f เพื่อให้ดูมีน้ำหนักกระแทก
+            float scale = Mathf.Lerp(0f, 1.2f, timer);
+            if (timer >= 1f) scale = 1f;
+
+            orbTransform.localScale = new Vector3(scale, scale, scale);
+            yield return null;
+        }
+    }
+
     public void ClearOrbs()
     {
         currentOrbs.Clear();
-        UpdateOrbUI();
+        UpdateOrbSprites();
+    }
+
+    public string GetCurrentRecipe()
+    {
+        if (currentOrbs.Count < 3) return "";
+        List<string> recipeList = new List<string>();
+        foreach (Element orb in currentOrbs) recipeList.Add(orb.ToString());
+        recipeList.Sort();
+        return string.Join("", recipeList);
     }
 }

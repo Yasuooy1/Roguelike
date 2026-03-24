@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 268529905895412925}
   - component: {fileID: 268529905895412924}
   - component: {fileID: 801985987182694071}
+  - component: {fileID: 3848298251535356585}
   m_Layer: 3
   m_Name: Enemy
   m_TagString: Enemy
@@ -79,10 +80,10 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: -9095717837082945937, guid: 207ee8102dd4143d288186ef0be518ee, type: 3}
+  m_SortingOrder: 5
+  m_Sprite: {fileID: -1402177961, guid: 74013e092767aac4abcd54b5d75fcad0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
+  m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 1, y: 2}
@@ -104,8 +105,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 1, y: 2}
+  m_Offset: {x: 0, y: -0.1891284}
+  m_Size: {x: 1, y: 2.3782568}
   m_Direction: 0
 --- !u!50 &268529905895412925
 Rigidbody2D:
@@ -162,14 +163,16 @@ MonoBehaviour:
   - {fileID: 7715009155026047168}
   - {fileID: 6210605712161435615}
   - {fileID: 6571869515273153176}
-  fireSprite: {fileID: 21300000, guid: 707d19b36e079f24fb09ca1ea62dd02b, type: 3}
-  waterSprite: {fileID: 21300000, guid: e9ef24d2edf157f469b81a94f598561a, type: 3}
-  lightningSprite: {fileID: 21300000, guid: 7dff3503aa3cce04c8105ecc93c9f5fa, type: 3}
+  fireSprite: {fileID: 21300000, guid: 17d32e7c8d5ff9e42942b8541e948c70, type: 3}
+  waterSprite: {fileID: 21300000, guid: 777f25bbc41b8a543892df89e4a75934, type: 3}
+  lightningSprite: {fileID: 21300000, guid: 981c3f2d3476d074585f84850bc008ed, type: 3}
   damagePopupPrefab: {fileID: 454069165497530963, guid: 0d51f671bc43a43428c5be161e6a075b, type: 3}
   dropItems:
   - {fileID: 4328854937533333145, guid: 1051788e5e501f144b096fdfb676415c, type: 3}
   - {fileID: 2775678723760842178, guid: ade50805a5ec1224fbfaf2263f50c65d, type: 3}
   dropChance: 100
+  soulPrefab: {fileID: 8376125546898566822, guid: bacb3f3616533d848a35ea1ab2b31edd, type: 3}
+  soulAmount: 3
 --- !u!114 &801985987182694071
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -183,6 +186,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   requiredRecipe: 
+--- !u!95 &3848298251535356585
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 268529905895412915}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 3e678dbfa40ffdc479f403cee5a93934, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &759908733530860519
 GameObject:
   m_ObjectHideFlags: 0
