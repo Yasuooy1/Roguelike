@@ -31,7 +31,7 @@ Transform:
   m_GameObject: {fileID: 400269274090597315}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 87.3726, y: -9.4274, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 3}
+  m_LocalScale: {x: 1, y: 1, z: 3}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4154636138109075153}
@@ -155,7 +155,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   smoothTime: 2
-  hoverHeight: 5
+  hoverHeight: 3
   floatAmplitude: 0.5
   floatFrequency: 3
   bossBulletPrefab: {fileID: 6262708044050321734, guid: 4874bec5b84260e41843af6c28b6e471, type: 3}
@@ -184,9 +184,12 @@ MonoBehaviour:
   isLaserUninterruptible: 0
   bgmSource: {fileID: 0}
   bossMusic: {fileID: 8300000, guid: 9a8f253ef2129074bb4c34631e5895f4, type: 3}
-  bossAudio: {fileID: 0}
+  bossAudio: {fileID: 3070655069865064489}
   laserSound: {fileID: 8300000, guid: cef700fa7107d0f468633768881ceb60, type: 3}
   blackholeSound: {fileID: 8300000, guid: 6ca1dc70e2f058b4ca3e73e1b870795d, type: 3}
+  hurtSound: {fileID: 8300000, guid: 443535d5d4424d64c80ad61494a03b67, type: 3}
+  deathSound: {fileID: 8300000, guid: 0ee515ca1dcb0f244819e4d3bbfcb3e9, type: 3}
+  victorySound: {fileID: 8300000, guid: 2c8248bf99a9d6f4c926bf8b1afc72f0, type: 3}
 --- !u!95 &3161971914436957177
 Animator:
   serializedVersion: 4
@@ -495,7 +498,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -0.66, y: 3.04}
+  m_AnchoredPosition: {x: -0.66, y: 2.43}
   m_SizeDelta: {x: 174.6002, y: 58.2001}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &7673848855823967360

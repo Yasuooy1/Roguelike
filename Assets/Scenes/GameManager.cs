@@ -6,29 +6,51 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
+    [Header("ตั้งค่าชื่อฉาก (Scenes)")]
+    public string menuScene = "Menu";
+    public string safeRoomScene = "SafeRoom"; // 🌟 เพิ่มช่องใส่ชื่อฉากห้องพัก
+
     [Header("ใส่ชื่อซีนด่านทั้งหมดที่นี่")]
     public List<string> allMaps = new List<string> { "map1", "map2", "map3" };
     private List<string> remainingMaps;
 
     void Awake()
     {
+        // 🌟 ระบบอมตะ: ห้ามพัง ห้ามซ้ำ ลอยข้ามฉากได้!
         if (instance == null)
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
             ResetRoguelike();
         }
-        else { Destroy(gameObject); }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
-    // ฟังก์ชันสำหรับรีเซ็ตด่านใหม่ทั้งหมด
+    // ฟังก์ชันสำหรับรีเซ็ตด่านใหม่ทั้งหมด (เริ่มรันใหม่)
     public void ResetRoguelike()
     {
         remainingMaps = new List<string>(allMaps);
-        Debug.Log("Reset Roguelike: ด่านถูกรีเซ็ตใหม่");
+        Debug.Log("Reset Roguelike: เติมลิสต์ด่านใหม่ พร้อมลุย!");
     }
 
-    // ฟังก์ชันสำหรับสุ่มและโหลดด่านถัดไป
+    // ==========================================
+    // 🌟 1. ปุ่ม "Start Game" ในหน้า Menu
+    // ==========================================
+    public void StartGameFromMenu()
+    {
+        // รีเซ็ตด่านให้กลับมาเต็มใหม่
+        ResetRoguelike();
+
+        // 🌟 เปลี่ยนจากการสุ่มด่าน เป็น "เข้าห้องพัก Safe Room" ก่อน!
+        SceneManager.LoadScene(safeRoomScene);
+    }
+
+    // ==========================================
+    // 🌟 2. ประตูวาร์ป (สุ่มและโหลดด่านถัดไป)
+    // ==========================================
     public void LoadNextRandomMap()
     {
         if (remainingMaps.Count > 0)
@@ -36,48 +58,34 @@ public class GameManager : MonoBehaviour
             int randomIndex = Random.Range(0, remainingMaps.Count);
             string nextMap = remainingMaps[randomIndex];
             remainingMaps.RemoveAt(randomIndex);
+
+            Debug.Log("วาร์ปไปด่าน: " + nextMap);
             SceneManager.LoadScene(nextMap);
         }
         else
         {
-            // ถ้าด่านหมด ให้กลับไปหน้าเมนู หรือห้องบอส
-            SceneManager.LoadScene("Menu"); // ⚠️ เช็กให้ชัวร์ว่าชื่อซีนเมนูคือ "Menu" นะครับ
+            // 🌟 ถ้าสู้จนด่านหมดแล้ว ก็กลับมาที่ห้อง Safe Room ถือว่าจบเวฟ หรือจะให้เด้งกลับหน้า Menu ก็ได้ครับ
+            Debug.Log("เคลียร์ทุกด่านแล้ว! กลับห้องพัก");
+            SceneManager.LoadScene(safeRoomScene);
         }
     }
 
     // ==========================================
-    // 🌟 ส่วนที่เพิ่มเข้ามาใหม่สำหรับปุ่ม UI ครับ 🌟
+    // ปุ่ม UI ทั่วไป
     // ==========================================
-
-    // 1. ฟังก์ชันสำหรับปุ่ม "Start Game" ในหน้า Menu
-    public void StartGameFromMenu()
-    {
-        // ล้างข้อมูลเซฟเก่าทิ้ง (เพื่อให้เริ่มเล่นใหม่ เงิน/เลือด/สเตตัส กลับเป็น 0)
-        //PlayerPrefs.DeleteAll();//
-
-        // รีเซ็ตลิสต์ด่านให้กลับมาเต็มใหม่
-        ResetRoguelike();
-
-        // สุ่มโหลดด่านแรกทันที!
-        LoadNextRandomMap();
-    }
-
-    // 2. ฟังก์ชันสำหรับปุ่ม "Main Menu" (กดเพื่อกลับหน้าแรกตอนตายหรือหยุดเกม)
     public void GoToMainMenu()
     {
-        SceneManager.LoadScene("Menu");
+        SceneManager.LoadScene(menuScene);
     }
 
-    // 3. ฟังก์ชันสำหรับปุ่ม "Exit / Quit" ปิดเกม
+    public void GoToStatMenu()
+    {
+        SceneManager.LoadScene("UpgradeMenu");
+    }
+
     public void QuitGame()
     {
         Debug.Log("ปิดเกมแล้วจ้า!");
-        Application.Quit(); // จะทำงานจริงตอนพอร์ตเกมเป็น .exe แล้วครับ
-    }
-    // ฟังก์ชันสำหรับปุ่มไปหน้า Stat / อัปเกรด
-    public void GoToStatMenu()
-    {
-        // ⚠️ เปลี่ยนคำว่า "StatScene" ให้ตรงกับชื่อไฟล์ฉากหน้าสเตตัสของคุณอาร์มเป๊ะๆ นะครับ
-        SceneManager.LoadScene("UpgradeMenu");
+        Application.Quit();
     }
 }

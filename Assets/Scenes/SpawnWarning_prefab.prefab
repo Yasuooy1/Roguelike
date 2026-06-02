@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6832190680172157151}
-  - component: {fileID: 4344476439740916155}
   m_Layer: 0
   m_Name: SpawnWarning_prefab
   m_TagString: Untagged
@@ -33,20 +32,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4344476439740916155
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1166890176837874835}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c038f78d3e322c4f977d9a152288c6c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spawnDelay: 1.5
-  warningGraphic: {fileID: 1535437350550043124}
 --- !u!1 &1535437350550043124
 GameObject:
   m_ObjectHideFlags: 0

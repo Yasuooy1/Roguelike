@@ -9,6 +9,7 @@ TagManager:
   - BossTP
   - BossPillarSpawn
   - Boss
+  - Bullet
   layers:
   - Default
   - TransparentFX
@@ -21,7 +22,7 @@ TagManager:
   - GhostEnemy
   - Obstacles
   - FlyingEnemy
-  - 
+  - BG
   - 
   - 
   - 
