@@ -7386,7 +7386,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 1151
+    m_Bits: 13439
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -7406,7 +7406,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.7088714, y: -0.029999733, z: -10}
+  m_LocalPosition: {x: -2.84, y: -0.029999733, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -19667,7 +19667,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1654897032}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.7088714, y: -0.029999733, z: -10}
+  m_LocalPosition: {x: -2.84, y: -0.029999733, z: -10}
   m_LocalScale: {x: 1, y: 1.025, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -20018,7 +20018,10 @@ MonoBehaviour:
     cardSprite: {fileID: 21300000, guid: 72356fe1b1f233349b68effd1c00f9b8, type: 3}
   - buffName: Multi-Shot
     cardSprite: {fileID: 21300000, guid: 4893be6626151bf43b7e41ffc5424ba5, type: 3}
-  currentActiveBuffs: []
+  fireLevel: 0
+  waterLevel: 0
+  windLevel: 0
+  maxLevelCap: 5
 --- !u!4 &1689721752
 Transform:
   m_ObjectHideFlags: 0
@@ -24301,6 +24304,7 @@ MonoBehaviour:
   upgradeShrinePrefab: {fileID: 3996045393000431330, guid: ec2a561619f5f814b93c70233a819d75, type: 3}
   spawnPoint: {fileID: 759903927}
   warningPrefab: {fileID: 1166890176837874835, guid: 2b0b4513a6f158949bb377f2a6a4edd0, type: 3}
+  arenaShiftingManager: {fileID: 0}
   gameStarted: 0
   startTrigger: {fileID: 0}
 --- !u!4 &2047493567

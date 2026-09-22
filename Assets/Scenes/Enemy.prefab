@@ -82,7 +82,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 5
-  m_Sprite: {fileID: -1402177961, guid: 74013e092767aac4abcd54b5d75fcad0, type: 3}
+  m_Sprite: {fileID: 928039839, guid: f0660a903b890a545aa649722378fe15, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
@@ -142,42 +142,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8345dc9fe94f9a5449788ef3bd8c0be6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  patrolSpeed: 1.5
-  chaseSpeed: 3.5
-  detectRange: 1000
+  patrolSpeed: 2
+  chaseSpeed: 4
+  detectRange: 100
   edgeCheck: {fileID: 935981011042668440}
   edgeCheckDistance: 1
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
-  attackRange: 5
-  dashForce: 8
+  attackRange: 3
+  dashForce: 12
   jumpForce: 15
   dashTime: 0.35
   attackCooldown: 2
-  maxHealth: 30
+  maxHealth: 50
   isBroken: 0
-  breakDuration: 5
+  breakDuration: 3
   knockbackForce: 5
   knockbackUpward: 3
   knockbackTime: 0.3
   requiredRecipe: 
-  puzzleCanvas: {fileID: 2299062589519845076}
-  puzzleSlots:
-  - {fileID: 7715009155026047168}
-  - {fileID: 6210605712161435615}
-  - {fileID: 6571869515273153176}
+  puzzleCanvas: {fileID: 0}
+  puzzleSlots: []
   fireSprite: {fileID: 21300000, guid: 17d32e7c8d5ff9e42942b8541e948c70, type: 3}
   waterSprite: {fileID: 21300000, guid: 777f25bbc41b8a543892df89e4a75934, type: 3}
-  lightningSprite: {fileID: 21300000, guid: 981c3f2d3476d074585f84850bc008ed, type: 3}
+  windSprite: {fileID: 21300000, guid: 981c3f2d3476d074585f84850bc008ed, type: 3}
   damagePopupPrefab: {fileID: 454069165497530963, guid: 0d51f671bc43a43428c5be161e6a075b, type: 3}
-  fireBurstVFX: {fileID: 0}
-  waterBurstVFX: {fileID: 0}
-  lightningBurstVFX: {fileID: 0}
+  fireBurstVFX: {fileID: 6148191579003736287, guid: 024d8c902a2112842aef91f2b8eeab3c, type: 3}
+  waterBurstVFX: {fileID: 1272505828567980182, guid: b507251f2094aca4088cb188065ff9a5, type: 3}
+  windBurstVFX: {fileID: 0}
   dropItems:
   - {fileID: 4328854937533333145, guid: 1051788e5e501f144b096fdfb676415c, type: 3}
-  - {fileID: 2775678723760842178, guid: ade50805a5ec1224fbfaf2263f50c65d, type: 3}
-  dropChance: 100
+  dropChance: 30
   soulPrefab: {fileID: 8376125546898566822, guid: bacb3f3616533d848a35ea1ab2b31edd, type: 3}
   soulAmount: 3
   audioSource: {fileID: -7316037011308483997}

@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -8,83 +7,68 @@ public class FlyingEnemy : MonoBehaviour
     [Header("Movement & AI")]
     public float flySpeed = 2.5f;
     public float detectRange = 20f;
+    private float baseFlySpeed; // จำความเร็วก่อนโดนสโลว์
 
     private Transform player;
     private Rigidbody2D rb;
 
-    [Header("Health & Armor")]
+    [Header("Health & Stats")]
     public int maxHealth = 15;
     private int currentHealth;
 
-    public bool isBroken = false;
-    public float breakDuration = 3f;
+    [Header("ตัวคูณความแพ้ธาตุ (1 = ปกติ, 1.5 = แพ้, 0.5 = กัน)")]
+    public float fireMultiplier = 1f;
+    public float waterMultiplier = 1f;
+    public float windMultiplier = 1f;
 
-    // 🌟 1. เพิ่มตัวแปร 2 ตัวนี้เข้ามา เพื่อให้ระบบ Die() ทำงานได้
-    private bool isDead = false;
-    private Animator anim;
+    [Header("ตั้งค่าไอคอนสถานะ")]
+    public float iconOffsetY = 1.0f; // ค้างคาวตัวเล็ก อาจจะปรับให้ต่ำลงหน่อย
+    public float iconSpacing = 0.5f;
+    private List<GameObject> activeIcons = new List<GameObject>();
 
-    [Header("🧩 Puzzle System (รหัสผ่านนก)")]
-    public string requiredRecipe;
-    private SpriteRenderer spriteRenderer;
+    [Header("Elemental VFX (เอฟเฟกต์ตอนติดสถานะ)")]
+    public GameObject fireBurstVFX;
+    public GameObject waterBurstVFX;
+    public GameObject windBurstVFX;
 
-    [Header("UI ลูกแก้วบนหัวนก")]
-    public GameObject puzzleCanvas;
-    public Image[] puzzleSlots;
-    public Sprite fireSprite;
-    public Sprite waterSprite;
-    public Sprite lightningSprite;
-
-    [Header("UI")]
+    [Header("UI Damage")]
     public GameObject damagePopupPrefab;
+    private SpriteRenderer spriteRenderer;
 
     [Header("Drop System")]
     public GameObject soulPrefab;
     public int soulAmount = 3;
     public GameObject[] dropItems;
     [Range(0, 100)] public int dropChance = 30;
+
     [Header("ระบบเสียงค้างคาว")]
-    public AudioSource audioSource; // ลำโพงติดตัว (เอาไว้เล่นเสียงเจ็บ)
-    public AudioClip hurtSound;     // เสียงโดนตี (จิ๊ด!)
-    public AudioClip deathSound;    // เสียงตาย (แอ๊ก!)
+    public AudioSource audioSource;
+    public AudioClip hurtSound;
+    public AudioClip deathSound;
+
+    // สถานะ
+    private bool isDead = false;
+    private Animator anim;
+
+    // สถานะผิดปกติ
+    private bool isBurning = false;
+    private bool isSlowed = false;
+    private bool isStunned = false;
 
     void Start()
     {
         currentHealth = maxHealth;
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
-
-        // 🌟 2. ดึง Animator มาใส่ตัวแปรเตรียมไว้เล่นท่าตอนตาย
         anim = GetComponent<Animator>();
 
-        rb.gravityScale = 0f;
-
-        GenerateRandomPuzzle();
-    }
-
-    void GenerateRandomPuzzle()
-    {
-        string[] elements = { "Fire", "Water", "Lightning" };
-        List<string> puzzleList = new List<string>();
-
-        puzzleList.Add(elements[Random.Range(0, 3)]);
-        puzzleList.Add(elements[Random.Range(0, 3)]);
-        puzzleList.Add(elements[Random.Range(0, 3)]);
-        puzzleList.Sort();
-        requiredRecipe = puzzleList[0] + puzzleList[1] + puzzleList[2];
-
-        for (int i = 0; i < puzzleSlots.Length; i++)
-        {
-            if (puzzleList[i] == "Fire") puzzleSlots[i].sprite = fireSprite;
-            else if (puzzleList[i] == "Water") puzzleSlots[i].sprite = waterSprite;
-            else if (puzzleList[i] == "Lightning") puzzleSlots[i].sprite = lightningSprite;
-        }
-
-        if (puzzleCanvas != null) puzzleCanvas.SetActive(true);
+        baseFlySpeed = flySpeed;
+        rb.gravityScale = 0f; // นกบินต้องไม่มีแรงโน้มถ่วง
     }
 
     void Update()
     {
-        if (isDead) return; // ถ้าตายแล้วไม่ต้องหันหน้าหาผู้เล่น
+        if (isDead) return;
 
         if (player == null)
         {
@@ -93,22 +77,20 @@ public class FlyingEnemy : MonoBehaviour
             return;
         }
 
-        if (player != null)
+        // หันหน้าหาผู้เล่น
+        if (player.position.x < transform.position.x)
         {
-            if (player.position.x < transform.position.x)
-            {
-                transform.localScale = new Vector3(1, 1, 1);
-            }
-            else
-            {
-                transform.localScale = new Vector3(-1, 1, 1);
-            }
+            transform.localScale = new Vector3(1, 1, 1);
+        }
+        else
+        {
+            transform.localScale = new Vector3(-1, 1, 1);
         }
     }
 
     void FixedUpdate()
     {
-        if (isBroken || player == null || isDead) return;
+        if (player == null || isDead || isStunned) return; // ถ้าโดนช็อตหรือตาย ไม่ต้องบินตาม
 
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
         if (distanceToPlayer <= detectRange)
@@ -116,12 +98,15 @@ public class FlyingEnemy : MonoBehaviour
             Vector2 direction = (player.position - transform.position).normalized;
             rb.velocity = direction * flySpeed;
         }
-        else rb.velocity = Vector2.zero;
+        else
+        {
+            rb.velocity = Vector2.zero;
+        }
     }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Player") && !isBroken && !isDead)
+        if (collision.gameObject.CompareTag("Player") && !isDead)
         {
             PlayerHealth playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
             PlayerController playerController = collision.gameObject.GetComponent<PlayerController>();
@@ -134,64 +119,228 @@ public class FlyingEnemy : MonoBehaviour
         }
     }
 
-    public void TakeDamage(int damage)
+    // ==========================================
+    // ⚔️ ระบบรับดาเมจและคำนวณธาตุ
+    // ==========================================
+    // ==========================================
+    // ⚔️ ระบบรับดาเมจและคำนวณธาตุ (อัปเดตระบบภูมิคุ้มกันสถานะ)
+    // ==========================================
+    public void TakeElementalDamage(int baseDamage, string spellRecipe)
     {
-        if (isDead) return; // กันตายซ้ำซ้อน
-        if (audioSource != null && hurtSound != null)
-        {
-            audioSource.PlayOneShot(hurtSound);
-        }
+        if (isDead) return;
 
-        if (isBroken)
-        {
-            currentHealth -= damage;
-            ShowDamagePopup(damage, Color.white, 4f);
-            if (currentHealth <= 0) Die();
-        }
-        else ShowDamagePopup(0, Color.gray, 3f);
-    }
+        float finalDamage = baseDamage;
+        Color popupColor = Color.white;
 
-    public bool CheckPuzzleBullet(string playerRecipe, int damage)
-    {
-        // 🌟 เปลี่ยนจาก return; ลอยๆ เป็น return false;
-        if (isBroken || isDead) return false;
-
-        if (playerRecipe == requiredRecipe)
+        // ==========================================
+        // 🌪️ 1. ดักท่าพายุเพลิง (สูตรใหม่ FireFireWind)
+        // ==========================================
+        if (spellRecipe == "FireFireWind")
         {
-            Debug.Log("🎯 รหัสนกถูกต้อง! ปีกหัก พร้อมโดนดาเมจ!");
-            BreakArmor();
-            TakeDamage(damage);
-            return true; // 🌟 รหัสถูก! ส่งค่า true (กระสุนระเบิด)
+            finalDamage = baseDamage * 2f;
+            popupColor = new Color(1f, 0.4f, 0f); // สีส้มแดงของพายุเพลิง
         }
+        // ==========================================
+        // ⚔️ 2. คำนวณธาตุปกติ (ไฟ, น้ำ, ลม)
+        // ==========================================
         else
         {
-            Debug.Log("❌ รหัสผิด!");
-            ShowDamagePopup(0, Color.red, 3f);
-            return false; // 🌟 รหัสผิด! ส่งค่า false (กระสุนเด้ง)
+            if (spellRecipe.Contains("Fire"))
+            {
+                finalDamage *= fireMultiplier;
+                popupColor = new Color(1f, 0.5f, 0f);
+                if (!isBurning && fireMultiplier >= 1f) StartCoroutine(ApplyBurn());
+            }
+            if (spellRecipe.Contains("Water"))
+            {
+                finalDamage *= waterMultiplier;
+                popupColor = Color.cyan;
+                if (!isSlowed && waterMultiplier >= 1f) StartCoroutine(ApplySlow());
+            }
+            // 🌟 ลบสายฟ้าทิ้ง เปลี่ยนเป็นลมแทน 
+            if (spellRecipe.Contains("Wind"))
+            {
+                finalDamage *= windMultiplier;
+                popupColor = Color.green; // สีเขียวธาตุลม
+                
+            }
         }
+
+        currentHealth -= (int)finalDamage;
+
+        // แสดงผล UI, เสียง, แอนิเมชัน และเช็กการตาย
+        if (audioSource != null && hurtSound != null) audioSource.PlayOneShot(hurtSound);
+        if (anim != null) anim.SetTrigger("Hurt");
+
+        
+        // if (!isKnockedBack) StartCoroutine(KnockbackRoutine());
+
+        ShowDamagePopup((int)finalDamage, popupColor, 4f);
+
+        if (currentHealth <= 0) Die();
     }
 
-    void BreakArmor()
+    // รองรับระบบสกิลเก่าที่ไม่ใช้ธาตุ
+    public void TakeDamage(int damage)
     {
-        isBroken = true;
-        spriteRenderer.color = Color.gray;
-        if (puzzleCanvas != null) puzzleCanvas.SetActive(false);
-
-        rb.gravityScale = 3f;
-
-        StartCoroutine(RecoverShieldRoutine());
+        TakeElementalDamage(damage, "None");
     }
 
-    IEnumerator RecoverShieldRoutine()
+    // ==========================================
+    // 🧪 ระบบสถานะผิดปกติและการเรียงไอคอน
+    // ==========================================
+    void RearrangeIcons()
     {
-        yield return new WaitForSeconds(breakDuration);
-        if (currentHealth > 0 && !isDead)
+        activeIcons.RemoveAll(item => item == null);
+        int count = activeIcons.Count;
+        if (count == 0) return;
+
+        float startX = -(count - 1) * iconSpacing / 2f;
+        for (int i = 0; i < count; i++)
         {
-            isBroken = false;
-            spriteRenderer.color = Color.white;
-            rb.gravityScale = 0f;
-            GenerateRandomPuzzle();
+            activeIcons[i].transform.localPosition = new Vector3(startX + (i * iconSpacing), iconOffsetY, 0);
         }
+    }
+
+    IEnumerator ApplyBurn()
+    {
+        isBurning = true;
+        GameObject icon = null;
+        SpriteRenderer iconSR = null;
+
+        if (fireBurstVFX != null)
+        {
+            icon = Instantiate(fireBurstVFX, transform.position, Quaternion.identity, transform);
+            iconSR = icon.GetComponent<SpriteRenderer>();
+            activeIcons.Add(icon);
+            RearrangeIcons();
+        }
+
+        for (int i = 0; i < 3; i++)
+        {
+            if (isDead) yield break;
+            if (i == 2 && iconSR != null) StartCoroutine(BlinkIconRoutine(iconSR));
+            yield return new WaitForSeconds(1f);
+
+            currentHealth -= 5;
+            ShowDamagePopup(5, new Color(1f, 0.5f, 0f), 3f);
+            if (currentHealth <= 0) Die();
+        }
+
+        if (icon != null)
+        {
+            activeIcons.Remove(icon);
+            RearrangeIcons();
+            Destroy(icon);
+        }
+        isBurning = false;
+    }
+
+    IEnumerator ApplySlow()
+    {
+        isSlowed = true;
+        GameObject icon = null;
+        SpriteRenderer iconSR = null;
+
+        if (waterBurstVFX != null)
+        {
+            icon = Instantiate(waterBurstVFX, transform.position, Quaternion.identity, transform);
+            iconSR = icon.GetComponent<SpriteRenderer>();
+            activeIcons.Add(icon);
+            RearrangeIcons();
+        }
+
+        if (spriteRenderer != null) spriteRenderer.color = Color.cyan;
+
+        if (!isStunned)
+        {
+            // ==========================================
+            // 🌟 Water Mastery: คำนวณความหนืดในการเดิน
+            // ==========================================
+            int buffLevel = BuffManager.instance != null ? BuffManager.instance.waterLevel : 0;
+
+            // พื้นฐานความเร็วเหลือ 50% (0.5f) และหนืดขึ้นเลเวลละ 10% (0.1f)
+            float speedMultiplier = 0.5f - (buffLevel * 0.1f);
+
+            // 🛑 ติดเพดาน! บังคับให้ค่าน้อยสุดคือ 0.2f (ห้ามเดินช้ากว่า 20%)
+            speedMultiplier = Mathf.Max(speedMultiplier, 0.2f);       
+             flySpeed = baseFlySpeed * speedMultiplier;
+        }
+
+        yield return new WaitForSeconds(2f); // ระยะเวลาที่โดนสโลว์ (2 วินาที)
+
+        if (iconSR != null) StartCoroutine(BlinkIconRoutine(iconSR));
+        yield return new WaitForSeconds(1f);
+
+        if (!isStunned)
+        {
+            // คืนค่าความเร็วกลับเป็นปกติ
+            
+            
+
+            
+            // flySpeed = baseFlySpeed;
+        }
+
+        if (spriteRenderer != null && !isDead) spriteRenderer.color = Color.white;
+
+        if (icon != null)
+        {
+            activeIcons.Remove(icon);
+            RearrangeIcons();
+            Destroy(icon);
+        }
+        isSlowed = false;
+    }
+
+    /*IEnumerator ApplyStun()
+    {
+        isStunned = true;
+        GameObject icon = null;
+        SpriteRenderer iconSR = null;
+
+        if (lightningBurstVFX != null)
+        {
+            icon = Instantiate(lightningBurstVFX, transform.position, Quaternion.identity, transform);
+            iconSR = icon.GetComponent<SpriteRenderer>();
+            activeIcons.Add(icon);
+            RearrangeIcons();
+        }
+
+        if (spriteRenderer != null) spriteRenderer.color = Color.yellow;
+
+        flySpeed = 0f;
+        rb.velocity = Vector2.zero;
+
+        yield return new WaitForSeconds(0.5f);
+
+        if (iconSR != null) StartCoroutine(BlinkIconRoutine(iconSR));
+        yield return new WaitForSeconds(1f);
+
+        flySpeed = isSlowed ? baseFlySpeed * 0.5f : baseFlySpeed;
+
+        if (spriteRenderer != null && !isDead) spriteRenderer.color = Color.white;
+
+        if (icon != null)
+        {
+            activeIcons.Remove(icon);
+            RearrangeIcons();
+            Destroy(icon);
+        }
+        isStunned = false;
+    }*/
+
+    IEnumerator BlinkIconRoutine(SpriteRenderer sr)
+    {
+        float timer = 0f;
+        while (timer < 1f)
+        {
+            if (sr == null || isDead) yield break;
+            sr.enabled = !sr.enabled;
+            yield return new WaitForSeconds(0.15f);
+            timer += 0.15f;
+        }
+        if (sr != null) sr.enabled = true;
     }
 
     void ShowDamagePopup(int damageAmount, Color textColor, float fontSize)
@@ -208,12 +357,8 @@ public class FlyingEnemy : MonoBehaviour
     {
         if (isDead) return;
         isDead = true;
-        if (deathSound != null)
-        {
-            AudioSource.PlayClipAtPoint(deathSound, transform.position, 1f);
-        }
 
-        if (puzzleCanvas != null) puzzleCanvas.SetActive(false); // ปิดหลอดปุ่มเวทมนตร์ทิ้งด้วย
+        if (deathSound != null) AudioSource.PlayClipAtPoint(deathSound, transform.position, 1f);
 
         if (soulPrefab != null)
         {
@@ -235,21 +380,11 @@ public class FlyingEnemy : MonoBehaviour
             Instantiate(dropItems[randomItem], transform.position, Quaternion.identity);
         }
 
-        // 1. สั่งเล่นแอนิเมชันตาย!
-        if (anim != null)
-        {
-            anim.SetTrigger("Die");
-        }
+        if (anim != null) anim.SetTrigger("Die");
 
-        // 2. ปิดกล่องชน (Collider) ผู้เล่นจะได้เดินทะลุศพไปได้ ไม่โดนดาเมจอีก
-        //GetComponent<Collider2D>().enabled = false;
-
-        // 3. ให้ศพตกพื้น (ถ้าเกมมีแรงโน้มถ่วง) หรือหยุดอยู่กับที่
         rb.velocity = Vector2.zero;
-        rb.gravityScale = 3f; // ให้ซากค้างคาวหล่นตุ๊บลงพื้น
+        rb.gravityScale = 3f; // นกตายแล้วร่วงลงพื้น
 
-        // 4. หน่วงเวลาทำลายทิ้ง 1 วินาที! ให้คนเล่นได้เห็นศพแบนๆ แป๊บนึงก่อนหายไป
         Destroy(gameObject, 1f);
-
-    } // 🌟 3. จัดระเบียบปีกกาปิดให้ถูกต้องแล้ว
+    }
 }

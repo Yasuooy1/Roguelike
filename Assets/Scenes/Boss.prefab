@@ -153,7 +153,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67d0a10b7ab0af54197173b328798ffc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  maxHealth: 500
+  fireMultiplier: 1
+  waterMultiplier: 1
+  lightningMultiplier: 1
+  iconOffsetY: 3
+  iconSpacing: 1
+  fireBurstVFX: {fileID: 6148191579003736287, guid: 024d8c902a2112842aef91f2b8eeab3c, type: 3}
+  waterBurstVFX: {fileID: 1272505828567980182, guid: b507251f2094aca4088cb188065ff9a5, type: 3}
+  lightningBurstVFX: {fileID: 8849333456460274597, guid: 8ca1092b25af29144bc27767a7e1fb62, type: 3}
   smoothTime: 2
   hoverHeight: 3
   floatAmplitude: 0.5
@@ -162,17 +170,6 @@ MonoBehaviour:
   bulletAmount: 8
   bulletSpeed: 4
   attackInterval: 3
-  requiredRecipe: 
-  isBroken: 0
-  breakDuration: 1
-  puzzleCanvas: {fileID: 2709745360763232805}
-  puzzleSlots:
-  - {fileID: 8049470817100130634}
-  - {fileID: 2693022207868143326}
-  - {fileID: 365510399987661228}
-  fireSprite: {fileID: 21300000, guid: 17d32e7c8d5ff9e42942b8541e948c70, type: 3}
-  waterSprite: {fileID: 21300000, guid: 777f25bbc41b8a543892df89e4a75934, type: 3}
-  lightningSprite: {fileID: 21300000, guid: 981c3f2d3476d074585f84850bc008ed, type: 3}
   delayBeforeSpawn: 2
   damagePopupPrefab: {fileID: 454069165497530963, guid: 0d51f671bc43a43428c5be161e6a075b, type: 3}
   bossAnim: {fileID: 3161971914436957177}
@@ -190,6 +187,8 @@ MonoBehaviour:
   hurtSound: {fileID: 8300000, guid: 443535d5d4424d64c80ad61494a03b67, type: 3}
   deathSound: {fileID: 8300000, guid: 0ee515ca1dcb0f244819e4d3bbfcb3e9, type: 3}
   victorySound: {fileID: 8300000, guid: 2c8248bf99a9d6f4c926bf8b1afc72f0, type: 3}
+  dangerZonePrefab: {fileID: 5590679796696209397, guid: fd571cb3d26a39a479d5996b51453fef, type: 3}
+  exclamationPrefab: {fileID: 2804542136381313019, guid: 2d35c35a12ba62646ac31b7391a4aeb8, type: 3}
 --- !u!95 &3161971914436957177
 Animator:
   serializedVersion: 4
@@ -339,9 +338,9 @@ RectTransform:
   m_Father: {fileID: 7102975158856347262}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 50, y: -50}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &740967631389001655
@@ -415,9 +414,9 @@ RectTransform:
   m_Father: {fileID: 7102975158856347262}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 160, y: -50}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2966593024907212782
@@ -477,7 +476,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7102975158856347262
 RectTransform:
   m_ObjectHideFlags: 0
@@ -841,9 +840,9 @@ RectTransform:
   m_Father: {fileID: 7102975158856347262}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 270, y: -50}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3745523929425880359

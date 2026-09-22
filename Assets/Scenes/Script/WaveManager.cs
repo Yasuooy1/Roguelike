@@ -40,6 +40,8 @@ public class WaveManager : MonoBehaviour
     public GameObject upgradeShrinePrefab;
     public Transform spawnPoint;
     public GameObject warningPrefab;
+    [Header("ระบบเปลี่ยนสภาพแวดล้อมฉาก")]
+    public ArenaShiftingManager arenaShiftingManager;
 
     public bool gameStarted = false;
     public GameObject startTrigger;
@@ -119,6 +121,11 @@ public class WaveManager : MonoBehaviour
         isSpawning = true;
         currentWave++;
         UpdateWaveUI();
+
+        if (arenaShiftingManager != null)
+        {
+            arenaShiftingManager.OnWaveStarted(currentWave);
+        }
 
         yield return new WaitForSeconds(2f);
 

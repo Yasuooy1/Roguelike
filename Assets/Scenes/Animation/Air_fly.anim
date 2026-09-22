@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Thunder_Fly
+  m_Name: Air_fly
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -20,14 +20,16 @@ AnimationClip:
   m_PPtrCurves:
   - curve:
     - time: 0
-      value: {fileID: 21300000, guid: ab6dd17dd26541641bd8eda624174244, type: 3}
-    - time: 0.083333336
-      value: {fileID: 21300000, guid: bf5fbaaa47078fb478a1ff60cd429e6b, type: 3}
+      value: {fileID: -1533931302, guid: f5e8383956f078b49940ed58f187adee, type: 3}
+    - time: 0.33333334
+      value: {fileID: -896201608, guid: f5e8383956f078b49940ed58f187adee, type: 3}
+    - time: 0.6666667
+      value: {fileID: -479113587, guid: f5e8383956f078b49940ed58f187adee, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
     script: {fileID: 0}
-  m_SampleRate: 12
+  m_SampleRate: 3
   m_WrapMode: 0
   m_Bounds:
     m_Center: {x: 0, y: 0, z: 0}
@@ -42,14 +44,15 @@ AnimationClip:
       customType: 23
       isPPtrCurve: 1
     pptrCurveMapping:
-    - {fileID: 21300000, guid: ab6dd17dd26541641bd8eda624174244, type: 3}
-    - {fileID: 21300000, guid: bf5fbaaa47078fb478a1ff60cd429e6b, type: 3}
+    - {fileID: -1533931302, guid: f5e8383956f078b49940ed58f187adee, type: 3}
+    - {fileID: -896201608, guid: f5e8383956f078b49940ed58f187adee, type: 3}
+    - {fileID: -479113587, guid: f5e8383956f078b49940ed58f187adee, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 0.16666667
+    m_StopTime: 1
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0

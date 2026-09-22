@@ -1,25 +1,27 @@
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.InputSystem; // 🌟 1. เพิ่มบรรทัดนี้เพื่อให้รู้จัก InputValue
+using UnityEngine.InputSystem;
 
 public class PlayerCombat : MonoBehaviour
 {
     [Header("จุดปล่อยพลัง")]
     public Transform firePoint;
 
-    [Header("กระสุนแยกตามธาตุ")]
+    [Header("🔮 เวทมนตร์ธาตุเดี่ยว (ใส่ธาตุเดียวกัน 3 ลูก)")]
     public GameObject fireBulletPrefab;
     public GameObject waterBulletPrefab;
-    public GameObject lightningBulletPrefab;
+    public GameObject WindBulletPrefab;
+
+    [Header("✨ เวทมนตร์แบบผสม (Invoker Style!)")]
+    public GameObject plasmaBulletPrefab;
 
     [Header("ท่าไม้ตาย")]
     public GameObject ultimatePrefab;
     public int ultimateManaCost = 2;
 
-    [Header("ระบบคูลดาวน์")]
+    [Header("ระบบคูลดาวน์และอื่นๆ")]
     public float fireCooldown = 0.5f;
     private float nextFireTime = 0f;
-
     public float bulletSizeMultiplier = 1f;
     public int ultimateManaDiscount = 0;
 
@@ -29,7 +31,7 @@ public class PlayerCombat : MonoBehaviour
     [Header("ระบบเสียงยิงตามธาตุ")]
     public AudioSource audioSource;
     public AudioClip fireSound;
-    public AudioClip lightningSound;
+    public AudioClip WindSound;
     public AudioClip waterSound;
 
     void Start()
@@ -46,94 +48,104 @@ public class PlayerCombat : MonoBehaviour
 
     void Update()
     {
-        // 🌟 2. ลบ Input.GetKeyDown(KeyCode.U) ทิ้งไปเลย เพราะเราจะใช้ OnSkillAttack แทน
-
-        // เช็คว่าผสมครบ 3 ลูกและคูลดาวน์เสร็จหรือยัง (การตรวจสอบยิงกระสุนยังคงเหมือนเดิม)
-        if (spellMixer != null && spellMixer.currentOrbs.Count >= 3 && Time.time >= nextFireTime)
-        {
-            TryCastPuzzleSpell();
-            nextFireTime = Time.time + fireCooldown;
-        }
+        // 🌟 ปล่อยว่างไว้เลยครับ เราไม่ยิงออโต้แล้ว![cite: 2]
     }
 
     // ==========================================
-    // 🌟 รับค่าปุ่มเวทมนตร์จาก New Input System (จอยและคีย์บอร์ด)
+    // 🌟 รับค่าปุ่มเวทมนตร์จาก New Input System 
     // ==========================================
-
-    // ธาตุไฟ (กด J หรือ X/สี่เหลี่ยม)
     public void OnElement1(InputValue value)
     {
-        if (value.isPressed && spellMixer != null)
-        {
-            spellMixer.AddOrb(SpellMixer.Element.Fire); // 🌟 เรียกใช้ AddOrb แบบตรงๆ
-        }
+        if (value.isPressed && spellMixer != null) spellMixer.AddOrb(SpellMixer.Element.Fire);
     }
 
-    // ท่าน้ำ (กด K หรือ Y/สามเหลี่ยม)
     public void OnElement2(InputValue value)
     {
-        if (value.isPressed && spellMixer != null)
-        {
-            spellMixer.AddOrb(SpellMixer.Element.Water);
-        }
+        if (value.isPressed && spellMixer != null) spellMixer.AddOrb(SpellMixer.Element.Water);
     }
 
-    // สายฟ้า (กด L หรือ B/วงกลม)
     public void OnElement3(InputValue value)
     {
-        if (value.isPressed && spellMixer != null)
-        {
-            spellMixer.AddOrb(SpellMixer.Element.Lightning);
-        }
+        if (value.isPressed && spellMixer != null) spellMixer.AddOrb(SpellMixer.Element.Wind);
     }
 
-    // ยิงเวทไม้ตาย (กด U หรือ LB/R2)
     public void OnSkillAttack(InputValue value)
+    {
+        if (value.isPressed) CastUltimateSkill();
+    }
+
+    // ==========================================
+    // 💥 รับค่าปุ่มยิงเวทมนตร์ (ปุ่ม Fire ใหม่) 
+    // ==========================================
+    public void OnFire(InputValue value)
     {
         if (value.isPressed)
         {
-            CastUltimateSkill();
+            // เช็กว่าผสมครบ 3 ลูกและคูลดาวน์เสร็จหรือยัง
+            if (spellMixer != null && spellMixer.currentOrbs.Count >= 3 && Time.time >= nextFireTime)
+            {
+                // สั่งยิงและรับค่าคูลดาวน์กลับมา
+                float currentCooldown = TryCastPuzzleSpell();
+                nextFireTime = Time.time + currentCooldown;
+            }
+            else if (Time.time < nextFireTime)
+            {
+                Debug.Log("ปืน Overheat อยู่ รอก่อน!");
+            }
+            else if (spellMixer != null && spellMixer.currentOrbs.Count < 3)
+            {
+                Debug.Log("ยังผสมไม่ครบ 3 ลูก ยิงไม่ได้นะ!");
+            }
         }
     }
 
     // ==========================================
-    // 🧩 ฟังก์ชันยิงกระสุนและการค้นหาเป้าหมาย (เหมือนเดิมเป๊ะ)
+    // 🧙‍♂️ ระบบยิงเวทมนตร์สไตล์ Invoker
     // ==========================================
 
-    void TryCastPuzzleSpell()
+    // 🌟 เปลี่ยนจาก void เป็น float เพื่อคืนค่าคูลดาวน์[cite: 2]
+    float TryCastPuzzleSpell()
     {
         List<string> sortedOrbs = new List<string>();
-        int fireCount = 0, waterCount = 0, lightningCount = 0;
 
         foreach (var orb in spellMixer.currentOrbs)
         {
-            string element = orb.ToString();
-            sortedOrbs.Add(element);
-
-            if (element == "Fire") fireCount++;
-            else if (element == "Water") waterCount++;
-            else if (element == "Lightning") lightningCount++;
+            sortedOrbs.Add(orb.ToString());
         }
 
+        sortedOrbs.Sort();
         string recipe = sortedOrbs[0] + sortedOrbs[1] + sortedOrbs[2];
 
         GameObject prefabToShoot = fireBulletPrefab;
         int soundToPlay = 0;
 
-        if (waterCount > fireCount && waterCount >= lightningCount)
+        // 🌟 ดึงค่าคูลดาวน์ปกติมาตั้งเป็นค่าเริ่มต้น
+        float actualCooldown = fireCooldown;
+
+        switch (recipe)
         {
-            prefabToShoot = waterBulletPrefab;
-            soundToPlay = 2;
-        }
-        else if (lightningCount > fireCount && lightningCount > waterCount)
-        {
-            prefabToShoot = lightningBulletPrefab;
-            soundToPlay = 1;
-        }
-        else if (fireCount == 1 && waterCount == 1 && lightningCount == 1)
-        {
-            prefabToShoot = fireBulletPrefab;
-            soundToPlay = 0;
+            case "FireFireFire":
+                prefabToShoot = fireBulletPrefab;
+                soundToPlay = 0;
+                break;
+            case "WaterWaterWater":
+                prefabToShoot = waterBulletPrefab;
+                soundToPlay = 2;
+                break;
+            case "WindWindWind":
+                prefabToShoot = WindBulletPrefab;
+                soundToPlay = 1;
+                break;
+
+            case "FireFireWind":
+                prefabToShoot = plasmaBulletPrefab != null ? plasmaBulletPrefab : fireBulletPrefab;
+                soundToPlay = 1;
+                actualCooldown = 2.5f; // 🛑 ปืนโอเวอร์ฮีต! ยิงพลาสมาเสร็จต้องพัก 2.5 วิ[cite: 2]
+                break;
+
+            default:
+                prefabToShoot = fireBulletPrefab;
+                break;
         }
 
         if (prefabToShoot != null)
@@ -152,15 +164,34 @@ public class PlayerCombat : MonoBehaviour
                 bulletScript.damage = 10f + (damageUpgradeLevel * 2f);
             }
         }
+
         spellMixer.ClearOrbs();
+
+        // 🌟 ส่งค่าคูลดาวน์กลับไปให้ปุ่มยิงทำงาน
+        return actualCooldown;
     }
 
+    // ==========================================
+    // 🎯 ระบบค้นหาเป้าหมาย (เหมือนเดิมเป๊ะ)
+    // ==========================================
     Transform FindClosestEnemy()
     {
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
         GameObject[] bosses = GameObject.FindGameObjectsWithTag("Boss");
+        ElementalObstacle[] obstacles = FindObjectsOfType<ElementalObstacle>();
+
         List<GameObject> allTargets = new List<GameObject>();
-        allTargets.AddRange(enemies); allTargets.AddRange(bosses);
+        allTargets.AddRange(enemies);
+        allTargets.AddRange(bosses);
+
+        foreach (ElementalObstacle obs in obstacles)
+        {
+            if (obs.gameObject.activeInHierarchy)
+            {
+                allTargets.Add(obs.gameObject);
+            }
+        }
+
         Transform bestTarget = null;
         float closestDistanceSqr = Mathf.Infinity;
         foreach (GameObject potentialTarget in allTargets)
@@ -178,14 +209,13 @@ public class PlayerCombat : MonoBehaviour
     public void PlayElementShootSound(int currentElementIndex)
     {
         if (audioSource == null) return;
-
         switch (currentElementIndex)
         {
             case 0:
                 if (fireSound != null) audioSource.PlayOneShot(fireSound);
                 break;
             case 1:
-                if (lightningSound != null) audioSource.PlayOneShot(lightningSound);
+                if (WindSound != null) audioSource.PlayOneShot(WindSound);
                 break;
             case 2:
                 if (waterSound != null) audioSource.PlayOneShot(waterSound);

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8310941702782027709}
   - component: {fileID: 7306427854189145656}
   - component: {fileID: 6434277731601490298}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Heart 1 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -87,7 +87,7 @@ GameObject:
   - component: {fileID: 6937692720650089234}
   - component: {fileID: 3784271100770975210}
   - component: {fileID: 8842292586037342181}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Mana (10)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -163,7 +163,7 @@ GameObject:
   - component: {fileID: 568995871237878986}
   - component: {fileID: 4207346932136592033}
   - component: {fileID: 7262144197944955804}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Heart 1 (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -239,7 +239,7 @@ GameObject:
   - component: {fileID: 7562768533599499872}
   - component: {fileID: 6243039799263230531}
   - component: {fileID: 3205699064483377823}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: ItemSlotUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -317,7 +317,7 @@ GameObject:
   - component: {fileID: 1592974354802143045}
   - component: {fileID: 8069133168049513036}
   - component: {fileID: 8300823150117296200}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Mana (8)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -393,7 +393,7 @@ GameObject:
   - component: {fileID: 8897635789063420307}
   - component: {fileID: 6691931795864881718}
   - component: {fileID: 9005060158433372525}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Heart 1 (8)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -470,7 +470,7 @@ GameObject:
   - component: {fileID: 2317559443348473134}
   - component: {fileID: 8883205739824358741}
   - component: {fileID: 8193718033051770382}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: HealthUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -583,7 +583,7 @@ GameObject:
   - component: {fileID: 6733807561965882935}
   - component: {fileID: 8695152927978253449}
   - component: {fileID: 5328959437089197386}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: ItemIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -743,7 +743,7 @@ GameObject:
   - component: {fileID: 4207964638719225761}
   - component: {fileID: 5713148753386643031}
   - component: {fileID: 2156537470441756124}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Orb_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -819,7 +819,7 @@ GameObject:
   - component: {fileID: 7085516809149086319}
   - component: {fileID: 1293416243156447675}
   - component: {fileID: 3233690579355584259}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Mana (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -895,7 +895,7 @@ GameObject:
   - component: {fileID: 5773683066780626140}
   - component: {fileID: 3242437781968658482}
   - component: {fileID: 1841011779179879124}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Heart 1 (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -971,7 +971,7 @@ GameObject:
   - component: {fileID: 8365281067496768474}
   - component: {fileID: 5721508975858878355}
   - component: {fileID: 8356434283548188669}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Orb1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1075,8 +1075,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4846608844854359539}
   - component: {fileID: 5725138997464753111}
-  - component: {fileID: 5868251828203170619}
-  m_Layer: 0
+  - component: {fileID: 222474167048632375}
+  m_Layer: 13
   m_Name: Orb3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1150,7 +1150,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!95 &5868251828203170619
+--- !u!95 &222474167048632375
 Animator:
   serializedVersion: 4
   m_ObjectHideFlags: 0
@@ -1181,7 +1181,7 @@ GameObject:
   - component: {fileID: 2333642789274015559}
   - component: {fileID: 3317267432695426863}
   - component: {fileID: 3459539623311656925}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Mana (9)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1258,7 +1258,7 @@ GameObject:
   - component: {fileID: 8694535343380865797}
   - component: {fileID: 8938586614569495060}
   - component: {fileID: 7128993969310307053}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: ManaUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1371,7 +1371,7 @@ GameObject:
   - component: {fileID: 6382788848146325632}
   - component: {fileID: 5706487010245485115}
   - component: {fileID: 6933362658708647485}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Mana (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1447,7 +1447,7 @@ GameObject:
   - component: {fileID: 7558551145247114346}
   - component: {fileID: 6153692008272853598}
   - component: {fileID: 6959737837013175324}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Heart 1 (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1523,7 +1523,7 @@ GameObject:
   - component: {fileID: 7261266657049739054}
   - component: {fileID: 7092854385283002607}
   - component: {fileID: 1389758450813459386}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Mana (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1600,7 +1600,7 @@ GameObject:
   - component: {fileID: 1168815654923016206}
   - component: {fileID: 3156627703574325730}
   - component: {fileID: 3234337623884929812}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1702,7 +1702,7 @@ GameObject:
   - component: {fileID: 6547593517434196778}
   - component: {fileID: 8111828696980226690}
   - component: {fileID: 969915508045811203}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Mana (7)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1778,7 +1778,7 @@ GameObject:
   - component: {fileID: 1940570008674903904}
   - component: {fileID: 8615470720011571810}
   - component: {fileID: 8630661390052920945}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Mana (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1854,7 +1854,7 @@ GameObject:
   - component: {fileID: 8800347256886770891}
   - component: {fileID: 4632650152778231446}
   - component: {fileID: 1673940206248777335}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Mana  (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1930,7 +1930,7 @@ GameObject:
   - component: {fileID: 2100060195452747107}
   - component: {fileID: 8479335040538970845}
   - component: {fileID: 291454731298967439}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Heart 1 (6)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2006,7 +2006,7 @@ GameObject:
   - component: {fileID: 503452705916224110}
   - component: {fileID: 6607749535530352992}
   - component: {fileID: 1506480634392392486}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Heart 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2082,7 +2082,7 @@ GameObject:
   - component: {fileID: 6107757544034868120}
   - component: {fileID: 713507727489726743}
   - component: {fileID: 4459478537369037285}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Orb_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2158,7 +2158,7 @@ GameObject:
   - component: {fileID: 5773729180446516579}
   - component: {fileID: 2180123227161343418}
   - component: {fileID: 7688896029957290875}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Mana (6)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2234,7 +2234,7 @@ GameObject:
   - component: {fileID: 3868826515626210576}
   - component: {fileID: 6905079093269661312}
   - component: {fileID: 945090078481624690}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Orb2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2351,7 +2351,7 @@ GameObject:
   - component: {fileID: 266554665631505318}
   - component: {fileID: -1470871195039375572}
   - component: {fileID: -1434680269562814374}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Player 1
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -2421,7 +2421,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 5
+  m_SortingOrder: 32767
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -2523,7 +2523,8 @@ MonoBehaviour:
   firePoint: {fileID: 6490995748606095295}
   fireBulletPrefab: {fileID: 2201312965372892127, guid: 4eb3eb11876936c42949fd50e6ef6c9c, type: 3}
   waterBulletPrefab: {fileID: 8383483531201576352, guid: 2d9f35a2f23862247a4a93d9f39bf2be, type: 3}
-  lightningBulletPrefab: {fileID: 8019050357196743704, guid: 47eac13f428d5874b813a693cd8eeaf7, type: 3}
+  WindBulletPrefab: {fileID: 8019050357196743704, guid: 47eac13f428d5874b813a693cd8eeaf7, type: 3}
+  plasmaBulletPrefab: {fileID: 1870457335915125429, guid: b1d2ca8d2f0455f41b67407366c50465, type: 3}
   ultimatePrefab: {fileID: 4813171366430408287, guid: 8981db9b247235e438e2493fe7b44ca5, type: 3}
   ultimateManaCost: 2
   fireCooldown: 1
@@ -2531,7 +2532,7 @@ MonoBehaviour:
   ultimateManaDiscount: 0
   audioSource: {fileID: 266554665631505318}
   fireSound: {fileID: 8300000, guid: c5bc6d35563400c49ad02f3342748587, type: 3}
-  lightningSound: {fileID: 8300000, guid: 19aebc8a7a2389e43a569a2572e87e81, type: 3}
+  WindSound: {fileID: 8300000, guid: 890037e6270ce57499178441930ff094, type: 3}
   waterSound: {fileID: 8300000, guid: 0204b5b2c74324d4b90ae11cfbeb50e5, type: 3}
 --- !u!114 &6490995748402856953
 MonoBehaviour:
@@ -2601,6 +2602,7 @@ MonoBehaviour:
   manaPotionIcon: {fileID: 21300000, guid: 4c1eddb04cc3375498a90cfbd9a1fce3, type: 3}
   audioSource: {fileID: 266554665631505318}
   drinkPotionSound: {fileID: 8300000, guid: 9a67925b02e64204fb2931bf4bc4f19c, type: 3}
+  currentNearbyShop: {fileID: 0}
 --- !u!114 &228671660582142772
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2669,16 +2671,15 @@ MonoBehaviour:
   orbAnimators:
   - {fileID: 8356434283548188669}
   - {fileID: 945090078481624690}
-  - {fileID: 5868251828203170619}
+  - {fileID: 222474167048632375}
   fireAnimController: {fileID: 9100000, guid: 03d1927bacb149d4a8c3be34aa4ae40c, type: 2}
   waterAnimController: {fileID: 9100000, guid: 35eaf5721f5c69d4fa773e10e5ed48a5, type: 2}
-  lightningAnimController: {fileID: 9100000, guid: eb56b988d40014a4db817e94fe03467b, type: 2}
-  orbOffsets:
-  - {x: -1.2, y: 1, z: 0}
-  - {x: 0, y: 1.8, z: 0}
-  - {x: 1.2, y: 1, z: 0}
+  windAnimController: {fileID: 9100000, guid: eb56b988d40014a4db817e94fe03467b, type: 2}
+  orbitRadius: 1.2
+  orbitSpeed: 150
   hoverSpeed: 3
   hoverHeight: 0.2
+  centerOffset: {x: 0, y: 1, z: 0}
 --- !u!82 &266554665631505318
 AudioSource:
   m_ObjectHideFlags: 0
@@ -2910,7 +2911,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6490995748606095295}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2941,7 +2942,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6490995748831770344}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Groundcheck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2974,7 +2975,7 @@ GameObject:
   - component: {fileID: 4812196696452473001}
   - component: {fileID: 6948149108524431444}
   - component: {fileID: 2637074014893401610}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Orb_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3050,7 +3051,7 @@ GameObject:
   - component: {fileID: 7182992564876925132}
   - component: {fileID: 4230790380858984272}
   - component: {fileID: 1253260550881400716}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Mana 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3126,7 +3127,7 @@ GameObject:
   - component: {fileID: 640804347189369004}
   - component: {fileID: 7811377457045743685}
   - component: {fileID: 701806192039023200}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Heart 1 (10)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3202,7 +3203,7 @@ GameObject:
   - component: {fileID: 5363933167080941341}
   - component: {fileID: 3095621624952964797}
   - component: {fileID: 4345484223238306107}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Heart 1 (7)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3278,7 +3279,7 @@ GameObject:
   - component: {fileID: 7229891047506828284}
   - component: {fileID: 3310605391153333472}
   - component: {fileID: 5940500210713719038}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: CountText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3413,7 +3414,7 @@ GameObject:
   - component: {fileID: 3445709622032549752}
   - component: {fileID: 3878981319693077696}
   - component: {fileID: 4731333251606102860}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Heart 1 (9)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3489,7 +3490,7 @@ GameObject:
   - component: {fileID: 6204283421317049006}
   - component: {fileID: 3066917182301155035}
   - component: {fileID: 1175804355392484522}
-  m_Layer: 5
+  m_Layer: 13
   m_Name: Heart 1 (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3567,7 +3568,7 @@ GameObject:
   - component: {fileID: 8484608070051852444}
   - component: {fileID: 5719242121501335682}
   - component: {fileID: 6162623145446949803}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: OrbCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}

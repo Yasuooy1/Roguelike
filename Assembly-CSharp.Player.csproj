@@ -92,6 +92,7 @@
     <Compile Include="Assets\Scenes\Script\DynamicInputText.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_ExampleScript_01.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextConsoleSimulator.cs" />
+    <Compile Include="Assets\Scenes\Script\ElementalObstacle.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ObjectSpin.cs" />
     <Compile Include="Assets\Scenes\Script\StartWaveCrystal.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextInfoDebugTool.cs" />
@@ -99,6 +100,7 @@
     <Compile Include="Assets\Scenes\Script\Boss.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextEventCheck.cs" />
     <Compile Include="Assets\Scenes\Script\PlayerCombat.cs" />
+    <Compile Include="Assets\Scenes\Script\ArenaShiftingManager.cs" />
     <Compile Include="Assets\Scenes\Script\WaveManager.cs" />
     <Compile Include="Assets\Scenes\GameManager.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ShaderPropAnimator.cs" />

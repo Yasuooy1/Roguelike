@@ -28,7 +28,7 @@ public class UltimateSkill : MonoBehaviour
         Boss boss = hitInfo.GetComponent<Boss>();
         if (boss != null)
         {
-            boss.ForceBreakArmor();
+            //boss.ForceBreakArmor();
             boss.TakeDamage(massiveDamage);
             Explode(); // เรียกฟังก์ชันระเบิด
             GameFeelManager.instance.ScreenShake(0.5f, 0.2f);
@@ -37,10 +37,10 @@ public class UltimateSkill : MonoBehaviour
 
         // 2. ชนมอนสเตอร์ทั่วไป
         Enemy enemy = hitInfo.GetComponent<Enemy>();
-        if (enemy != null) { enemy.isBroken = true; enemy.TakeDamage(massiveDamage); Explode(); }
+        if (enemy != null) { enemy.TakeDamage(massiveDamage); Explode(); }
 
         FlyingEnemy flyingEnemy = hitInfo.GetComponent<FlyingEnemy>();
-        if (flyingEnemy != null) { flyingEnemy.isBroken = true; flyingEnemy.TakeDamage(massiveDamage); Explode(); }
+        if (flyingEnemy != null) { flyingEnemy.TakeDamage(massiveDamage); Explode(); }
     }
 
     // 🌟 ฟังก์ชันเสกระเบิดแล้วทำลายตัวเอง

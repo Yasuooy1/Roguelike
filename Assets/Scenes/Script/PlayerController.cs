@@ -55,6 +55,7 @@ public class PlayerController : MonoBehaviour
     public AudioClip landingSound;   // 🌟 เสียงตอนเท้ากระทบพื้น (ตุ้บ!)
     private bool wasGrounded;        // 🌟 เอาไว้จำว่า "เฟรมที่แล้วลอยอยู่หรือเปล่า?"
     private Vector2 moveInput;
+    
 
     void Start()
     {

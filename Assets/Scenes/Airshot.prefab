@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 923356313464974840}
   - component: {fileID: -2484352865918522017}
   m_Layer: 2
-  m_Name: thundershot
+  m_Name: Airshot
   m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -31,7 +31,7 @@ Transform:
   m_GameObject: {fileID: 8019050357196743704}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -18.910463, y: -0.60683966, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -78,7 +78,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: ab6dd17dd26541641bd8eda624174244, type: 3}
+  m_Sprite: {fileID: -896201608, guid: f5e8383956f078b49940ed58f187adee, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -147,7 +147,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 20.48, y: 20.48}
+    oldSize: {x: 3, y: 3}
     newSize: {x: 20.48, y: 20.48}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -173,6 +173,7 @@ MonoBehaviour:
   impactEffect: {fileID: 0}
   isPuzzleBullet: 0
   puzzleRecipe: 
+  aoeRadius: 2.5
 --- !u!114 &-2484352865918522017
 MonoBehaviour:
   m_ObjectHideFlags: 0

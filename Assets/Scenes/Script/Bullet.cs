@@ -1,4 +1,5 @@
 using UnityEngine;
+
 public class Bullet : MonoBehaviour
 {
     public float speed = 20f;
@@ -9,143 +10,168 @@ public class Bullet : MonoBehaviour
     public bool isPuzzleBullet = false;
     public string puzzleRecipe;
 
+    [Header("AOE Settings")]
+    public float aoeRadius = 2.5f;
+
     private Rigidbody2D rb;
-    private bool isDeflected = false; // เอาไว้ล็อกไม่ให้กระสุนทำดาเมจซ้ำตอนกำลังเด้ง
+    private bool isDeflected = false;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+
+        // ==========================================
+        // 🌪️ ระบบอัปเกรดธาตุลม (ขยายขนาด & เพิ่มความเร็ว)
+        // ==========================================
+        if (isPuzzleBullet && puzzleRecipe == "WindWindWind")
+        {
+            int buffLevel = BuffManager.instance != null ? BuffManager.instance.windLevel : 0;
+
+            float sizeMultiplier = 1f + (buffLevel * 0.2f);
+            sizeMultiplier = Mathf.Min(sizeMultiplier, 2f);
+            transform.localScale = new Vector3(transform.localScale.x, transform.localScale.y * sizeMultiplier, transform.localScale.z);
+
+            float speedMultiplier = 1f + (buffLevel * 0.1f);
+            speedMultiplier = Mathf.Min(speedMultiplier, 1.5f);
+            speed = speed * speedMultiplier;
+        }
+
         rb.velocity = transform.right * speed;
     }
 
     void OnTriggerEnter2D(Collider2D hitInfo)
     {
-        // ถ้ายิงพลาดและกำลังกระดอนตกพื้นอยู่ ให้ทะลุผ่านทุกอย่างไปเลย
         if (isDeflected) return;
 
-        bool hitEnemy = false;
-        bool isCorrectPuzzle = true; // ตั้งค่าเริ่มต้นว่ายิงถูกไว้ก่อน
+        // ==========================================
+        // 💣 1. ถ้ายิงพายุเพลิง (ระเบิดหมู่ AOE)
+        // ==========================================
+        if (isPuzzleBullet && puzzleRecipe == "FireFireWind")
+        {
+            if (hitInfo.CompareTag("Enemy") || hitInfo.CompareTag("Boss") || hitInfo.gameObject.layer == LayerMask.NameToLayer("Ground") || hitInfo.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
+            {
+                ExplodeAOE();
+                ExplodeAndDestroy();
+            }
+            return;
+        }
 
-        // 1. เช็กมอนสเตอร์เดินดิน
+        // ==========================================
+        // 🗡️ 2. ถ้ายิงธาตุปกติ หรือ ท่าคลื่นลมทะลวง (Air Slash)
+        // ==========================================
+        bool hitSomething = false;
+
         Enemy enemy = hitInfo.GetComponent<Enemy>();
         if (enemy != null)
         {
-            hitEnemy = true;
-            if (isPuzzleBullet && !enemy.isBroken)
-            {
-                isCorrectPuzzle = enemy.CheckPuzzleBullet(puzzleRecipe, (int)damage);
-            }
+            hitSomething = true;
+            // 🌟 แก้ไข: ถ้าเป็นกระสุนพัซเซิล ให้ใช้คำสั่งเจาะเกราะ ถ้าไม่ใช่ให้ทำดาเมจปกติ
+            if (isPuzzleBullet) enemy.CheckPuzzleBullet(puzzleRecipe, (int)damage);
             else enemy.TakeDamage((int)damage);
         }
 
-        // 2. เช็กมอนสเตอร์บิน (นก)
         FlyingEnemy flyingEnemy = hitInfo.GetComponent<FlyingEnemy>();
-        if (flyingEnemy != null && !hitEnemy)
+        if (flyingEnemy != null && !hitSomething)
         {
-            hitEnemy = true;
-            if (isPuzzleBullet && !flyingEnemy.isBroken)
-            {
-                isCorrectPuzzle = flyingEnemy.CheckPuzzleBullet(puzzleRecipe, (int)damage);
-            }
-            else flyingEnemy.TakeDamage((int)damage);
+            hitSomething = true;
+            // 🌟 แก้ไข: นกบินยังไม่มีระบบเกราะ ให้ทำดาเมจปกติไปก่อน
+            flyingEnemy.TakeDamage((int)damage);
         }
 
-        // 3. เช็กบอสหลัก
         Boss boss = hitInfo.GetComponent<Boss>();
-        if (boss != null && !hitEnemy)
+        if (boss != null && !hitSomething)
         {
-            hitEnemy = true;
-            if (isPuzzleBullet && !boss.isBroken)
-            {
-                isCorrectPuzzle = boss.CheckPuzzleBullet(puzzleRecipe, (int)damage);
-            }
-            else boss.TakeDamage((int)damage);
+            hitSomething = true;
+            // 🌟 แก้ไข: บอสให้รับดาเมจปกติไปก่อนเช่นกัน
+            boss.TakeDamage((int)damage);
         }
 
-        // 4. สรุปผลลัพธ์หลังชน
-        if (hitEnemy)
+        // 🌟 3. สรุปผลลัพธ์หลังชน
+        if (hitSomething)
         {
-            if (isCorrectPuzzle)
+            bool isAirSlash = (isPuzzleBullet && puzzleRecipe == "WindWindWind");
+
+            if (!isAirSlash)
             {
-                // ยิงถูกธาตุ (หรือยิงมอนสเตอร์ธรรมดา) -> ระเบิดเอฟเฟกต์แล้วหายไป
                 ExplodeAndDestroy();
             }
-            else
-            {
-                // ยิงผิดธาตุ! -> กระเด้งกลับตกพื้น
-                DeflectBullet();
-            }
         }
-        else if (hitInfo.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        else if (hitInfo.gameObject.layer == LayerMask.NameToLayer("Ground") || hitInfo.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
         {
-            // ชนพื้นดิน หรือกำแพง -> ระเบิดหายไป
             ExplodeAndDestroy();
+        }
+    }
+
+    // ==========================================
+    // 💥 ฟังก์ชันระเบิดหมู่
+    // ==========================================
+    void ExplodeAOE()
+    {
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(transform.position, aoeRadius);
+
+        foreach (Collider2D col in hitEnemies)
+        {
+            Enemy enemy = col.GetComponent<Enemy>();
+            if (enemy != null)
+            {
+                // 🌟 แก้ไข: กระจายแรงระเบิดให้เช็กระบบเจาะเกราะด้วย
+                if (isPuzzleBullet) enemy.CheckPuzzleBullet(puzzleRecipe, (int)damage);
+                else enemy.TakeDamage((int)damage);
+            }
+
+            FlyingEnemy flyingEnemy = col.GetComponent<FlyingEnemy>();
+            if (flyingEnemy != null) flyingEnemy.TakeDamage((int)damage);
+
+            Boss boss = col.GetComponent<Boss>();
+            if (boss != null) boss.TakeDamage((int)damage);
         }
     }
 
     private void ExplodeAndDestroy()
     {
-        // 1. ถ้ายังมีโค้ด Instantiate เอฟเฟกต์เก่าอยู่ ให้ลบออกหรือคอมเมนต์ทิ้ง
-        // if (impactEffect != null) Instantiate(impactEffect, transform.position, transform.rotation);
-
-        // 2. 🛡️ กันเหนียว: ปิด Collider และ Rigidbody ก่อนเพื่อไม่ให้มันชนอะไรซ้ำซ้อน
         Collider2D col = GetComponent<Collider2D>();
         if (col != null) col.enabled = false;
 
         if (rb != null)
         {
-            rb.velocity = Vector2.zero; // หยุดวิ่ง
-            rb.simulated = false; // 🌟 หยุดระบบฟิสิกส์ทั้งหมดเพื่อความชัวร์
+            rb.velocity = Vector2.zero;
+            rb.simulated = false;
         }
 
-        // 3. 🎬 พยายามสั่งเล่นแอนิเมชันระเบิด
         Animator anim = GetComponent<Animator>();
         if (anim != null)
         {
             anim.SetTrigger("Explode");
         }
 
-        // 4. 🌟 ท่าไม้ตาย: สั่งทำลายตัวเองทิ้ง "ทันที" หรือหลังจาก 0.1 วินาที (เพื่อให้พอเห็นระเบิดนิดนึง)
-        // อย่ารอ 0.4 วินาที เพราะบางทีแอนิเมชันมันไม่เล่น มันเลยไม่ถูก Destroy ครับ
-        Destroy(gameObject); // 🌟 แก้เป็นบรรทัดนี้เลยครับ เพื่อทำลายทันทีที่ชน
-
-        // ถ้าอยากให้แอนิเมชันระเบิดเล่นจนจบ (0.4s) เราต้องใช้ทริคเพิ่มในหัวข้อที่ 3 ครับ
+        Destroy(gameObject);
     }
 
     private void DeflectBullet()
     {
-        isDeflected = true; // ล็อกสถานะกระสุน
-
-        // 1. เปลี่ยนกระสุนเป็นสีเทา (แสดงว่าไร้พลัง)
+        isDeflected = true;
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
         if (sr != null) sr.color = Color.gray;
 
-        // 2. ใส่ฟิสิกส์ให้เด้งกลับ
         if (rb != null)
         {
-            rb.velocity = Vector2.zero; // เบรกความเร็วพุ่งไปข้างหน้า
-            rb.gravityScale = 2f; // เปิดแรงโน้มถ่วงให้ร่วงลงพื้น
+            rb.velocity = Vector2.zero;
+            rb.gravityScale = 2f;
 
-            // เช็กทิศทางเดิม ถ้ายิงไปขวา ให้เด้งไปซ้าย
             float bounceDirection = (transform.right.x > 0) ? -1f : 1f;
-
-            // สุ่มแรงกระดอน
             float bounceX = bounceDirection * Random.Range(2f, 4f);
-            float bounceY = Random.Range(3f, 6f); // เด้งลอยขึ้น
+            float bounceY = Random.Range(3f, 6f);
             rb.velocity = new Vector2(bounceX, bounceY);
         }
 
-        // 3. ปิด Collider ทิ้งไปเลย กระสุนจะได้ไม่ไปทำดาเมจซ้ำ หรือชนมอนตัวอื่น
         Collider2D col = GetComponent<Collider2D>();
         if (col != null) col.enabled = false;
 
-        // 4. สั่งเคลียร์ขยะ ทำลายทิ้งใน 1.5 วินาที
         Destroy(gameObject, 1.5f);
     }
-    // ฟังก์ชันนี้จะถูกเรียกจากแอนิเมชันตอนเล่นจบเฟรมสุดท้าย
+
     public void DestroyBulletAfterAnim()
     {
         Destroy(gameObject);
     }
-   
 }

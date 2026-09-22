@@ -4,30 +4,29 @@ using UnityEngine;
 
 public class SpellMixer : MonoBehaviour
 {
-    public enum Element { Fire, Water, Lightning }
+    // 🌟 1. ใช้ธาตุ 3 ชนิดให้ตรงกับพัซเซิลมอนสเตอร์
+    public enum Element { Fire, Water, Wind }
 
     [Header("ลูกแก้วที่กำลังผสมอยู่")]
     public List<Element> currentOrbs = new List<Element>();
 
     [Header("ออบเจกต์ลูกแก้วในฉาก")]
     public SpriteRenderer[] orbRenderers;
-    // 🌟 1. เพิ่มช่องใส่ Animator เพื่อบังคับให้ภาพมันขยับ
     public Animator[] orbAnimators;
 
     [Header("ไฟล์อนิเมชันของแต่ละธาตุ")]
-    // 🌟 2. ใช้ RuntimeAnimatorController แทน Sprite ธรรมดา
     public RuntimeAnimatorController fireAnimController;
     public RuntimeAnimatorController waterAnimController;
-    public RuntimeAnimatorController lightningAnimController;
+    public RuntimeAnimatorController windAnimController;
 
-    [Header("ตำแหน่งการลอยรอบตัว (แบบ Invoker)")]
-    public Vector3[] orbOffsets = new Vector3[] {
-        new Vector3(-1.2f, 1f, 0f),  // ลูกที่ 1: ไหล่ซ้าย
-        new Vector3(0f, 1.8f, 0f),   // ลูกที่ 2: เหนือหัว
-        new Vector3(1.2f, 1f, 0f)    // ลูกที่ 3: ไหล่ขวา
-    };
+    [Header("ตั้งค่าการลอยวนรอบตัว (Orbit)")]
+    public float orbitRadius = 1.2f;
+    public float orbitSpeed = 150f;
     public float hoverSpeed = 3f;
     public float hoverHeight = 0.2f;
+    public Vector3 centerOffset = new Vector3(0, 1f, 0);
+
+    private float currentAngle = 0f;
 
     void Start()
     {
@@ -39,19 +38,22 @@ public class SpellMixer : MonoBehaviour
         AnimateOrbs();
     }
 
-    public void AddOrb(Element newOrb)
+    public void AddOrb(Element element)
     {
+        // ถ้ายัดลูกแก้วเกิน 3 ลูก ให้ลบลูกเก่าสุดทิ้ง
         if (currentOrbs.Count >= 3)
         {
             currentOrbs.RemoveAt(0);
         }
 
-        currentOrbs.Add(newOrb);
+        currentOrbs.Add(element);
         UpdateOrbSprites();
 
-        // 🌟 3. สั่งเล่นเอฟเฟกต์ "เด้งป๊อปอัป" เฉพาะลูกแก้วที่เพิ่งเกิดใหม่
-        int newOrbIndex = currentOrbs.Count - 1;
-        StartCoroutine(PopSpawnAnimation(orbRenderers[newOrbIndex].transform));
+        // เล่นแอนิเมชันลูกแก้วเด้งขึ้นมา
+        if (currentOrbs.Count > 0 && currentOrbs.Count <= orbRenderers.Length)
+        {
+            StartCoroutine(PopSpawnAnimation(orbRenderers[currentOrbs.Count - 1].transform));
+        }
     }
 
     void UpdateOrbSprites()
@@ -62,12 +64,11 @@ public class SpellMixer : MonoBehaviour
             {
                 orbRenderers[i].enabled = true;
 
-                // 🌟 4. สลับไฟล์อนิเมชันตามธาตุ (ไฟจะลุก น้ำจะเดือดตามรูปที่ทำมาเลย!)
                 if (orbAnimators.Length > i && orbAnimators[i] != null)
                 {
                     if (currentOrbs[i] == Element.Fire) orbAnimators[i].runtimeAnimatorController = fireAnimController;
                     else if (currentOrbs[i] == Element.Water) orbAnimators[i].runtimeAnimatorController = waterAnimController;
-                    else if (currentOrbs[i] == Element.Lightning) orbAnimators[i].runtimeAnimatorController = lightningAnimController;
+                    else if (currentOrbs[i] == Element.Wind) orbAnimators[i].runtimeAnimatorController = windAnimController;
                 }
             }
             else
@@ -79,30 +80,39 @@ public class SpellMixer : MonoBehaviour
 
     void AnimateOrbs()
     {
+        currentAngle += orbitSpeed * Time.deltaTime;
+
+        int activeCount = currentOrbs.Count;
+        if (activeCount == 0) return;
+
         for (int i = 0; i < orbRenderers.Length; i++)
         {
             if (orbRenderers[i].enabled)
             {
+                float angleOffset = (360f / activeCount) * i;
+                float finalAngle = currentAngle + angleOffset;
+
+                float rad = finalAngle * Mathf.Deg2Rad;
+                float xPos = Mathf.Cos(rad) * orbitRadius;
+                float yPos = Mathf.Sin(rad) * orbitRadius;
+
                 float floatOffset = Mathf.Sin(Time.time * hoverSpeed + (i * 1.5f)) * hoverHeight;
-                Vector3 targetPos = transform.position + orbOffsets[i] + new Vector3(0, floatOffset, 0);
+
+                Vector3 targetPos = transform.position + centerOffset + new Vector3(xPos, yPos + floatOffset, 0);
+
                 orbRenderers[i].transform.position = Vector3.Lerp(orbRenderers[i].transform.position, targetPos, Time.deltaTime * 10f);
             }
         }
     }
 
-    // ==========================================
-    // 🌟 ฟังก์ชันทำเอฟเฟกต์ตอนกดลูกแก้ว (ขยายตัวเด้งดึ๋ง)
-    // ==========================================
     IEnumerator PopSpawnAnimation(Transform orbTransform)
     {
         float timer = 0f;
-        orbTransform.localScale = Vector3.zero; // เริ่มต้นที่ขนาด 0 (มองไม่เห็น)
+        orbTransform.localScale = Vector3.zero;
 
         while (timer < 1f)
         {
-            timer += Time.deltaTime * 15f; // ความเร็วในการเด้งโผล่ขึ้นมา
-
-            // ขยายเกินขนาดจริงนิดนึง (1.2f) แล้วค่อยหดกลับมา 1f เพื่อให้ดูมีน้ำหนักกระแทก
+            timer += Time.deltaTime * 15f;
             float scale = Mathf.Lerp(0f, 1.2f, timer);
             if (timer >= 1f) scale = 1f;
 
@@ -111,18 +121,33 @@ public class SpellMixer : MonoBehaviour
         }
     }
 
+    // เอาไว้เรียกใช้ตอนยิงเวทออกไปแล้ว เพื่อล้างลูกแก้วรอบตัวทิ้ง
     public void ClearOrbs()
     {
         currentOrbs.Clear();
         UpdateOrbSprites();
     }
 
+    // ==========================================
+    // 🌟 ฟังก์ชันส่งรหัสผ่านไปเจาะเกราะมอนสเตอร์!
+    // ==========================================
     public string GetCurrentRecipe()
     {
+        // ถ้ายังกดไม่ครบ 3 ลูก จะยิงรหัสผ่านไม่ได้ (return string เปล่า)
         if (currentOrbs.Count < 3) return "";
+
         List<string> recipeList = new List<string>();
-        foreach (Element orb in currentOrbs) recipeList.Add(orb.ToString());
+
+        // แปลงลูกแก้วแต่ละลูกเป็นคำ เช่น "Fire", "Water", "Wind"
+        foreach (Element orb in currentOrbs)
+        {
+            recipeList.Add(orb.ToString());
+        }
+
+        // เรียงตัวอักษร A-Z (Fire > Water > Wind) เพื่อให้ตรงกับโค้ดฝั่งมอนสเตอร์เป๊ะๆ
         recipeList.Sort();
+
+        // จับมัดรวมกันเป็นก้อนเดียว เช่น "FireWaterWind"
         return string.Join("", recipeList);
     }
 }

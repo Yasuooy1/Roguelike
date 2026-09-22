@@ -55,18 +55,17 @@ public class Enemy : MonoBehaviour
     public Image[] puzzleSlots;
     public Sprite fireSprite;
     public Sprite waterSprite;
-    public Sprite lightningSprite;
+    // 🌟 เปลี่ยนจาก lightningSprite เป็น windSprite
+    public Sprite windSprite;
 
     [Header("UI Damage")]
     public GameObject damagePopupPrefab;
 
-    // ==========================================
-    // 🌟 ช่องสำหรับใส่ VFX เอฟเฟกต์ธาตุ
-    // ==========================================
     [Header("Elemental VFX (เอฟเฟกต์ตอนระเบิดธาตุ)")]
     public GameObject fireBurstVFX;
     public GameObject waterBurstVFX;
-    public GameObject lightningBurstVFX;
+    // 🌟 เปลี่ยนจาก lightningBurstVFX เป็น windBurstVFX
+    public GameObject windBurstVFX;
 
     [Header("Drop System")]
     public GameObject[] dropItems;
@@ -78,6 +77,7 @@ public class Enemy : MonoBehaviour
     private Animator anim;
     private int currentWaveMode = 0;
     private int mySpawnIndex = 0;
+
     [Header("ระบบเสียงมอนสเตอร์")]
     public AudioSource audioSource;
     public AudioClip hurtSound;
@@ -107,7 +107,8 @@ public class Enemy : MonoBehaviour
 
     void GenerateRandomPuzzle()
     {
-        string[] elements = { "Fire", "Lightning", "Water" };
+        // 🌟 เปลี่ยนชื่อธาตุใน Array เป็น Wind
+        string[] elements = { "Fire", "Wind", "Water" };
         List<string> puzzleList = new List<string>();
 
         if (currentWaveMode == 1)
@@ -129,7 +130,7 @@ public class Enemy : MonoBehaviour
         }
         else
         {
-            string[] allElements = { "Fire", "Water", "Lightning" };
+            string[] allElements = { "Fire", "Water", "Wind" };
             puzzleList.Add(allElements[Random.Range(0, 3)]);
             puzzleList.Add(allElements[Random.Range(0, 3)]);
             puzzleList.Add(allElements[Random.Range(0, 3)]);
@@ -138,11 +139,12 @@ public class Enemy : MonoBehaviour
         puzzleList.Sort();
         requiredRecipe = puzzleList[0] + puzzleList[1] + puzzleList[2];
 
+        // 🌟 อัปเดตการแสดงรูปภาพ UI เป็นธาตุลม
         for (int i = 0; i < puzzleSlots.Length; i++)
         {
             if (puzzleList[i] == "Fire") puzzleSlots[i].sprite = fireSprite;
             else if (puzzleList[i] == "Water") puzzleSlots[i].sprite = waterSprite;
-            else if (puzzleList[i] == "Lightning") puzzleSlots[i].sprite = lightningSprite;
+            else if (puzzleList[i] == "Wind") puzzleSlots[i].sprite = windSprite;
         }
 
         if (puzzleCanvas != null) puzzleCanvas.SetActive(true);
@@ -252,9 +254,6 @@ public class Enemy : MonoBehaviour
     {
         if (isDead) return;
 
-        // ==========================================
-        // 🌟 แทรกเสียงเจ็บตรงนี้!
-        // ==========================================
         if (audioSource != null && hurtSound != null)
         {
             audioSource.PlayOneShot(hurtSound);
@@ -287,7 +286,7 @@ public class Enemy : MonoBehaviour
         if (playerRecipe == requiredRecipe)
         {
             BreakArmor();
-            TriggerElementalBurst(requiredRecipe); // 🌟 เรียกระเบิดธาตุและเปิด VFX
+            TriggerElementalBurst(requiredRecipe);
             TakeDamage(damage);
             return true;
         }
@@ -298,9 +297,6 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    // ==========================================
-    // 🌪️ ปฏิกิริยาธาตุ (Elemental Detonation พร้อม VFX)
-    // ==========================================
     private void TriggerElementalBurst(string recipe)
     {
         if (spriteRenderer != null) spriteRenderer.color = Color.white;
@@ -308,24 +304,21 @@ public class Enemy : MonoBehaviour
 
         if (recipe == "FireFireFire")
         {
-            // 🌟 ถาม PlayerPrefs ว่าผู้เล่นอัปเกรดธาตุไฟหรือยัง?
             int hasFireUpgrade = PlayerPrefs.GetInt("Skill_Fire", 0);
 
             if (hasFireUpgrade == 1)
             {
-                // 🔥 ท่าอัปเกรด (Hellfire) แรงสุดๆ!
                 Debug.Log("🔥 ท่าอัปเกรด: ฝนอุกกาบาตล้างบาง!");
                 if (fireBurstVFX != null) Destroy(Instantiate(fireBurstVFX, transform.position, Quaternion.identity), 2f);
 
-                int burstDamage = 100; // ดาเมจทะลุหลอด!
+                int burstDamage = 100;
                 currentHealth -= burstDamage;
-                ShowDamagePopup(burstDamage, Color.red, 8f); // ตัวเลขไซส์ยักษ์ (8f)
+                ShowDamagePopup(burstDamage, Color.red, 8f);
 
-                StartCoroutine(BurnRoutine(5, 10)); // เผาแรงขึ้นเป็นทีละ 10 ดาเมจ
+                StartCoroutine(BurnRoutine(5, 10));
             }
             else
             {
-                // 🔥 ท่าไฟปกติ (ถ้ายังไม่ซื้อ)
                 Debug.Log("🔥 ท่าไฟ: ระเบิดมหาประลัย + ติดไฟเผารุนแรง!");
                 if (fireBurstVFX != null) Destroy(Instantiate(fireBurstVFX, transform.position, Quaternion.identity), 1.5f);
 
@@ -333,7 +326,7 @@ public class Enemy : MonoBehaviour
                 currentHealth -= burstDamage;
                 ShowDamagePopup(burstDamage, Color.red, 6f);
 
-                StartCoroutine(BurnRoutine(5, 5)); // เผา 5 วิ ลดทีละ 5
+                StartCoroutine(BurnRoutine(5, 5));
             }
         }
         else if (recipe == "WaterWaterWater")
@@ -345,26 +338,26 @@ public class Enemy : MonoBehaviour
             currentHealth -= burstDamage;
             ShowDamagePopup(burstDamage, Color.cyan, 6f);
 
-            StartCoroutine(SuperKnockbackRoutine()); // กระเด็นแรงพิเศษ
+            StartCoroutine(SuperKnockbackRoutine());
         }
-        else if (recipe == "LightningLightningLightning")
+        // 🌟 เปลี่ยนชื่อเช็กรหัสเป็นลม
+        else if (recipe == "WindWindWind")
         {
-            Debug.Log("⚡ ท่าสายฟ้า: อัมพาตหยุดนิ่ง!");
-            if (lightningBurstVFX != null) Destroy(Instantiate(lightningBurstVFX, transform.position, Quaternion.identity), 1.5f);
+            Debug.Log("🌪️ ท่าลม: พายุหมุนสตันศัตรู!");
+            if (windBurstVFX != null) Destroy(Instantiate(windBurstVFX, transform.position, Quaternion.identity), 1.5f);
 
             int burstDamage = 15;
             currentHealth -= burstDamage;
-            ShowDamagePopup(burstDamage, Color.yellow, 6f);
+            ShowDamagePopup(burstDamage, Color.green, 6f);
 
-            StartCoroutine(StunRoutine(5f)); // สตันนาน 5 วินาที
+            StartCoroutine(StunRoutine(5f));
         }
-        // --- 2. กลุ่มธาตุผสมอื่นๆ (เอาไว้ทำทีหลัง) ---
         else
         {
             Debug.Log("✨ ปฏิกิริยาธาตุผสมทั่วไป");
             int defaultDamage = 15;
             currentHealth -= defaultDamage;
-            ShowDamagePopup(defaultDamage, Color.white, 4f); // ดาเมจพื้นฐาน ไม่มีสถานะพิเศษ
+            ShowDamagePopup(defaultDamage, Color.white, 4f);
         }
 
         if (currentHealth <= 0) Die();
@@ -372,7 +365,8 @@ public class Enemy : MonoBehaviour
 
     private IEnumerator StunRoutine(float duration)
     {
-        spriteRenderer.color = Color.yellow;
+        // 🌟 เปลี่ยนสีตอนติดสตันลมเป็นสีเขียว
+        spriteRenderer.color = Color.green;
         patrolSpeed = 0f;
         chaseSpeed = 0f;
         rb.velocity = Vector2.zero;
@@ -479,9 +473,6 @@ public class Enemy : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        // ==========================================
-        // 🌟 แทรกเสียงตายตรงนี้! (ใช้ระบบลำโพงล่องหนเหมือนค้างคาว)
-        // ==========================================
         if (deathSound != null)
         {
             AudioSource.PlayClipAtPoint(deathSound, transform.position, 1f);

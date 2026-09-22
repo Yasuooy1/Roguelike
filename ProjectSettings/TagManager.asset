@@ -10,6 +10,7 @@ TagManager:
   - BossPillarSpawn
   - Boss
   - Bullet
+  - Obtacle2
   layers:
   - Default
   - TransparentFX
@@ -23,8 +24,8 @@ TagManager:
   - Obstacles
   - FlyingEnemy
   - BG
-  - 
-  - 
+  - Lava
+  - Player
   - 
   - 
   - 

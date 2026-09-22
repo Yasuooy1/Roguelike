@@ -173,6 +173,7 @@ MonoBehaviour:
   impactEffect: {fileID: 0}
   isPuzzleBullet: 0
   puzzleRecipe: 
+  plasmaRadius: 0
 --- !u!114 &5693395835189155981
 MonoBehaviour:
   m_ObjectHideFlags: 0

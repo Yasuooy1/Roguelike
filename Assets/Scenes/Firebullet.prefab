@@ -147,6 +147,7 @@ MonoBehaviour:
   impactEffect: {fileID: 0}
   isPuzzleBullet: 0
   puzzleRecipe: 
+  plasmaRadius: 0
 --- !u!61 &-8468735273533417608
 BoxCollider2D:
   m_ObjectHideFlags: 0
