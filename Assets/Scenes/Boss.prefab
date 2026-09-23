@@ -155,9 +155,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   smoothTime: 2
-  hoverHeight: 3
+  hoverHeight: 1
   floatAmplitude: 0.5
-  floatFrequency: 3
+  floatFrequency: 1
   bossBulletPrefab: {fileID: 6262708044050321734, guid: 4874bec5b84260e41843af6c28b6e471, type: 3}
   bulletAmount: 8
   bulletSpeed: 4
@@ -175,6 +175,9 @@ MonoBehaviour:
   lightningSprite: {fileID: 21300000, guid: 981c3f2d3476d074585f84850bc008ed, type: 3}
   delayBeforeSpawn: 2
   damagePopupPrefab: {fileID: 454069165497530963, guid: 0d51f671bc43a43428c5be161e6a075b, type: 3}
+  exclamationPrefab: {fileID: 1644212554346942916, guid: bc868a70f83d5c14f88e05361a468b43, type: 3}
+  exclamationOffsetY: 4
+  dangerZonePrefab: {fileID: 6592544399402560024, guid: 5d94a648b2ac0884195de052c80194e3, type: 3}
   bossAnim: {fileID: 3161971914436957177}
   backBlackhole: {fileID: 4995601369101157060}
   blackholeProjectilePrefab: {fileID: 3038160999028468534, guid: 91a4bae7ea887b442a6ab0da008f0281, type: 3}

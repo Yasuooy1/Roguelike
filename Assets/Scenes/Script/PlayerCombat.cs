@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.InputSystem; // 🌟 1. เพิ่มบรรทัดนี้เพื่อให้รู้จัก InputValue
+using UnityEngine.InputSystem;
 
 public class PlayerCombat : MonoBehaviour
 {
@@ -46,58 +46,59 @@ public class PlayerCombat : MonoBehaviour
 
     void Update()
     {
-        // 🌟 2. ลบ Input.GetKeyDown(KeyCode.U) ทิ้งไปเลย เพราะเราจะใช้ OnSkillAttack แทน
-
-        // เช็คว่าผสมครบ 3 ลูกและคูลดาวน์เสร็จหรือยัง (การตรวจสอบยิงกระสุนยังคงเหมือนเดิม)
-        if (spellMixer != null && spellMixer.currentOrbs.Count >= 3 && Time.time >= nextFireTime)
-        {
-            TryCastPuzzleSpell();
-            nextFireTime = Time.time + fireCooldown;
-        }
+        // 🛑 ว่างไว้ ไม่มียิงออโต้แล้ว ต้องกดปุ่มยิงเอง
     }
 
     // ==========================================
-    // 🌟 รับค่าปุ่มเวทมนตร์จาก New Input System (จอยและคีย์บอร์ด)
+    // 🌟 รับค่าปุ่มเวทมนตร์จาก New Input System 
     // ==========================================
 
     // ธาตุไฟ (กด J หรือ X/สี่เหลี่ยม)
     public void OnElement1(InputValue value)
     {
-        if (value.isPressed && spellMixer != null)
-        {
-            spellMixer.AddOrb(SpellMixer.Element.Fire); // 🌟 เรียกใช้ AddOrb แบบตรงๆ
-        }
+        if (value.isPressed && spellMixer != null) spellMixer.AddOrb(SpellMixer.Element.Fire);
     }
 
     // ท่าน้ำ (กด K หรือ Y/สามเหลี่ยม)
     public void OnElement2(InputValue value)
     {
-        if (value.isPressed && spellMixer != null)
-        {
-            spellMixer.AddOrb(SpellMixer.Element.Water);
-        }
+        if (value.isPressed && spellMixer != null) spellMixer.AddOrb(SpellMixer.Element.Water);
     }
 
     // สายฟ้า (กด L หรือ B/วงกลม)
     public void OnElement3(InputValue value)
     {
-        if (value.isPressed && spellMixer != null)
+        if (value.isPressed && spellMixer != null) spellMixer.AddOrb(SpellMixer.Element.Lightning);
+    }
+
+    // ==========================================
+    // 💥 ระบบกดปุ่มยิงเวทมนตร์ (ฟังก์ชันใหม่!)
+    // ==========================================
+    public void OnFire(InputValue value)
+    {
+        if (value.isPressed)
         {
-            spellMixer.AddOrb(SpellMixer.Element.Lightning);
+            // เช็กว่าคูลดาวน์เสร็จและผสมครบ 3 ลูกแล้วหรือยัง
+            if (spellMixer != null && spellMixer.currentOrbs.Count >= 3 && Time.time >= nextFireTime)
+            {
+                TryCastPuzzleSpell();
+                nextFireTime = Time.time + fireCooldown;
+            }
+            else if (spellMixer != null && spellMixer.currentOrbs.Count < 3)
+            {
+                Debug.Log("ยังผสมธาตุไม่ครบ 3 ลูก ยิงไม่ได้!");
+            }
         }
     }
 
     // ยิงเวทไม้ตาย (กด U หรือ LB/R2)
     public void OnSkillAttack(InputValue value)
     {
-        if (value.isPressed)
-        {
-            CastUltimateSkill();
-        }
+        if (value.isPressed) CastUltimateSkill();
     }
 
     // ==========================================
-    // 🧩 ฟังก์ชันยิงกระสุนและการค้นหาเป้าหมาย (เหมือนเดิมเป๊ะ)
+    // 🧩 ฟังก์ชันยิงกระสุนและการค้นหาเป้าหมาย (เหมือนเดิม)
     // ==========================================
 
     void TryCastPuzzleSpell()
@@ -152,7 +153,7 @@ public class PlayerCombat : MonoBehaviour
                 bulletScript.damage = 10f + (damageUpgradeLevel * 2f);
             }
         }
-        spellMixer.ClearOrbs();
+        spellMixer.ClearOrbs(); // ยิงเสร็จ ล้างลูกแก้วรอบตัวทิ้งทันที
     }
 
     Transform FindClosestEnemy()

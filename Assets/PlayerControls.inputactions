@@ -94,6 +94,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Fire",
+                    "type": "Button",
+                    "id": "54e93305-ba03-499b-ae52-a318022369d7",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -111,7 +120,7 @@
                 {
                     "name": "up",
                     "id": "55210a83-85cb-4fd0-9b3e-2e3c22102db0",
-                    "path": "<Keyboard>/w",
+                    "path": "<Keyboard>/upArrow",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -122,7 +131,7 @@
                 {
                     "name": "down",
                     "id": "cade1575-a95e-4b5a-9a0a-75ba1fe7ec91",
-                    "path": "<Keyboard>/s",
+                    "path": "<Keyboard>/downArrow",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -133,7 +142,7 @@
                 {
                     "name": "left",
                     "id": "83081bfe-0642-43a8-894a-a6f33193c121",
-                    "path": "<Keyboard>/a",
+                    "path": "<Keyboard>/leftArrow",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -144,7 +153,7 @@
                 {
                     "name": "right",
                     "id": "3bdd07dd-0374-4602-85ec-89dd1cb38e62",
-                    "path": "<Keyboard>/d",
+                    "path": "<Keyboard>/rightArrow",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -166,7 +175,7 @@
                 {
                     "name": "",
                     "id": "fc753f1f-c2c9-4158-8db0-51184f7a487a",
-                    "path": "<Keyboard>/space",
+                    "path": "<Keyboard>/upArrow",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -188,7 +197,7 @@
                 {
                     "name": "",
                     "id": "2cbcad90-0bdf-4599-8308-0c2591a6812a",
-                    "path": "<Gamepad>/rightShoulder",
+                    "path": "<Gamepad>/leftShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -210,7 +219,7 @@
                 {
                     "name": "",
                     "id": "e4504de3-5661-4762-a12e-ac45bea4580e",
-                    "path": "<Keyboard>/j",
+                    "path": "<Keyboard>/z",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -232,7 +241,7 @@
                 {
                     "name": "",
                     "id": "02bfcd66-086f-43ea-a52f-b812fb4bdd29",
-                    "path": "<Keyboard>/k",
+                    "path": "<Keyboard>/x",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -254,7 +263,7 @@
                 {
                     "name": "",
                     "id": "cba98188-d064-4af6-8fe3-ad04bda92f9e",
-                    "path": "<Keyboard>/l",
+                    "path": "<Keyboard>/c",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -276,18 +285,7 @@
                 {
                     "name": "",
                     "id": "50fb590b-bdc5-4f18-bd75-cfc3e401688d",
-                    "path": "<Keyboard>/u",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "SkillAttack",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "0769ee49-7d7e-4fbd-b744-ddbd0355447e",
-                    "path": "<Gamepad>/leftShoulder",
+                    "path": "<Keyboard>/v",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -331,7 +329,7 @@
                 {
                     "name": "",
                     "id": "df2ea902-21bd-4b56-8f48-9383a1e52e5e",
-                    "path": "<Keyboard>/r",
+                    "path": "<Keyboard>/d",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -353,7 +351,7 @@
                 {
                     "name": "",
                     "id": "368317f5-137a-4203-b69d-3f8b00601202",
-                    "path": "<Keyboard>/e",
+                    "path": "<Keyboard>/f",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -369,6 +367,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Interact",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "58236be7-6676-48a9-9a0d-7c26ec1e0604",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Fire",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9b612b53-febb-4b56-b4c9-b624b8aba92a",
+                    "path": "<Gamepad>/rightShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Fire",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

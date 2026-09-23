@@ -82,7 +82,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 5
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 3b46151ff769b4b4b8c3fbd38ff8bfac, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -175,6 +175,9 @@ MonoBehaviour:
   lightningSprite: {fileID: 21300000, guid: 981c3f2d3476d074585f84850bc008ed, type: 3}
   delayBeforeSpawn: 2
   damagePopupPrefab: {fileID: 454069165497530963, guid: 0d51f671bc43a43428c5be161e6a075b, type: 3}
+  exclamationPrefab: {fileID: 1644212554346942916, guid: bc868a70f83d5c14f88e05361a468b43, type: 3}
+  exclamationOffsetY: 5
+  dangerZonePrefab: {fileID: 6592544399402560024, guid: 5d94a648b2ac0884195de052c80194e3, type: 3}
   bossAnim: {fileID: 3161971914436957177}
   backBlackhole: {fileID: 4995601369101157060}
   blackholeProjectilePrefab: {fileID: 3038160999028468534, guid: 91a4bae7ea887b442a6ab0da008f0281, type: 3}
@@ -187,6 +190,9 @@ MonoBehaviour:
   bossAudio: {fileID: 0}
   laserSound: {fileID: 8300000, guid: cef700fa7107d0f468633768881ceb60, type: 3}
   blackholeSound: {fileID: 8300000, guid: 6ca1dc70e2f058b4ca3e73e1b870795d, type: 3}
+  hurtSound: {fileID: 0}
+  deathSound: {fileID: 0}
+  victorySound: {fileID: 0}
 --- !u!95 &3161971914436957177
 Animator:
   serializedVersion: 4
