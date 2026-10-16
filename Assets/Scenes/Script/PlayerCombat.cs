@@ -1,20 +1,25 @@
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class PlayerCombat : MonoBehaviour
 {
     [Header("จุดปล่อยพลัง")]
     public Transform firePoint;
+    [Header("✨ ระบบแอนิเมชันตัวละคร")]
+    public Animator playerAnimator;
 
     [Header("กระสุนแยกตามธาตุ")]
     public GameObject fireBulletPrefab;
     public GameObject waterBulletPrefab;
     public GameObject lightningBulletPrefab;
 
-    [Header("ท่าไม้ตาย")]
+    [Header("ท่าไม้ตาย (สโลว์เวลา)")]
     public GameObject ultimatePrefab;
     public int ultimateManaCost = 2;
+    public GameObject bulletTimeVFX;
 
     [Header("ระบบคูลดาวน์")]
     public float fireCooldown = 0.5f;
@@ -26,11 +31,12 @@ public class PlayerCombat : MonoBehaviour
     private PlayerMana playerMana;
     private SpellMixer spellMixer;
 
-    [Header("ระบบเสียงยิงตามธาตุ")]
+    [Header("ระบบเสียง")]
     public AudioSource audioSource;
     public AudioClip fireSound;
     public AudioClip lightningSound;
     public AudioClip waterSound;
+    public AudioClip timeStopSound;
 
     void Start()
     {
@@ -38,68 +44,50 @@ public class PlayerCombat : MonoBehaviour
         playerMana = GetComponent<PlayerMana>();
         spellMixer = GetComponent<SpellMixer>();
         nextFireTime = Time.time + 0.5f;
-        if (spellMixer != null)
-        {
-            spellMixer.ClearOrbs();
-        }
+        if (spellMixer != null) spellMixer.ClearOrbs();
+
+        if (bulletTimeVFX != null) bulletTimeVFX.SetActive(false);
     }
 
-    void Update()
-    {
-        // 🛑 ว่างไว้ ไม่มียิงออโต้แล้ว ต้องกดปุ่มยิงเอง
-    }
+    void Update() { }
 
-    // ==========================================
-    // 🌟 รับค่าปุ่มเวทมนตร์จาก New Input System 
-    // ==========================================
+    public void OnElement1(InputValue value) { if (value.isPressed && spellMixer != null) spellMixer.AddOrb(SpellMixer.Element.Fire); }
+    public void OnElement2(InputValue value) { if (value.isPressed && spellMixer != null) spellMixer.AddOrb(SpellMixer.Element.Water); }
+    public void OnElement3(InputValue value) { if (value.isPressed && spellMixer != null) spellMixer.AddOrb(SpellMixer.Element.Lightning); }
 
-    // ธาตุไฟ (กด J หรือ X/สี่เหลี่ยม)
-    public void OnElement1(InputValue value)
-    {
-        if (value.isPressed && spellMixer != null) spellMixer.AddOrb(SpellMixer.Element.Fire);
-    }
-
-    // ท่าน้ำ (กด K หรือ Y/สามเหลี่ยม)
-    public void OnElement2(InputValue value)
-    {
-        if (value.isPressed && spellMixer != null) spellMixer.AddOrb(SpellMixer.Element.Water);
-    }
-
-    // สายฟ้า (กด L หรือ B/วงกลม)
-    public void OnElement3(InputValue value)
-    {
-        if (value.isPressed && spellMixer != null) spellMixer.AddOrb(SpellMixer.Element.Lightning);
-    }
-
-    // ==========================================
-    // 💥 ระบบกดปุ่มยิงเวทมนตร์ (ฟังก์ชันใหม่!)
-    // ==========================================
     public void OnFire(InputValue value)
     {
         if (value.isPressed)
         {
-            // เช็กว่าคูลดาวน์เสร็จและผสมครบ 3 ลูกแล้วหรือยัง
+            // 🛑 ถ้าธาตุยังไม่ครบ 3 ลูก บล็อกไม่ให้โจมตีและไม่สะบัดไม้คฑา
+            if (spellMixer != null && spellMixer.currentOrbs.Count < 3)
+            {
+                if (playerAnimator != null) playerAnimator.SetBool("CanAttack", false);
+                Debug.Log("ยังผสมธาตุไม่ครบ 3 ลูก ยิงไม่ได้!");
+                return;
+            }
+
+            // ✨ ถ้าธาตุครบ 3 ลูกแล้ว อนุญาตให้โจมตีได้
             if (spellMixer != null && spellMixer.currentOrbs.Count >= 3 && Time.time >= nextFireTime)
             {
+                if (playerAnimator != null)
+                {
+                    playerAnimator.SetBool("CanAttack", true);
+                    playerAnimator.SetTrigger("Attack"); // สั่งเล่นท่าโจมตี
+                }
+                PlayerController controller = GetComponent<PlayerController>();
+                if (controller != null) controller.LockMovement(0.5f);
+
                 TryCastPuzzleSpell();
                 nextFireTime = Time.time + fireCooldown;
-            }
-            else if (spellMixer != null && spellMixer.currentOrbs.Count < 3)
-            {
-                Debug.Log("ยังผสมธาตุไม่ครบ 3 ลูก ยิงไม่ได้!");
             }
         }
     }
 
-    // ยิงเวทไม้ตาย (กด U หรือ LB/R2)
     public void OnSkillAttack(InputValue value)
     {
         if (value.isPressed) CastUltimateSkill();
     }
-
-    // ==========================================
-    // 🧩 ฟังก์ชันยิงกระสุนและการค้นหาเป้าหมาย (เหมือนเดิม)
-    // ==========================================
 
     void TryCastPuzzleSpell()
     {
@@ -110,32 +98,18 @@ public class PlayerCombat : MonoBehaviour
         {
             string element = orb.ToString();
             sortedOrbs.Add(element);
-
             if (element == "Fire") fireCount++;
             else if (element == "Water") waterCount++;
             else if (element == "Lightning") lightningCount++;
         }
 
         string recipe = sortedOrbs[0] + sortedOrbs[1] + sortedOrbs[2];
-
         GameObject prefabToShoot = fireBulletPrefab;
         int soundToPlay = 0;
 
-        if (waterCount > fireCount && waterCount >= lightningCount)
-        {
-            prefabToShoot = waterBulletPrefab;
-            soundToPlay = 2;
-        }
-        else if (lightningCount > fireCount && lightningCount > waterCount)
-        {
-            prefabToShoot = lightningBulletPrefab;
-            soundToPlay = 1;
-        }
-        else if (fireCount == 1 && waterCount == 1 && lightningCount == 1)
-        {
-            prefabToShoot = fireBulletPrefab;
-            soundToPlay = 0;
-        }
+        if (waterCount > fireCount && waterCount >= lightningCount) { prefabToShoot = waterBulletPrefab; soundToPlay = 2; }
+        else if (lightningCount > fireCount && lightningCount > waterCount) { prefabToShoot = lightningBulletPrefab; soundToPlay = 1; }
+        else if (fireCount == 1 && waterCount == 1 && lightningCount == 1) { prefabToShoot = fireBulletPrefab; soundToPlay = 0; }
 
         if (prefabToShoot != null)
         {
@@ -148,12 +122,13 @@ public class PlayerCombat : MonoBehaviour
             {
                 bulletScript.isPuzzleBullet = true;
                 bulletScript.puzzleRecipe = recipe;
-
                 int damageUpgradeLevel = PlayerPrefs.GetInt("Upgrade_Damage", 0);
+
+                // 🌟 แก้ไขจุดที่ตัวหนังสือติดกันให้ถูกต้องเรียบร้อยครับ
                 bulletScript.damage = 10f + (damageUpgradeLevel * 2f);
             }
         }
-        spellMixer.ClearOrbs(); // ยิงเสร็จ ล้างลูกแก้วรอบตัวทิ้งทันที
+        spellMixer.ClearOrbs();
     }
 
     Transform FindClosestEnemy()
@@ -179,18 +154,11 @@ public class PlayerCombat : MonoBehaviour
     public void PlayElementShootSound(int currentElementIndex)
     {
         if (audioSource == null) return;
-
         switch (currentElementIndex)
         {
-            case 0:
-                if (fireSound != null) audioSource.PlayOneShot(fireSound);
-                break;
-            case 1:
-                if (lightningSound != null) audioSource.PlayOneShot(lightningSound);
-                break;
-            case 2:
-                if (waterSound != null) audioSource.PlayOneShot(waterSound);
-                break;
+            case 0: if (fireSound != null) audioSource.PlayOneShot(fireSound); break;
+            case 1: if (lightningSound != null) audioSource.PlayOneShot(lightningSound); break;
+            case 2: if (waterSound != null) audioSource.PlayOneShot(waterSound); break;
         }
     }
 
@@ -210,9 +178,69 @@ public class PlayerCombat : MonoBehaviour
     void CastUltimateSkill()
     {
         int finalCost = Mathf.Max(0, ultimateManaCost - ultimateManaDiscount);
-        if (playerMana != null && playerMana.UseMana(finalCost) && ultimatePrefab != null)
+
+        if (Time.timeScale < 1f) return;
+
+        if (playerMana != null && playerMana.UseMana(finalCost))
         {
-            Instantiate(ultimatePrefab, firePoint.position, GetAutoAimRotation());
+            StartCoroutine(SupportBulletTimeRoutine());
         }
+    }
+
+    private IEnumerator SupportBulletTimeRoutine()
+    {
+        if (audioSource != null && timeStopSound != null)
+        {
+            audioSource.PlayOneShot(timeStopSound);
+        }
+
+        Time.timeScale = 0.05f;
+
+        Image overlayImage = null;
+        float maxAlpha = 0.5f;
+        Color grayColor = new Color(0.2f, 0.2f, 0.2f, maxAlpha);
+
+        if (bulletTimeVFX != null)
+        {
+            bulletTimeVFX.SetActive(true);
+            overlayImage = bulletTimeVFX.GetComponent<Image>();
+        }
+
+        if (overlayImage != null)
+        {
+            overlayImage.color = new Color(1f, 1f, 1f, 0.7f);
+        }
+
+        yield return new WaitForSecondsRealtime(0.15f);
+
+        Time.timeScale = 0.4f;
+
+        if (overlayImage != null)
+        {
+            float fadeTime = 0.2f;
+            for (float t = 0; t < fadeTime; t += Time.unscaledDeltaTime)
+            {
+                overlayImage.color = Color.Lerp(new Color(1f, 1f, 1f, 0.7f), grayColor, t / fadeTime);
+                yield return null;
+            }
+            overlayImage.color = grayColor;
+        }
+
+        yield return new WaitForSecondsRealtime(2.6f);
+
+        if (overlayImage != null)
+        {
+            Color c = overlayImage.color;
+            float fadeTime = 0.2f;
+            for (float t = 0; t < fadeTime; t += Time.unscaledDeltaTime)
+            {
+                c.a = Mathf.Lerp(maxAlpha, 0f, t / fadeTime);
+                overlayImage.color = c;
+                yield return null;
+            }
+        }
+
+        Time.timeScale = 1f;
+        if (bulletTimeVFX != null) bulletTimeVFX.SetActive(false);
     }
 }

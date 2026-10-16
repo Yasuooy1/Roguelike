@@ -14,6 +14,14 @@ public class Enemy : MonoBehaviour
     public float edgeCheckDistance = 1f;
     public LayerMask groundLayer;
 
+    // ==========================================
+    // 🌟 ระบบ Tactical AI (มีชั้นเชิง & ฟุตเวิร์ก)
+    // ==========================================
+    [Header("Tactical AI (มีชั้นเชิง)")]
+    public float sweetSpotDistance = 6f; // ระยะคุมเชิงที่มันชอบยืน
+    public float retreatDistance = 3f;   // ถ้าระยะใกล้กว่านี้ มันจะพยายามเดินถอยหนี
+    private int tacticalAction = 0;      // 1 = เดินหน้าบุก, 0 = หยุดจ้อง, -1 = ถอยหลังฉากหลบ
+
     [Header("Attack System")]
     public float attackRange = 3f;
     public float dashForce = 12f;
@@ -45,16 +53,21 @@ public class Enemy : MonoBehaviour
     public float knockbackTime = 0.3f;
     private bool isKnockedBack = false;
 
-    [Header("🧩 Puzzle System (รหัสผ่านเกราะ)")]
-    public string requiredRecipe;
-    private SpriteRenderer spriteRenderer;
+    [Header("⏳ ระบบ Dynamic Puzzle (โจทย์ดิ้นได้)")]
+    public bool isDynamicPuzzle = true;
+    public float shuffleTime = 3f;
+    private float currentShuffleTime;
+    private bool isWarningPuzzle = false;
 
-    [Header("UI ลูกแก้วบนหัวมอนสเตอร์")]
+    [Header("🧩 Puzzle System (ไอคอนธาตุ)")]
+    public string requiredRecipe;
     public GameObject puzzleCanvas;
     public Image[] puzzleSlots;
     public Sprite fireSprite;
     public Sprite waterSprite;
     public Sprite lightningSprite;
+
+    private SpriteRenderer spriteRenderer;
 
     [Header("UI Damage")]
     public GameObject damagePopupPrefab;
@@ -88,11 +101,14 @@ public class Enemy : MonoBehaviour
         anim = GetComponent<Animator>();
 
         patrolSpeed = Random.Range(1.2f, 2.0f);
-
         basePatrolSpeed = patrolSpeed;
         baseChaseSpeed = chaseSpeed;
 
         GenerateRandomPuzzle();
+        currentShuffleTime = shuffleTime;
+
+        // 🌟 เรียกใช้ระบบ Tactical AI ตั้งแต่เริ่มเกิด
+        StartCoroutine(TacticalAI_Routine());
     }
 
     public void SetTutorialWave(int waveNumber, int spawnIndex)
@@ -135,11 +151,14 @@ public class Enemy : MonoBehaviour
         puzzleList.Sort();
         requiredRecipe = puzzleList[0] + puzzleList[1] + puzzleList[2];
 
-        for (int i = 0; i < puzzleSlots.Length; i++)
+        if (puzzleSlots != null && puzzleSlots.Length == 3)
         {
-            if (puzzleList[i] == "Fire") puzzleSlots[i].sprite = fireSprite;
-            else if (puzzleList[i] == "Water") puzzleSlots[i].sprite = waterSprite;
-            else if (puzzleList[i] == "Lightning") puzzleSlots[i].sprite = lightningSprite;
+            for (int i = 0; i < puzzleSlots.Length; i++)
+            {
+                if (puzzleList[i] == "Fire") puzzleSlots[i].sprite = fireSprite;
+                else if (puzzleList[i] == "Water") puzzleSlots[i].sprite = waterSprite;
+                else if (puzzleList[i] == "Lightning") puzzleSlots[i].sprite = lightningSprite;
+            }
         }
 
         if (puzzleCanvas != null) puzzleCanvas.SetActive(true);
@@ -148,6 +167,16 @@ public class Enemy : MonoBehaviour
     void Update()
     {
         if (isBroken || isAttacking || isDead || isKnockedBack) return;
+
+        if (isDynamicPuzzle && !isWarningPuzzle)
+        {
+            currentShuffleTime -= Time.deltaTime;
+            if (currentShuffleTime <= 0)
+            {
+                // 🌟 แทนที่จะสุ่มใหม่ปุบปับ ให้เรียก Coroutine กระพริบเตือนก่อน
+                StartCoroutine(PuzzleWarningRoutine());
+            }
+        }
 
         if (player == null)
         {
@@ -186,29 +215,82 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    // ==========================================
-    // 🌟 ล็อกป้ายพัซเซิลให้หันหน้าตรงเสมอ
-    // ==========================================
-    void LateUpdate()
-    {
-        if (puzzleCanvas != null)
-        {
-            puzzleCanvas.transform.rotation = Quaternion.identity;
-        }
-    }
-
     void FixedUpdate()
     {
         if (isBroken || isAttacking || isDead || isKnockedBack) return;
 
-        if (isChasing && !canMoveForward)
+        if (isChasing)
         {
-            rb.velocity = new Vector2(0, rb.velocity.y);
-            return;
-        }
+            float currentSpeed = chaseSpeed;
 
-        float currentSpeed = isChasing ? chaseSpeed : patrolSpeed;
-        rb.velocity = new Vector2(transform.right.x * currentSpeed, rb.velocity.y);
+            // 🌟 ตีความคำสั่งจาก AI
+            if (tacticalAction == 0) // สั่งหยุด
+            {
+                rb.velocity = new Vector2(0, rb.velocity.y);
+            }
+            else if (tacticalAction == 1) // สั่งบุก
+            {
+                if (!canMoveForward) { rb.velocity = new Vector2(0, rb.velocity.y); return; }
+                rb.velocity = new Vector2(transform.right.x * currentSpeed, rb.velocity.y);
+            }
+            else if (tacticalAction == -1) // สั่งถอยหลัง (ชั้นเชิงสูง)
+            {
+                // ถอยด้วยความเร็ว 70% ของวิ่งบุก จะได้ดูพริ้วๆ
+                rb.velocity = new Vector2(-transform.right.x * (currentSpeed * 0.7f), rb.velocity.y);
+            }
+        }
+        else
+        {
+            // หลุดระยะมองเห็น เดินลาดตระเวนปกติ
+            if (!canMoveForward)
+            {
+                rb.velocity = new Vector2(0, rb.velocity.y);
+                return;
+            }
+            rb.velocity = new Vector2(transform.right.x * patrolSpeed, rb.velocity.y);
+        }
+    }
+
+    // ==========================================
+    // 🌟 Coroutine จัดการจังหวะ AI (Tactical AI)
+    // ==========================================
+    private IEnumerator TacticalAI_Routine()
+    {
+        tacticalAction = 0;
+        yield return new WaitForSeconds(Random.Range(0.5f, 1.5f));
+
+        while (!isDead)
+        {
+            if (player == null)
+            {
+                yield return new WaitForSeconds(0.5f);
+                continue;
+            }
+
+            float distToPlayer = Vector2.Distance(transform.position, player.position);
+
+            // 🧠 คิดชั้นเชิงที่ 1: ถ้าผู้เล่นอยู่ใกล้เกินไป แล้วเราโจมตีไม่ได้ (ติดคูลดาวน์) -> ถอยหนี!
+            if (distToPlayer < retreatDistance && isOnCooldown)
+            {
+                tacticalAction = -1; // สั่งถอยหลัง
+                yield return new WaitForSeconds(Random.Range(0.5f, 1f));
+            }
+            // 🧠 คิดชั้นเชิงที่ 2: ถ้าผู้เล่นอยู่ไกล -> วิ่งเข้าใส่เลย
+            else if (distToPlayer > sweetSpotDistance)
+            {
+                tacticalAction = 1; // สั่งเดินหน้า
+                yield return new WaitForSeconds(Random.Range(1f, 2f));
+            }
+            // 🧠 คิดชั้นเชิงที่ 3: ระยะพอดี (คุมเชิง) -> สุ่มโยกหลอก เดินหน้า, ถอยหลัง, หรือหยุดนิ่ง
+            else
+            {
+                int randMove = Random.Range(-1, 2); // สุ่มเลข -1, 0, 1
+                tacticalAction = randMove;
+
+                // ให้เวลาทำฟุตเวิร์กแป๊บเดียว จะได้ดูพริ้วๆ
+                yield return new WaitForSeconds(Random.Range(0.5f, 1.2f));
+            }
+        }
     }
 
     IEnumerator AttackRoutine()
@@ -306,60 +388,45 @@ public class Enemy : MonoBehaviour
     private void TriggerElementalBurst(string recipe)
     {
         if (spriteRenderer != null) spriteRenderer.color = Color.white;
-        Debug.Log("💥 ตรวจสอบปฏิกิริยาธาตุจากรหัส: " + recipe);
 
         if (recipe == "FireFireFire")
         {
             int hasFireUpgrade = PlayerPrefs.GetInt("Skill_Fire", 0);
-
             if (hasFireUpgrade == 1)
             {
-                Debug.Log("🔥 ท่าอัปเกรด: ฝนอุกกาบาตล้างบาง!");
                 if (fireBurstVFX != null) Destroy(Instantiate(fireBurstVFX, transform.position, Quaternion.identity), 2f);
-
                 int burstDamage = 100;
                 currentHealth -= burstDamage;
                 ShowDamagePopup(burstDamage, Color.red, 8f);
-
                 StartCoroutine(BurnRoutine(5, 10));
             }
             else
             {
-                Debug.Log("🔥 ท่าไฟ: ระเบิดมหาประลัย + ติดไฟเผารุนแรง!");
                 if (fireBurstVFX != null) Destroy(Instantiate(fireBurstVFX, transform.position, Quaternion.identity), 1.5f);
-
                 int burstDamage = 30;
                 currentHealth -= burstDamage;
                 ShowDamagePopup(burstDamage, Color.red, 6f);
-
                 StartCoroutine(BurnRoutine(5, 5));
             }
         }
         else if (recipe == "WaterWaterWater")
         {
-            Debug.Log("💧 ท่าน้ำ: คลื่นยักษ์ผลักกระเด็นสุดขอบจอ!");
             if (waterBurstVFX != null) Destroy(Instantiate(waterBurstVFX, transform.position, Quaternion.identity), 1.5f);
-
             int burstDamage = 20;
             currentHealth -= burstDamage;
             ShowDamagePopup(burstDamage, Color.cyan, 6f);
-
             StartCoroutine(SuperKnockbackRoutine());
         }
         else if (recipe == "LightningLightningLightning")
         {
-            Debug.Log("⚡ ท่าสายฟ้า: อัมพาตหยุดนิ่ง!");
             if (lightningBurstVFX != null) Destroy(Instantiate(lightningBurstVFX, transform.position, Quaternion.identity), 1.5f);
-
             int burstDamage = 15;
             currentHealth -= burstDamage;
             ShowDamagePopup(burstDamage, Color.yellow, 6f);
-
             StartCoroutine(StunRoutine(5f));
         }
         else
         {
-            Debug.Log("✨ ปฏิกิริยาธาตุผสมทั่วไป");
             int defaultDamage = 15;
             currentHealth -= defaultDamage;
             ShowDamagePopup(defaultDamage, Color.white, 4f);
@@ -379,7 +446,7 @@ public class Enemy : MonoBehaviour
 
         patrolSpeed = basePatrolSpeed;
         chaseSpeed = baseChaseSpeed;
-        if (!isDead && spriteRenderer != null) spriteRenderer.color = Color.gray;
+        if (!isDead && spriteRenderer != null) spriteRenderer.color = Color.white;
     }
 
     private IEnumerator BurnRoutine(int ticks, int damagePerTick)
@@ -405,13 +472,11 @@ public class Enemy : MonoBehaviour
             float bounceDir = (player != null && player.position.x > transform.position.x) ? -1f : 1f;
 
             rb.velocity = new Vector2(bounceDir * (knockbackForce * 2f), knockbackUpward * 1.5f);
-            if (spriteRenderer != null) spriteRenderer.color = Color.cyan;
         }
 
         yield return new WaitForSeconds(knockbackTime * 1.5f);
 
         if (rb != null && !isDead) rb.velocity = Vector2.zero;
-        if (spriteRenderer != null && !isDead) spriteRenderer.color = Color.gray;
         isKnockedBack = false;
     }
 
@@ -422,31 +487,24 @@ public class Enemy : MonoBehaviour
         if (rb != null)
         {
             rb.velocity = Vector2.zero;
-
             float bounceDir = 1f;
-            if (player != null && player.position.x > transform.position.x)
-            {
-                bounceDir = -1f;
-            }
+            if (player != null && player.position.x > transform.position.x) bounceDir = -1f;
 
             rb.velocity = new Vector2(bounceDir * knockbackForce, knockbackUpward);
-            if (spriteRenderer != null) spriteRenderer.color = Color.red;
         }
 
         yield return new WaitForSeconds(knockbackTime);
 
         if (rb != null && !isDead) rb.velocity = Vector2.zero;
-        if (spriteRenderer != null && !isDead) spriteRenderer.color = Color.gray;
-
         isKnockedBack = false;
     }
 
     void BreakArmor()
     {
         isBroken = true;
-        spriteRenderer.color = Color.gray;
 
         if (puzzleCanvas != null) puzzleCanvas.SetActive(false);
+        spriteRenderer.color = Color.gray;
 
         StartCoroutine(RecoverShieldRoutine());
     }
@@ -459,6 +517,7 @@ public class Enemy : MonoBehaviour
             isBroken = false;
             spriteRenderer.color = Color.white;
             GenerateRandomPuzzle();
+            currentShuffleTime = shuffleTime;
         }
     }
 
@@ -477,10 +536,7 @@ public class Enemy : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        if (deathSound != null)
-        {
-            AudioSource.PlayClipAtPoint(deathSound, transform.position, 1f);
-        }
+        if (deathSound != null) AudioSource.PlayClipAtPoint(deathSound, transform.position, 1f);
 
         if (puzzleCanvas != null) puzzleCanvas.SetActive(false);
         if (spriteRenderer != null) spriteRenderer.color = Color.white;
@@ -505,11 +561,7 @@ public class Enemy : MonoBehaviour
             Instantiate(dropItems[randomItem], transform.position, Quaternion.identity);
         }
 
-        if (anim != null)
-        {
-            anim.SetTrigger("Die");
-        }
-
+        if (anim != null) anim.SetTrigger("Die");
         rb.velocity = Vector2.zero;
         rb.gravityScale = 3f;
 
@@ -522,12 +574,35 @@ public class Enemy : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, detectRange);
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
+    }
+    private IEnumerator PuzzleWarningRoutine()
+    {
+        isWarningPuzzle = true;
 
-        if (edgeCheck != null)
+        // สั่งให้กระพริบเปิด-ปิด 6 ครั้ง (ใช้เวลาประมาณ 1 วินาทีก่อนเปลี่ยนธาตุ)
+        for (int i = 0; i < 6; i++)
         {
-            Gizmos.color = Color.cyan;
-            Gizmos.DrawLine(edgeCheck.position, edgeCheck.position + Vector3.down * edgeCheckDistance);
-            Gizmos.DrawLine(edgeCheck.position, edgeCheck.position + transform.right * 0.2f);
+            // เช็กระบบป้องกัน: ถ้ามอนสเตอร์ตายหรือเกราะแตกไประหว่างนี้ ให้ยกเลิกการกระพริบเลย
+            if (isDead || isBroken)
+            {
+                isWarningPuzzle = false;
+                yield break;
+            }
+
+            // สลับสถานะ ปิด/เปิด หน้าต่างพัซเซิล
+            if (puzzleCanvas != null) puzzleCanvas.SetActive(!puzzleCanvas.activeSelf);
+
+            yield return new WaitForSeconds(0.15f); // ความเร็วกระพริบ (ปรับให้ถี่ขึ้นได้)
         }
+
+        // เมื่อกระพริบเสร็จ มั่นใจว่าเปิดภาพกลับมาแล้วค่อยสุ่มธาตุใหม่
+        if (!isDead && !isBroken && puzzleCanvas != null)
+        {
+            puzzleCanvas.SetActive(true);
+            GenerateRandomPuzzle();
+        }
+
+        currentShuffleTime = shuffleTime; // รีเซ็ตเวลาเริ่มต้นนับใหม่
+        isWarningPuzzle = false;
     }
 }

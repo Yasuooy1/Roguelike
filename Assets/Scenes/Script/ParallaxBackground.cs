@@ -2,41 +2,53 @@ using UnityEngine;
 
 public class ParallaxBackground : MonoBehaviour
 {
-    private float length, startpos;
+    private float length;
+    private float startpos;
     public GameObject cam;
-    public float parallaxEffect; // ค่าความช้า/เร็วของการเลื่อนตามกล้อง
+
+    [Range(0f, 1f)]
+    public float parallaxEffect; // ความช้า/เร็วตามใจชอบเลยครับ สมูทแน่นอน
 
     void Start()
     {
         startpos = transform.position.x;
-        // หาความกว้างของรูปภาพ เพื่อเอาไว้วนลูป
-        length = GetComponent<SpriteRenderer>().bounds.size.x;
 
-        // ถ้าลืมลากกล้องใส่ มันจะหา Main Camera ให้เองอัตโนมัติ
+        // ดึงความกว้างจริงของรูปต้นฉบับมาเป็นเกณฑ์วนลูป
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        if (sr != null && sr.sprite != null)
+        {
+            length = (sr.sprite.rect.width / sr.sprite.pixelsPerUnit) * transform.localScale.x;
+        }
+        else
+        {
+            length = 20f;
+        }
+
         if (cam == null)
         {
             cam = Camera.main.gameObject;
         }
     }
 
-    // ใช้ LateUpdate เพื่อให้มันขยับ "หลัง" จากที่กล้องหลัก (Cinemachine) ขยับเสร็จแล้ว ภาพจะได้ไม่กระตุก
     void LateUpdate()
     {
-        // คำนวณระยะที่กล้องเดินไปแล้วเทียบกับฉาก
-        float temp = (cam.transform.position.x * (1 - parallaxEffect));
-        float dist = (cam.transform.position.x * parallaxEffect);
+        if (cam == null) return;
 
-        // ขยับฉากหลังตามค่าที่ตั้งไว้
+        // 1. คำนวณการเคลื่อนที่ตาม Parallax แบบดั้งเดิมที่คุ้นเคย
+        float dist = cam.transform.position.x * parallaxEffect;
         transform.position = new Vector3(startpos + dist, transform.position.y, transform.position.z);
 
-        // --- ระบบวนลูปอัตโนมัติ (Infinite Loop) ---
-        if (temp > startpos + length)
+        // 2. เช็กระยะห่างจากกล้องแบบเรียลไทม์ (ตัดปัญหาเรื่องโหลดช้า/หน่วง)
+        float offset = cam.transform.position.x - transform.position.x;
+
+        // พอกล้องขยับเลยระยะของภาพ จะทำการวนลูปตำแหน่งทันทีอย่างไร้รอยต่อ
+        if (offset > length)
         {
-            startpos += length; // ถอยรูปมาต่อด้านหน้า
+            startpos += length;
         }
-        else if (temp < startpos - length)
+        else if (offset < -length)
         {
-            startpos -= length; // ถอยรูปไปต่อด้านหลัง
+            startpos -= length;
         }
     }
 }

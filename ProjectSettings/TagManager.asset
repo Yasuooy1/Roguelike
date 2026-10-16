@@ -23,11 +23,11 @@ TagManager:
   - Obstacles
   - FlyingEnemy
   - BG
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Player
+  - Background_Far
+  - Background_Mid
+  - Backgound_Close
+  - Foregound
   - 
   - 
   - 
@@ -44,13 +44,25 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background_Far
+    uniqueID: 1976105711
+    locked: 0
+  - name: Background_Mid
+    uniqueID: 3483353413
+    locked: 0
+  - name: Backgound_Close
+    uniqueID: 2581153123
+    locked: 0
+  - name: Foreground
+    uniqueID: 1779888727
+    locked: 0
   - name: BackGround
     uniqueID: 2829640955
     locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Foreground
+  - name: 
     uniqueID: 1420034509
     locked: 0
   - name: Enemies

@@ -6,7 +6,7 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Movement Settings")]
     public float moveSpeed = 8f;
-    public float jumpForce = 17.3f; // ปรับตามความสูง 5 หรือ 6 บล็อกได้เลยครับ
+    public float jumpForce = 17.3f;
 
     [Header("Jump UX (ความสมูทระดับโปร)")]
     public float fallMultiplier = 3.5f;
@@ -21,22 +21,20 @@ public class PlayerController : MonoBehaviour
     public float groundCheckRadius = 0.2f;
     public LayerMask groundLayer;
 
-    // 🌟 เอากลับมาแล้ว! ระบบ Knockback
     [Header("Knockback System")]
     public float knockbackForceX = 10f;
     public float knockbackForceY = 5f;
     public float knockbackDuration = 0.2f;
     private bool isKnockedBack = false;
 
-    // 🌟 เอากลับมาแล้ว! ระบบ Teleport
     [Header("Magic Teleport (Blink)")]
     public float teleportDistance = 4f;
     public float teleportCooldown = 1f;
     private float nextTeleportTime = 0f;
 
-    // 🌟 เอากลับมาแล้ว! ตัวแปรอมตะ
     [Header("I-Frames Status")]
     public bool isInvincible = false;
+    public bool isActionLocked = false;
 
     private Rigidbody2D rb;
     private float horizontalInput;
@@ -44,64 +42,87 @@ public class PlayerController : MonoBehaviour
     public Animator anim;
 
     [Header("ระบบเสียงเคลื่อนไหว")]
-    public AudioSource audioSource;  // ลาก Player มาใส่ช่องนี้
+    public AudioSource audioSource;
     public AudioSource walkAudioSource;
-    public AudioClip walkSound;      // เสียงเดิน
-    public AudioClip jumpSound;      // เสียงกระโดดปกติ
-    public AudioClip highJumpSound;  // เสียงกระโดดสูง (รอใส่ตอนทำแท่นกระโดด)
-    public AudioClip blinkSound;     // เสียงพุ่ง/บลิ๊งค์
-    public float walkSoundRate = 0.3f; // ปรับความรัวของก้าวเดินตรงนี้ (ยิ่งน้อยยิ่งรัว)
+    public AudioClip walkSound;
+    public AudioClip jumpSound;
+    public AudioClip highJumpSound;
+    public AudioClip blinkSound;
+    public float walkSoundRate = 0.3f;
     private float nextWalkSoundTime = 0f;
-    public AudioClip landingSound;   // 🌟 เสียงตอนเท้ากระทบพื้น (ตุ้บ!)
-    private bool wasGrounded;        // 🌟 เอาไว้จำว่า "เฟรมที่แล้วลอยอยู่หรือเปล่า?"
+    public AudioClip landingSound;
+    private bool wasGrounded;
     private Vector2 moveInput;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
     }
+
     public void OnMove(InputValue value)
     {
-        // เก็บค่าทิศทางที่กด (X และ Y) ไว้ในตัวแปร
         moveInput = value.Get<Vector2>();
-        Debug.Log("ขยับจอยไปที่: " + moveInput);
     }
+
     public void OnJump(InputValue value)
     {
+        if (isActionLocked) return;
         if (value.isPressed)
         {
-            jumpBufferCounter = jumpBufferTime; // ตั้งเวลารอกระโดด
+            jumpBufferCounter = jumpBufferTime;
         }
         else if (rb.velocity.y > 0f)
         {
-            // ตัดจังหวะลอยค้าง (ปล่อยปุ่มแล้วร่วงทันที)
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
             coyoteTimeCounter = 0f;
         }
     }
+
     public void OnDash(InputValue value)
     {
+        if (isActionLocked) return;
+
         if (value.isPressed && Time.time >= nextTeleportTime)
         {
             StartCoroutine(TeleportSequence());
         }
     }
 
+    public void OnFire(InputValue value)
+    {
+        if (value.isPressed && !isKnockedBack)
+        {
+            // สั่งเล่นท่าสะบัดไม้กายสิทธิ์เท่านั้น (ยังไม่เสกกระสุน)
+            if (anim != null) anim.SetTrigger("Attack");
+        }
+    }
+
+    // ==========================================
+    //  ฟังก์ชันเสกกระสุน (เรียกโดย Animation Event)
+    // ==========================================
+    public void TriggerMagicShoot()
+    {
+        // โค้ดสำหรับเสกกระสุนของคุณอาร์มจะมาใส่ที่นี่ครับ
+        // เช่น Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+
+        Debug.Log("เสกกระสุนออกไปในเฟรมที่กำหนด!");
+    }
+
     void Update()
     {
-        // ถ้าโดนตีปลิวกระเด็นอยู่ ห้ามขยับตัว
         if (isKnockedBack) return;
 
-        // 🌟 1. ดึงค่าจากจอยหรือคีย์บอร์ดมาใช้ (ตัด Input.GetAxisRaw ทิ้ง!)
         horizontalInput = moveInput.x;
+        if (isActionLocked)
+        {
+            horizontalInput = 0;
+        }
 
         if (anim != null) anim.SetFloat("Speed", Mathf.Abs(horizontalInput));
 
-        // หันหน้าซ้ายขวา
         if (horizontalInput > 0) transform.eulerAngles = new Vector3(0, 0, 0);
         else if (horizontalInput < 0) transform.eulerAngles = new Vector3(0, 180f, 0);
 
-        // 2. เช็กพื้น
         bool currentGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
 
         if (!wasGrounded && currentGrounded)
@@ -115,7 +136,6 @@ public class PlayerController : MonoBehaviour
         isGrounded = currentGrounded;
         wasGrounded = isGrounded;
 
-        // เสียงเดิน
         if (Mathf.Abs(horizontalInput) > 0.1f && isGrounded)
         {
             if (walkAudioSource != null)
@@ -140,7 +160,6 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        // 3. ระบบ Coyote Time
         if (isGrounded)
         {
             coyoteTimeCounter = coyoteTime;
@@ -150,10 +169,8 @@ public class PlayerController : MonoBehaviour
             coyoteTimeCounter -= Time.deltaTime;
         }
 
-        // 4. ระบบ Jump Buffer (อัปเดตเวลารอไปเรื่อยๆ)
         jumpBufferCounter -= Time.deltaTime;
 
-        // 5. คำสั่งกระโดด (เช็กเงื่อนไข)
         if (jumpBufferCounter > 0f && coyoteTimeCounter > 0f)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
@@ -165,7 +182,6 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        // 7. ระบบร่วงตกพื้นแบบมีน้ำหนัก
         if (rb.velocity.y < 0)
         {
             rb.velocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
@@ -175,13 +191,13 @@ public class PlayerController : MonoBehaviour
     void FixedUpdate()
     {
         if (isKnockedBack) return;
-        // ใช้ horizontalInput ที่อัปเดตจากจอย/คีย์บอร์ดแล้ว
+        if (isActionLocked)
+        {
+            rb.velocity = new Vector2(0, rb.velocity.y);
+            return;
+        }
         rb.velocity = new Vector2(horizontalInput * moveSpeed, rb.velocity.y);
     }
-
-    // ==========================================
-    // 🌟 ระบบวาร์ป และ Knockback
-    // ==========================================
 
     System.Collections.IEnumerator TeleportSequence()
     {
@@ -190,9 +206,6 @@ public class PlayerController : MonoBehaviour
 
         if (anim != null) anim.SetTrigger("Dash");
 
-        // ==========================================
-        // 🌟 แทรกเสียงบลิ๊งค์ (Teleport) ตรงนี้! 
-        // ==========================================
         if (audioSource != null && blinkSound != null)
         {
             audioSource.PlayOneShot(blinkSound);
@@ -245,5 +258,16 @@ public class PlayerController : MonoBehaviour
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
         }
+    }
+    public void LockMovement(float duration)
+    {
+        StartCoroutine(LockMovementRoutine(duration));
+    }
+
+    private System.Collections.IEnumerator LockMovementRoutine(float duration)
+    {
+        isActionLocked = true;
+        yield return new WaitForSeconds(duration);
+        isActionLocked = false;
     }
 }

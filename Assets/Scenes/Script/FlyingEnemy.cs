@@ -5,12 +5,30 @@ using System.Collections.Generic;
 
 public class FlyingEnemy : MonoBehaviour
 {
-    [Header("Movement & AI")]
-    public float flySpeed = 2.5f;
+    [Header("🦇 Flight & AI (อัปเกรดบินวนและโฉบ)")]
     public float detectRange = 20f;
+    public float flySpeed = 2.5f;
+    public float orbitRadius = 4f;
+    public float orbitSpeed = 2f;
+
+    public float swoopSpeed = 12f;
+    public float prepTime = 0.8f;
+    public float attackCooldown = 4f;
+
+    private float orbitAngle = 0f;
+    private bool isSwooping = false;
+    private bool isOnCooldown = false;
+    private Vector3 startPos;
+
+    // 🌟 บัตรคิวส่วนกลาง: ป้องกันค้างคาวพุ่งพร้อมกัน
+    private static float nextGlobalSwoopTime = 0f;
 
     private Transform player;
     private Rigidbody2D rb;
+
+    [Header("⚠️ ระบบเตือนภัยก่อนโฉบ")]
+    public GameObject exclamationPrefab;
+    public float exclamationOffsetY = 1.5f;
 
     [Header("Health & Armor")]
     public int maxHealth = 15;
@@ -19,7 +37,6 @@ public class FlyingEnemy : MonoBehaviour
     public bool isBroken = false;
     public float breakDuration = 3f;
 
-    // 🌟 1. เพิ่มตัวแปร 2 ตัวนี้เข้ามา เพื่อให้ระบบ Die() ทำงานได้
     private bool isDead = false;
     private Animator anim;
 
@@ -42,23 +59,38 @@ public class FlyingEnemy : MonoBehaviour
     public int soulAmount = 3;
     public GameObject[] dropItems;
     [Range(0, 100)] public int dropChance = 30;
+
     [Header("ระบบเสียงค้างคาว")]
-    public AudioSource audioSource; // ลำโพงติดตัว (เอาไว้เล่นเสียงเจ็บ)
-    public AudioClip hurtSound;     // เสียงโดนตี (จิ๊ด!)
-    public AudioClip deathSound;    // เสียงตาย (แอ๊ก!)
+    public AudioSource audioSource;
+    public AudioClip hurtSound;
+    public AudioClip deathSound;
 
     void Start()
     {
         currentHealth = maxHealth;
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
-
-        // 🌟 2. ดึง Animator มาใส่ตัวแปรเตรียมไว้เล่นท่าตอนตาย
         anim = GetComponent<Animator>();
 
         rb.gravityScale = 0f;
+        startPos = transform.position;
+
+        // 🌟 สุ่มตำแหน่งเริ่มต้นของวงโคจร และรัศมีการบิน
+        // ทำให้ค้างคาวแต่ละตัวบินแยกกัน ไม่ซ้อนทับเป็นก้อนเดียว
+        orbitAngle = Random.Range(0f, 360f);
+        orbitRadius = Random.Range(3.5f, 5.5f);
 
         GenerateRandomPuzzle();
+
+        // 🌟 สุ่มดีเลย์ตั้งต้น เพื่อให้แต่ละตัวพร้อมโฉบไม่พร้อมกันตอนเกิด
+        isOnCooldown = true;
+        StartCoroutine(InitialCooldownRoutine());
+    }
+
+    private IEnumerator InitialCooldownRoutine()
+    {
+        yield return new WaitForSeconds(Random.Range(1f, 4.5f));
+        isOnCooldown = false;
     }
 
     void GenerateRandomPuzzle()
@@ -84,7 +116,7 @@ public class FlyingEnemy : MonoBehaviour
 
     void Update()
     {
-        if (isDead) return; // ถ้าตายแล้วไม่ต้องหันหน้าหาผู้เล่น
+        if (isDead || isBroken) return;
 
         if (player == null)
         {
@@ -93,30 +125,87 @@ public class FlyingEnemy : MonoBehaviour
             return;
         }
 
-        if (player != null)
+        if (!isSwooping)
         {
-            if (player.position.x < transform.position.x)
+            float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+
+            if (distanceToPlayer <= detectRange)
             {
-                transform.localScale = new Vector3(1, 1, 1);
+                orbitAngle += orbitSpeed * Time.deltaTime;
+
+                // 🌟 ใช้รัศมีวงโคจร (orbitRadius) ที่สุ่มไว้ ทำให้วงการบินแตกต่างกัน
+                float offsetX = Mathf.Cos(orbitAngle) * orbitRadius;
+                float offsetY = Mathf.Abs(Mathf.Sin(orbitAngle)) * (orbitRadius * 0.4f) + 1.8f;
+
+                Vector3 targetPos = player.position + new Vector3(offsetX, offsetY, 0);
+
+                transform.position = Vector3.MoveTowards(transform.position, targetPos, orbitSpeed * 2f * Time.deltaTime);
+
+                if (player.position.x < transform.position.x) transform.localScale = new Vector3(1, 1, 1);
+                else transform.localScale = new Vector3(-1, 1, 1);
+
+                // 🌟 ระบบบัตรคิวโฉบ: เช็กว่าบัตรคิวว่างไหม? (ห่างจากตัวก่อนหน้า 1.5 วิ)
+                if (!isOnCooldown && Time.time >= nextGlobalSwoopTime)
+                {
+                    // หยิบบัตรคิว! บังคับให้ค้างคาวตัวอื่นต้องรอไปอีก 1.5 วิ
+                    nextGlobalSwoopTime = Time.time + 1.5f;
+                    StartCoroutine(SwoopAttackRoutine());
+                }
             }
             else
             {
-                transform.localScale = new Vector3(-1, 1, 1);
+                transform.position = Vector3.MoveTowards(transform.position, startPos, flySpeed * Time.deltaTime);
+                if (startPos.x < transform.position.x) transform.localScale = new Vector3(1, 1, 1);
+                else transform.localScale = new Vector3(-1, 1, 1);
             }
         }
     }
 
     void FixedUpdate()
     {
-        if (isBroken || player == null || isDead) return;
+        if (isBroken || isDead || isSwooping) return;
+        rb.velocity = Vector2.zero;
+    }
 
-        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
-        if (distanceToPlayer <= detectRange)
+    IEnumerator SwoopAttackRoutine()
+    {
+        isSwooping = true;
+        isOnCooldown = true;
+
+        if (exclamationPrefab != null)
         {
-            Vector2 direction = (player.position - transform.position).normalized;
-            rb.velocity = direction * flySpeed;
+            GameObject warningIcon = Instantiate(exclamationPrefab, transform.position + Vector3.up * exclamationOffsetY, Quaternion.identity, transform);
+            Destroy(warningIcon, prepTime);
         }
-        else rb.velocity = Vector2.zero;
+
+        spriteRenderer.color = Color.red;
+        if (anim != null) anim.SetTrigger("Prepare");
+
+        yield return new WaitForSeconds(prepTime);
+
+        if (isDead || isBroken) { isSwooping = false; yield break; }
+
+        Vector3 swoopTarget = player.position;
+        Vector3 swoopStart = transform.position;
+        float swoopDuration = Vector2.Distance(swoopStart, swoopTarget) / swoopSpeed;
+        float t = 0;
+
+        while (t < 1f)
+        {
+            if (isDead || isBroken) break;
+            t += Time.deltaTime / swoopDuration;
+            transform.position = Vector3.Lerp(swoopStart, swoopTarget, t);
+            yield return null;
+        }
+
+        spriteRenderer.color = Color.white;
+        yield return new WaitForSeconds(0.3f);
+
+        isSwooping = false;
+
+        // สุ่มเวลาพักก่อนจะเริ่มเช็กบัตรคิวครั้งถัดไป
+        yield return new WaitForSeconds(attackCooldown + Random.Range(0f, 1.5f));
+        isOnCooldown = false;
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -136,7 +225,7 @@ public class FlyingEnemy : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        if (isDead) return; // กันตายซ้ำซ้อน
+        if (isDead) return;
         if (audioSource != null && hurtSound != null)
         {
             audioSource.PlayOneShot(hurtSound);
@@ -153,27 +242,26 @@ public class FlyingEnemy : MonoBehaviour
 
     public bool CheckPuzzleBullet(string playerRecipe, int damage)
     {
-        // 🌟 เปลี่ยนจาก return; ลอยๆ เป็น return false;
         if (isBroken || isDead) return false;
 
         if (playerRecipe == requiredRecipe)
         {
-            Debug.Log("🎯 รหัสนกถูกต้อง! ปีกหัก พร้อมโดนดาเมจ!");
             BreakArmor();
             TakeDamage(damage);
-            return true; // 🌟 รหัสถูก! ส่งค่า true (กระสุนระเบิด)
+            return true;
         }
         else
         {
-            Debug.Log("❌ รหัสผิด!");
             ShowDamagePopup(0, Color.red, 3f);
-            return false; // 🌟 รหัสผิด! ส่งค่า false (กระสุนเด้ง)
+            return false;
         }
     }
 
     void BreakArmor()
     {
         isBroken = true;
+        isSwooping = false;
+
         spriteRenderer.color = Color.gray;
         if (puzzleCanvas != null) puzzleCanvas.SetActive(false);
 
@@ -213,7 +301,7 @@ public class FlyingEnemy : MonoBehaviour
             AudioSource.PlayClipAtPoint(deathSound, transform.position, 1f);
         }
 
-        if (puzzleCanvas != null) puzzleCanvas.SetActive(false); // ปิดหลอดปุ่มเวทมนตร์ทิ้งด้วย
+        if (puzzleCanvas != null) puzzleCanvas.SetActive(false);
 
         if (soulPrefab != null)
         {
@@ -235,21 +323,22 @@ public class FlyingEnemy : MonoBehaviour
             Instantiate(dropItems[randomItem], transform.position, Quaternion.identity);
         }
 
-        // 1. สั่งเล่นแอนิเมชันตาย!
         if (anim != null)
         {
             anim.SetTrigger("Die");
         }
 
-        // 2. ปิดกล่องชน (Collider) ผู้เล่นจะได้เดินทะลุศพไปได้ ไม่โดนดาเมจอีก
-        //GetComponent<Collider2D>().enabled = false;
-
-        // 3. ให้ศพตกพื้น (ถ้าเกมมีแรงโน้มถ่วง) หรือหยุดอยู่กับที่
         rb.velocity = Vector2.zero;
-        rb.gravityScale = 3f; // ให้ซากค้างคาวหล่นตุ๊บลงพื้น
+        rb.gravityScale = 3f;
 
-        // 4. หน่วงเวลาทำลายทิ้ง 1 วินาที! ให้คนเล่นได้เห็นศพแบนๆ แป๊บนึงก่อนหายไป
         Destroy(gameObject, 1f);
+    }
 
-    } // 🌟 3. จัดระเบียบปีกกาปิดให้ถูกต้องแล้ว
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, detectRange);
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(transform.position, orbitRadius);
+    }
 }

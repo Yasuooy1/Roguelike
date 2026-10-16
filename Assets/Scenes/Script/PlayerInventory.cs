@@ -2,11 +2,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using TMPro;
-using UnityEngine.InputSystem; // 🌟 1. อย่าลืมบรรทัดนี้เด็ดขาด!
+using UnityEngine.InputSystem;
 
 public class PlayerInventory : MonoBehaviour
 {
-    [Header("UI กระเป๋า (Elden Ring Style)")]
+    [Header("UI กระเป๋า")]
     public Image itemSlotUI;
     public Sprite emptySlotSprite;
     public TextMeshProUGUI countText;
@@ -20,12 +20,19 @@ public class PlayerInventory : MonoBehaviour
     private float currentCooldown = 0f;
     private float maxCooldown = 0f;
 
-    [Header("Item Sprites (สำหรับระบบ Load)")]
     public Sprite healPotionIcon;
     public Sprite manaPotionIcon;
+
     [Header("🎵 ระบบเสียงไอเทม")]
-    public AudioSource audioSource;   // ลาก Player หรือกล่องเสียงมาใส่
+    public AudioSource audioSource;
     public AudioClip drinkPotionSound;
+
+    [Header("✨ ระบบแอนิเมชัน & ออร่า")]
+    public Animator playerAnimator;
+    public GameObject healthAura;
+    public GameObject manaAura;
+
+    public NPCShop currentNearbyShop;
 
     void Start()
     {
@@ -35,42 +42,39 @@ public class PlayerInventory : MonoBehaviour
 
     void Update()
     {
-        // ❌ เอา Input.GetKeyDown(KeyCode.R) และ F ออกไปแล้วครับ
-        // ให้เหลือแค่ตัวนับเวลา Cooldown UI พอ
         if (currentCooldown > 0)
         {
             currentCooldown -= Time.deltaTime;
             if (cooldownImage != null) cooldownImage.fillAmount = currentCooldown / maxCooldown;
         }
-        else if (cooldownImage != null)
-        {
-            cooldownImage.fillAmount = 0;
-        }
+        else if (cooldownImage != null) cooldownImage.fillAmount = 0;
     }
 
-    // ==========================================
-    // 🌟 2. รับค่าจากจอยสติ๊ก (D-pad) และคีย์บอร์ด (F, R)
-    // ==========================================
-
-    // กดยา (ปุ่ม F หรือ D-Pad บน)
     public void OnUseItem(InputValue value)
+    {
+        if (value.isPressed) UseCurrentItem();
+    }
+
+    public void OnSwitchItem(InputValue value)
+    {
+        if (value.isPressed && currentCooldown <= 0) CycleItem();
+    }
+
+    // 🌟 ระบบคุยกับ NPC 
+    public void OnInteract(InputValue value)
     {
         if (value.isPressed)
         {
-            UseCurrentItem();
+            if (currentNearbyShop != null)
+            {
+                currentNearbyShop.ToggleShop();
+            }
+            else
+            {
+                Debug.Log("กด Interact แต่ไม่มีอะไรให้คุยแถวนี้");
+            }
         }
     }
-
-    // สลับยา (ปุ่ม R หรือ D-Pad ซ้าย )
-    public void OnSwitchItem(InputValue value)
-    {
-        if (value.isPressed && currentCooldown <= 0)
-        {
-            CycleItem();
-        }
-    }
-
-    // ==========================================
 
     void CycleItem()
     {
@@ -86,46 +90,41 @@ public class PlayerInventory : MonoBehaviour
 
         ItemData itemToUse = inventoryList[currentIndex];
 
+        PlayerController controller = FindObjectOfType<PlayerController>();
+
         if (itemToUse.itemName == "HealPotion")
         {
             PlayerHealth health = GetComponent<PlayerHealth>();
-            if (health != null)
+            if (health != null && health.currentHealth < health.maxHealth)
             {
-                if (health.currentHealth >= health.maxHealth) return;
-                health.Heal(1);
+                if (playerAnimator != null) playerAnimator.SetTrigger("DrinkHealth");
+                if (controller != null) controller.LockMovement(0.8f);
                 StartCooldown(itemToUse.cooldownTime);
-                // 🌟 แทรกเสียงกินยาตรงนี้! (หลังจากฮีลสำเร็จ)
-                if (audioSource != null && drinkPotionSound != null)
-                {
-                    audioSource.PlayOneShot(drinkPotionSound);
-                }
+                ConsumeItem(itemToUse);
             }
         }
         else if (itemToUse.itemName == "ManaPotion")
         {
             PlayerMana mana = GetComponent<PlayerMana>();
-            if (mana != null)
+            if (mana != null && mana.currentMana < mana.maxMana)
             {
-                if (mana.currentMana >= mana.maxMana) return;
-                mana.AddMana(1);
+                if (playerAnimator != null) playerAnimator.SetTrigger("DrinkMana");
+                if (controller != null) controller.LockMovement(0.8f);
                 StartCooldown(itemToUse.cooldownTime);
-                
-                if (audioSource != null && drinkPotionSound != null)
-                {
-                    audioSource.PlayOneShot(drinkPotionSound);
-                }
+                ConsumeItem(itemToUse);
             }
         }
+    }
 
+    void ConsumeItem(ItemData itemToUse)
+    {
         itemToUse.amount--;
         SaveInventory();
-
         if (itemToUse.amount <= 0)
         {
             inventoryList.RemoveAt(currentIndex);
             if (currentIndex >= inventoryList.Count) currentIndex = 0;
         }
-
         UpdateUI();
     }
 
@@ -135,10 +134,40 @@ public class PlayerInventory : MonoBehaviour
         currentCooldown = time;
     }
 
+    public void DrinkHealthPotionEvent()
+    {
+        PlayerHealth health = GetComponent<PlayerHealth>();
+        if (health != null) health.Heal(1);
+
+        if (audioSource != null && drinkPotionSound != null)
+            audioSource.PlayOneShot(drinkPotionSound);
+
+        if (healthAura != null)
+        {
+            healthAura.SetActive(false);
+            healthAura.SetActive(true);
+        }
+    }
+
+    public void DrinkManaPotionEvent()
+    {
+        PlayerMana mana = GetComponent<PlayerMana>();
+        if (mana != null) mana.AddMana(1);
+
+        if (audioSource != null && drinkPotionSound != null)
+            audioSource.PlayOneShot(drinkPotionSound);
+
+        if (manaAura != null)
+        {
+            manaAura.SetActive(false);
+            manaAura.SetActive(true);
+        }
+    }
+
+    // 🌟 ระบบเพิ่มไอเทม (ที่ทำให้เกิด Error เมื่อกี้ นำกลับมาใส่ให้แล้วครับ)
     public void AddItem(ItemData newItem)
     {
         ItemData existingItem = inventoryList.Find(x => x.itemName == newItem.itemName);
-
         if (existingItem != null)
         {
             existingItem.amount += newItem.amount;
@@ -154,93 +183,41 @@ public class PlayerInventory : MonoBehaviour
             };
             inventoryList.Add(clonedItem);
         }
-
         SaveInventory();
         UpdateUI();
-    }
-
-    void UpdateUI()
-    {
-        if (itemSlotUI == null) return;
-
-        if (inventoryList.Count > 0)
-        {
-            ItemData currentItem = inventoryList[currentIndex];
-            if (itemIconImage != null)
-            {
-                itemIconImage.sprite = currentItem.itemIcon;
-                itemIconImage.enabled = true;
-            }
-            if (countText != null)
-            {
-                countText.text = currentItem.amount.ToString();
-                countText.enabled = true;
-            }
-        }
-        else
-        {
-            if (itemIconImage != null) itemIconImage.enabled = false;
-            if (countText != null) countText.enabled = false;
-        }
     }
 
     public void SaveInventory()
     {
         ItemData heal = inventoryList.Find(x => x.itemName == "HealPotion");
         ItemData mana = inventoryList.Find(x => x.itemName == "ManaPotion");
-
         PlayerPrefs.SetInt("Inv_HealPotion", heal != null ? heal.amount : 0);
         PlayerPrefs.SetInt("Inv_ManaPotion", mana != null ? mana.amount : 0);
-
         PlayerPrefs.Save();
     }
 
     public void LoadInventory()
     {
         inventoryList.Clear();
-
         int healAmount = PlayerPrefs.GetInt("Inv_HealPotion", 0);
         int manaAmount = PlayerPrefs.GetInt("Inv_ManaPotion", 0);
-
-        if (healAmount > 0)
-        {
-            inventoryList.Add(new ItemData
-            {
-                itemName = "HealPotion",
-                itemIcon = healPotionIcon,
-                amount = healAmount,
-                cooldownTime = 2f
-            });
-        }
-
-        if (manaAmount > 0)
-        {
-            inventoryList.Add(new ItemData
-            {
-                itemName = "ManaPotion",
-                itemIcon = manaPotionIcon,
-                amount = manaAmount,
-                cooldownTime = 2f
-            });
-        }
+        if (healAmount > 0) inventoryList.Add(new ItemData { itemName = "HealPotion", itemIcon = healPotionIcon, amount = healAmount, cooldownTime = 2f });
+        if (manaAmount > 0) inventoryList.Add(new ItemData { itemName = "ManaPotion", itemIcon = manaPotionIcon, amount = manaAmount, cooldownTime = 2f });
     }
-    // 🌟 เพิ่มตัวแปรนี้ไว้ด้านบนสุดของคลาส PlayerInventory
-    public NPCShop currentNearbyShop;
 
-    // 🌟 แก้ไขฟังก์ชัน OnInteract (เอาไปวางต่อจาก OnSwitchItem)
-    public void OnInteract(InputValue value)
+    void UpdateUI()
     {
-        if (value.isPressed)
+        if (itemSlotUI == null) return;
+        if (inventoryList.Count > 0)
         {
-            // ถ้าอยู่ใกล้ร้านค้า ให้สั่งเปิดร้านค้านั้นๆ
-            if (currentNearbyShop != null)
-            {
-                currentNearbyShop.ToggleShop();
-            }
-            else
-            {
-                Debug.Log("กด Interact แต่ไม่มีอะไรให้คุยแถวนี้");
-            }
+            ItemData currentItem = inventoryList[currentIndex];
+            if (itemIconImage != null) { itemIconImage.sprite = currentItem.itemIcon; itemIconImage.enabled = true; }
+            if (countText != null) { countText.text = currentItem.amount.ToString(); countText.enabled = true; }
+        }
+        else
+        {
+            if (itemIconImage != null) itemIconImage.enabled = false;
+            if (countText != null) countText.enabled = false;
         }
     }
 }
