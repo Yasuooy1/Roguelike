@@ -59,6 +59,7 @@ public class Boss : MonoBehaviour
     private bool isPhase2 = false;
     private bool isPullingPlayer = false;
     private bool isUninterruptible = false;
+    private Rigidbody2D rb;
 
     [Header("⚡ Laser Effect (เฟส 2)")]
     public GameObject laserMuzzleFlash;
@@ -81,9 +82,12 @@ public class Boss : MonoBehaviour
     public AudioClip hurtSound;
     public AudioClip deathSound;
     public AudioClip victorySound;
+    [Header("Boss Info")]
+    public string bossName = "The Void Wizard";
 
     void Start()
     {
+        rb = GetComponent<Rigidbody2D>();
         currentHealth = maxHealth;
         spriteRenderer = GetComponent<SpriteRenderer>();
         bossAudio = GetComponent<AudioSource>();
@@ -180,7 +184,7 @@ public class Boss : MonoBehaviour
         GetComponent<Collider2D>().enabled = true;
         hasSpawned = true;
         GenerateRandomPuzzle();
-        if (BossHealthUI.instance != null) BossHealthUI.instance.ShowBossUI(maxHealth);
+        if (BossHealthUI.instance != null) BossHealthUI.instance.ShowBossUI(maxHealth, bossName);
         StartCoroutine(ActionRoutine());
     }
 
@@ -287,14 +291,27 @@ public class Boss : MonoBehaviour
         if (playerTransform == null) yield break;
         isAttacking = true;
         FacePlayer();
+        if (rb != null) rb.velocity = Vector2.zero; // หยุดแรงไถลจากฟิสิกส์
+        velocity = Vector3.zero;                    // หยุดความเร็วของโค้ดลอยตาม
+        currentCenterPos = transform.position;
 
         ShowWarningExclamation(); // ⚠️ เก็บเตือนภัยไว้เฉพาะท่าหนักๆ
         spriteRenderer.color = Color.red;
-
         if (dangerZonePrefab != null)
         {
             Vector3 lockTargetPos = playerTransform.position;
-            GameObject danger = Instantiate(dangerZonePrefab, lockTargetPos, Quaternion.identity);
+
+            // 🌟 1. คำนวณทิศทางและองศาจากบอสไปหาผู้เล่น
+            Vector2 dir = lockTargetPos - transform.position;
+            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+
+            // 🌟 2. เสกเส้นเตือนที่ "ตัวบอส" (ไม่ใช่ตัวผู้เล่นแล้ว) และหมุนองศาชี้ไปหาเป้าหมาย
+            GameObject danger = Instantiate(dangerZonePrefab, transform.position, Quaternion.Euler(0, 0, angle));
+
+            // 🌟 3. ยืดความยาวเส้นให้เท่ากับระยะทางระหว่างบอสถึงผู้เล่นพอดี (ถ้าเส้นยาวไป/สั้นไป ลองปรับแกน X ตรงนี้ดูครับ)
+            float distance = dir.magnitude;
+            danger.transform.localScale = new Vector3(distance, 1.5f, 1f);
+
             Destroy(danger, 0.8f);
         }
 

@@ -52,11 +52,33 @@ public class PlayerInventory : MonoBehaviour
 
     public void OnUseItem(InputValue value)
     {
-        if (value.isPressed) UseCurrentItem();
+        if (value.isPressed)
+        {
+            // 🌟 1. เช็กก่อนเลยว่ายืนอยู่ใกล้พ่อค้าไหม?
+            if (currentNearbyShop != null)
+            {
+                // ถ้าอยู่ใกล้ ให้สั่ง "เปิดร้านค้า" แล้วยกเลิกการกินยาทันที!
+                currentNearbyShop.ToggleShop();
+                return;
+            }
+
+            // 🌟 2. ถ้าไม่ได้อยู่ใกล้พ่อค้า ให้เช็กว่าเกมหยุดอยู่ไหม (เปิดเมนู/ร้านค้าอยู่)
+            if (Time.timeScale == 0f)
+            {
+                return; // ห้ามกินยาตอนเปิดเมนู
+            }
+
+            // 🌟 3. ถ้าไม่ได้เปิดเมนู และไม่ได้อยู่ใกล้พ่อค้า ก็กินยาตามปกติ!
+            UseCurrentItem();
+        }
     }
 
     public void OnSwitchItem(InputValue value)
     {
+        if (currentNearbyShop != null || Time.timeScale == 0f)
+        {
+            return;
+        }
         if (value.isPressed && currentCooldown <= 0) CycleItem();
     }
 
@@ -94,6 +116,12 @@ public class PlayerInventory : MonoBehaviour
 
         if (itemToUse.itemName == "HealPotion")
         {
+
+            if (BuffManager.instance != null && BuffManager.instance.HasBuff("Bloodthirst"))
+            {
+                Debug.Log("คำสาป Bloodthirst: คุณไม่สามารถใช้ยาฮีลได้อีกต่อไป!");
+                return;
+            }
             PlayerHealth health = GetComponent<PlayerHealth>();
             if (health != null && health.currentHealth < health.maxHealth)
             {

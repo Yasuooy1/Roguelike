@@ -61,12 +61,17 @@ public class PlayerController : MonoBehaviour
 
     public void OnMove(InputValue value)
     {
+        if (Time.timeScale == 0f)
+        {
+            moveInput = Vector2.zero;
+            return;
+        }
         moveInput = value.Get<Vector2>();
     }
 
     public void OnJump(InputValue value)
     {
-        if (isActionLocked) return;
+        if (isActionLocked || Time.timeScale == 0f) return;
         if (value.isPressed)
         {
             jumpBufferCounter = jumpBufferTime;
@@ -80,7 +85,7 @@ public class PlayerController : MonoBehaviour
 
     public void OnDash(InputValue value)
     {
-        if (isActionLocked) return;
+        if (isActionLocked || Time.timeScale == 0f) return;
 
         if (value.isPressed && Time.time >= nextTeleportTime)
         {
@@ -90,6 +95,7 @@ public class PlayerController : MonoBehaviour
 
     public void OnFire(InputValue value)
     {
+        if (isActionLocked || Time.timeScale == 0f) return;
         if (value.isPressed && !isKnockedBack)
         {
             // สั่งเล่นท่าสะบัดไม้กายสิทธิ์เท่านั้น (ยังไม่เสกกระสุน)
@@ -217,6 +223,18 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
 
         Vector2 facingDirection = (transform.eulerAngles.y == 0) ? Vector2.right : Vector2.left;
+        if (BuffManager.instance != null && BuffManager.instance.HasBuff("Void Blink"))
+        {
+            RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, facingDirection, teleportDistance);
+            foreach (RaycastHit2D hitObj in hits)
+            {
+                if (hitObj.collider != null && hitObj.collider.CompareTag("Enemy"))
+                {
+                    Enemy enemyHit = hitObj.collider.GetComponent<Enemy>();
+                    if (enemyHit != null) enemyHit.TakeDamage(50); // ความแรง 50
+                }
+            }
+        }
         RaycastHit2D hit = Physics2D.Raycast(transform.position, facingDirection, teleportDistance, groundLayer);
         Vector2 targetPosition;
 

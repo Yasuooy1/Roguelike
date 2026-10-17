@@ -366,7 +366,6 @@ public class Enemy : MonoBehaviour
             ShowDamagePopup(0, Color.gray, 3f);
         }
     }
-
     public bool CheckPuzzleBullet(string playerRecipe, int damage)
     {
         if (isBroken || isDead) return false;
@@ -376,6 +375,17 @@ public class Enemy : MonoBehaviour
             BreakArmor();
             TriggerElementalBurst(requiredRecipe);
             TakeDamage(damage);
+
+            // 🩸 [บัฟ Bloodthirst] โจมตีพัซเซิลถูก ได้เลือดคืน 1 หน่วย
+            if (BuffManager.instance != null && BuffManager.instance.HasBuff("Bloodthirst"))
+            {
+                PlayerHealth playerHealth = FindObjectOfType<PlayerHealth>();
+                if (playerHealth != null)
+                {
+                    playerHealth.Heal(1);
+                }
+            }
+
             return true;
         }
         else
@@ -384,6 +394,7 @@ public class Enemy : MonoBehaviour
             return false;
         }
     }
+
 
     private void TriggerElementalBurst(string recipe)
     {
@@ -540,6 +551,21 @@ public class Enemy : MonoBehaviour
 
         if (puzzleCanvas != null) puzzleCanvas.SetActive(false);
         if (spriteRenderer != null) spriteRenderer.color = Color.white;
+
+        if (BuffManager.instance != null && BuffManager.instance.HasBuff("Soul Detonation"))
+        {
+            if (fireBurstVFX != null) Destroy(Instantiate(fireBurstVFX, transform.position, Quaternion.identity), 1.5f);
+
+            Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(transform.position, 3f);
+            foreach (Collider2D enemy in hitEnemies)
+            {
+                if (enemy.CompareTag("Enemy") && enemy.gameObject != this.gameObject)
+                {
+                    Enemy enemyScript = enemy.GetComponent<Enemy>();
+                    if (enemyScript != null) enemyScript.TakeDamage(30);
+                }
+            }
+        }
 
         if (soulPrefab != null)
         {

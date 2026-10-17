@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class UpgradeShrine : MonoBehaviour
 {
+    [Header("เป็นเสาของบอสไหม?")]
+    public bool isBossShrine = false; //
     void OnTriggerEnter2D(Collider2D collision)
     {
         // ต้องมั่นใจว่าตัวละครผู้เล่น ตั้ง Tag เป็นคำว่า "Player" เป๊ะๆ นะครับ!
@@ -12,7 +14,7 @@ public class UpgradeShrine : MonoBehaviour
             // เรียกคำสั่งสุ่มการ์ดขึ้นมาโชว์ทันที
             if (BuffManager.instance != null)
             {
-                BuffManager.instance.ShowBuffSelection();
+                BuffManager.instance.ShowBuffSelection(isBossShrine);
             }
 
             // เปิดหน้าต่างเสร็จ ก็ทำลายเสาทิ้งไปเลย

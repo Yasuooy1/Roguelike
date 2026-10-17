@@ -20,6 +20,7 @@ public class PlayerCombat : MonoBehaviour
     public GameObject ultimatePrefab;
     public int ultimateManaCost = 2;
     public GameObject bulletTimeVFX;
+    public float ultimateDuration = 2.6f;
 
     [Header("ระบบคูลดาวน์")]
     public float fireCooldown = 0.5f;
@@ -51,9 +52,32 @@ public class PlayerCombat : MonoBehaviour
 
     void Update() { }
 
-    public void OnElement1(InputValue value) { if (value.isPressed && spellMixer != null) spellMixer.AddOrb(SpellMixer.Element.Fire); }
-    public void OnElement2(InputValue value) { if (value.isPressed && spellMixer != null) spellMixer.AddOrb(SpellMixer.Element.Water); }
-    public void OnElement3(InputValue value) { if (value.isPressed && spellMixer != null) spellMixer.AddOrb(SpellMixer.Element.Lightning); }
+    public void OnElement1(InputValue value)
+    {
+        if (value.isPressed && spellMixer != null)
+        {
+            spellMixer.AddOrb(SpellMixer.Element.Fire);
+            if (playerAnimator != null) playerAnimator.SetTrigger("CastFire"); // 🌟 สั่งเล่นแอนิเมชันร่ายไฟ
+        }
+    }
+
+    public void OnElement2(InputValue value)
+    {
+        if (value.isPressed && spellMixer != null)
+        {
+            spellMixer.AddOrb(SpellMixer.Element.Water);
+            if (playerAnimator != null) playerAnimator.SetTrigger("CastWater"); // 🌟 สั่งเล่นแอนิเมชันร่ายน้ำ
+        }
+    }
+
+    public void OnElement3(InputValue value)
+    {
+        if (value.isPressed && spellMixer != null)
+        {
+            spellMixer.AddOrb(SpellMixer.Element.Lightning);
+            if (playerAnimator != null) playerAnimator.SetTrigger("CastLightning"); // 🌟 สั่งเล่นแอนิเมชันร่ายสายฟ้า
+        }
+    }
 
     public void OnFire(InputValue value)
     {
@@ -226,7 +250,7 @@ public class PlayerCombat : MonoBehaviour
             overlayImage.color = grayColor;
         }
 
-        yield return new WaitForSecondsRealtime(2.6f);
+        yield return new WaitForSecondsRealtime(ultimateDuration);
 
         if (overlayImage != null)
         {

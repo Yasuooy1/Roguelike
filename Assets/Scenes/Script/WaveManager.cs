@@ -88,22 +88,22 @@ public class WaveManager : MonoBehaviour
             }
             else if (isBossSpawned)
             {
-                isRoomCleared = true;
-
-                // 🌟 ดึงบัฟออกตอนชนะบอสเคลียร์ด่าน
+                // 🌟 ดึงบัฟเวฟเล็กออก (แต่บัฟบอสถาวรจะยังอยู่)
                 if (BuffManager.instance != null)
                 {
                     BuffManager.instance.OnWaveEnded();
                 }
 
-                if (warningDirectionText != null)
+                // 🌟 [เปลี่ยนใหม่] เมื่อฆ่าบอสสำเร็จ แทนที่จะจบเกม ให้เสก "เสาบอส" แทน!
+                GameObject shrine = Instantiate(upgradeShrinePrefab, spawnPoint.position, Quaternion.identity);
+
+                // ติ๊กบอกว่าเป็นเสาบอส เพื่อสุ่มการ์ดสัญญามรณะ
+                UpgradeShrine shrineScript = shrine.GetComponent<UpgradeShrine>();
+                if (shrineScript != null) shrineScript.isBossShrine = true;
+
+                if (ArrowIndicator.instance != null)
                 {
-                    warningDirectionText.text = "🎉 เคลียร์ด่านสำเร็จ!";
-                    warningDirectionText.gameObject.SetActive(true);
-                }
-                if (EndGameManager.instance != null)
-                {
-                    EndGameManager.instance.ShowWinScreen();
+                    ArrowIndicator.instance.SetTarget(shrine.transform);
                 }
             }
         }
@@ -134,7 +134,7 @@ public class WaveManager : MonoBehaviour
 
         Transform playerPos = GameObject.FindGameObjectWithTag("Player").transform;
         float centerX = (playerPos != null) ? playerPos.position.x : 0f;
-        
+
         for (int i = 0; i < enemiesToSpawn; i++)
         {
             GameObject randomEnemy = currentEnemyPool[Random.Range(0, currentEnemyPool.Length)];
@@ -232,7 +232,6 @@ public class WaveManager : MonoBehaviour
     // ==========================================
     // 🌟 ฟังก์ชันจัดการเมื่อจบเวฟ
     // ==========================================
-    // --- ส่วนที่แก้ไขใน OnWaveClear ---
     void OnWaveClear()
     {
         if (BuffManager.instance != null)
@@ -240,17 +239,14 @@ public class WaveManager : MonoBehaviour
             BuffManager.instance.OnWaveEnded();
         }
 
-        // 🌟 เก็บค่า Object ที่เสกออกมาไว้ในตัวแปร shrine
         GameObject shrine = Instantiate(upgradeShrinePrefab, spawnPoint.position, Quaternion.identity);
 
-        // 🌟 สั่งให้ลูกศรชี้ไปที่ shrine ตัวที่เพิ่งเสกออกมา (ไม่ใช่ตัว Prefab)
         if (ArrowIndicator.instance != null)
         {
             ArrowIndicator.instance.SetTarget(shrine.transform);
         }
     }
 
-    // --- ส่วนที่แก้ไขใน ResumeWave ---
     public void ResumeWave()
     {
         if (isRoomCleared || !isWaitingForReward || isSpawning)
@@ -258,7 +254,6 @@ public class WaveManager : MonoBehaviour
             return;
         }
 
-        // 🌟 เมื่อกดรับบัฟและเริ่มเวฟใหม่ ให้สั่งลบลูกศรทิ้งไปก่อนครับ
         if (ArrowIndicator.instance != null)
         {
             ArrowIndicator.instance.ClearTarget();
@@ -274,26 +269,13 @@ public class WaveManager : MonoBehaviour
         {
             StartCoroutine(SpawnBoss());
         }
-    }
-
-    /*public void ResumeWave()
-    {
-        // 🌟 ใส่แม่กุญแจล็อคตรงนี้!
-        // ถ้าเคลียร์ห้องแล้ว / ไม่ได้อยู่ในช่วงพักรับรางวัล / หรือกำลังเสกมอนสเตอร์อยู่ -> ห้ามรันคำสั่งซ้ำเด็ดขาด!
-        if (isRoomCleared || !isWaitingForReward || isSpawning)
+        else
         {
-            return;
-        }
-
-        isWaitingForReward = false; // ปลดล็อคว่ารับรางวัลเสร็จแล้ว
-
-        if (currentWave < totalWaves)
-        {
+            // 🌟 [ระบบวนลูป Endless] หลังจากเลือกการ์ดบอสเสร็จ รีเซ็ตและเริ่มเวฟใหม่ที่ยากขึ้น
+            isBossSpawned = false;
+            currentWave = 0;
+            totalWaves += 2; // เพิ่มจำนวนเวฟให้ยาวขึ้นในรอบถัดไป
             StartCoroutine(StartNextWave());
         }
-        else if (!isBossSpawned)
-        {
-            StartCoroutine(SpawnBoss());
-        }
-    }*/
+    }
 }

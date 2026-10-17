@@ -150,6 +150,10 @@
     <Compile Include="Assets\Scenes\Script\BossHealthUI.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01.cs" />
     <Compile Include="Assets\Scenes\Script\UpgradeManager.cs" />
+    <Compile Include="Assets\Scenes\Script\CardSelectionEffect.cs" />
+    <Compile Include="Assets\Scenes\Script\PauseMenu.cs" />
+    <Compile Include="Assets\Scenes\Script\MerchantInteract.cs" />
+    <Compile Include="Assets\Scenes\Script\BuffIconUI.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

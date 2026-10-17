@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI; // ต้องใส่ตัวนี้ถึงจะคุม UI ได้
+// using TMPro; // 🌟 ถ้าใช้ฟอนต์แบบ TextMeshPro ให้เอา // ข้างหน้าออกนะครับ
 
 public class BossHealthUI : MonoBehaviour
 {
@@ -9,6 +10,9 @@ public class BossHealthUI : MonoBehaviour
     [Header("UI Elements")]
     public GameObject uiPanel;    // ตัวกรอบพื้นหลัง (BossHealthBackground)
     public Image healthFill;      // หลอดเลือดสีแดง (BossHealthFill)
+
+    [Header("UI ชื่อบอส")]
+    public Text bossNameText;     // 🌟 1. เพิ่มตัวช่องใส่ข้อความชื่อบอส (ถ้าใช้ TextMeshPro ให้เปลี่ยนคำว่า Text เป็น TextMeshProUGUI)
 
     private int maxBossHealth;
 
@@ -21,12 +25,18 @@ public class BossHealthUI : MonoBehaviour
         uiPanel.SetActive(false);
     }
 
-    // ฟังก์ชันให้บอสเรียกตอนเปิดตัว
-    public void ShowBossUI(int maxHP)
+    // 🌟 2. แก้ฟังก์ชันให้รับค่า string bossName เพิ่มเข้ามา
+    public void ShowBossUI(int maxHP, string bossName)
     {
         maxBossHealth = maxHP;
         healthFill.fillAmount = 1f; // เลือดเต็มหลอด
         uiPanel.SetActive(true);    // โชว์ UI!
+
+        // 🌟 3. สั่งเปลี่ยนข้อความบนหลอดเลือด ให้ตรงกับชื่อบอสที่ส่งมา
+        if (bossNameText != null)
+        {
+            bossNameText.text = bossName;
+        }
     }
 
     // ฟังก์ชันให้บอสเรียกตอนโดนตี

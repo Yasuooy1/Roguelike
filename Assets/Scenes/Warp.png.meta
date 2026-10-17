@@ -120,10 +120,10 @@ TextureImporter:
       name: Warp_0
       rect:
         serializedVersion: 2
-        x: 49
-        y: 33
-        width: 117
-        height: 303
+        x: 0
+        y: 0
+        width: 241.07143
+        height: 344
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,10 +141,10 @@ TextureImporter:
       name: Warp_1
       rect:
         serializedVersion: 2
-        x: 274
-        y: 33
-        width: 117
-        height: 303
+        x: 241
+        y: 0
+        width: 241.07143
+        height: 344
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -162,10 +162,10 @@ TextureImporter:
       name: Warp_2
       rect:
         serializedVersion: 2
-        x: 499
-        y: 33
-        width: 117
-        height: 303
+        x: 482
+        y: 0
+        width: 241.07143
+        height: 344
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -184,9 +184,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 723
-        y: 33
-        width: 117
-        height: 303
+        y: 0
+        width: 241.07143
+        height: 344
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -204,10 +204,10 @@ TextureImporter:
       name: Warp_4
       rect:
         serializedVersion: 2
-        x: 984
-        y: 267
-        width: 16
-        height: 46
+        x: 964
+        y: 0
+        width: 241.07143
+        height: 344
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -225,10 +225,10 @@ TextureImporter:
       name: Warp_5
       rect:
         serializedVersion: 2
-        x: 1009
-        y: 242
-        width: 14
-        height: 43
+        x: 1205
+        y: 0
+        width: 241.07143
+        height: 344
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -246,10 +246,10 @@ TextureImporter:
       name: Warp_6
       rect:
         serializedVersion: 2
-        x: 2333
-        y: 267
-        width: 17
-        height: 46
+        x: 1928
+        y: 0
+        width: 241.07143
+        height: 344
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -267,10 +267,10 @@ TextureImporter:
       name: Warp_7
       rect:
         serializedVersion: 2
-        x: 2358
-        y: 242
-        width: 15
-        height: 43
+        x: 2169
+        y: 0
+        width: 241.07143
+        height: 344
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -288,10 +288,10 @@ TextureImporter:
       name: Warp_8
       rect:
         serializedVersion: 2
-        x: 2523
-        y: 33
-        width: 119
-        height: 303
+        x: 2410
+        y: 0
+        width: 241.07143
+        height: 344
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -309,10 +309,10 @@ TextureImporter:
       name: Warp_9
       rect:
         serializedVersion: 2
-        x: 2749
-        y: 33
-        width: 117
-        height: 303
+        x: 2651
+        y: 0
+        width: 241.07143
+        height: 344
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -330,10 +330,10 @@ TextureImporter:
       name: Warp_10
       rect:
         serializedVersion: 2
-        x: 2975
-        y: 33
-        width: 117
-        height: 303
+        x: 2892
+        y: 0
+        width: 241.07143
+        height: 344
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -351,10 +351,10 @@ TextureImporter:
       name: Warp_11
       rect:
         serializedVersion: 2
-        x: 3199
-        y: 33
-        width: 117
-        height: 303
+        x: 3133
+        y: 0
+        width: 241.07143
+        height: 344
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -364,384 +364,6 @@ TextureImporter:
       bones: []
       spriteID: b473ea112e22e7f4f96d067a1946b519
       internalID: -499620273
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Warp_12
-      rect:
-        serializedVersion: 2
-        x: 1215
-        y: 225
-        width: 9
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: f270c7be0f1880b409a1c8087e5ca81e
-      internalID: -724038948
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Warp_13
-      rect:
-        serializedVersion: 2
-        x: 2114
-        y: 225
-        width: 10
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 6abeb7191da2a3848a0904070aa6711e
-      internalID: -214730497
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Warp_14
-      rect:
-        serializedVersion: 2
-        x: 976
-        y: 183
-        width: 16
-        height: 39
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 051e92b4d3cbeef45a5a66a0e0bee05e
-      internalID: 366040434
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Warp_15
-      rect:
-        serializedVersion: 2
-        x: 1017
-        y: 174
-        width: 16
-        height: 27
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: af0123d2384895543b447f0ea4ff8484
-      internalID: -681820740
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Warp_16
-      rect:
-        serializedVersion: 2
-        x: 1231
-        y: 179
-        width: 10
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: da84b69a376fe5f47a3066261b3ad378
-      internalID: 1142935648
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Warp_17
-      rect:
-        serializedVersion: 2
-        x: 2132
-        y: 179
-        width: 9
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: d88ea8daa4f991e4ab46572f83bda642
-      internalID: -2060368607
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Warp_18
-      rect:
-        serializedVersion: 2
-        x: 2325
-        y: 183
-        width: 17
-        height: 39
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 2f8e1ff05eeca34418a5a82c7503c2e6
-      internalID: 1545456685
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Warp_19
-      rect:
-        serializedVersion: 2
-        x: 2366
-        y: 174
-        width: 17
-        height: 27
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 84381053bd459bd4cb87bf9ec5e5a19f
-      internalID: -562917837
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Warp_20
-      rect:
-        serializedVersion: 2
-        x: 1211
-        y: 151
-        width: 7
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 5bac39528fe812d499a20d21659c94ad
-      internalID: 1823462634
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Warp_21
-      rect:
-        serializedVersion: 2
-        x: 2111
-        y: 151
-        width: 7
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: d91eb912a3d74b349854311972eab9b8
-      internalID: 1345529265
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Warp_22
-      rect:
-        serializedVersion: 2
-        x: 1000
-        y: 110
-        width: 17
-        height: 36
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: c5d9fa3026e0d474f8fc85b98971da34
-      internalID: -2092509507
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Warp_23
-      rect:
-        serializedVersion: 2
-        x: 2350
-        y: 110
-        width: 16
-        height: 36
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: f3a478625173a9744a1bb62c4fe03b85
-      internalID: 1223185334
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Warp_24
-      rect:
-        serializedVersion: 2
-        x: 976
-        y: 41
-        width: 14
-        height: 33
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 544977338e3e7f1428d9b9860bd9ad41
-      internalID: -1651795749
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Warp_25
-      rect:
-        serializedVersion: 2
-        x: 1018
-        y: 69
-        width: 10
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: fa2af64e3d0d9a54ab5b017ffbfcc11c
-      internalID: 2004557181
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Warp_26
-      rect:
-        serializedVersion: 2
-        x: 1221
-        y: 72
-        width: 12
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: aa3b485cfb332a5478841fe111cce69a
-      internalID: -902918025
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Warp_27
-      rect:
-        serializedVersion: 2
-        x: 2123
-        y: 72
-        width: 9
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 57bafbf4e1f0caa4f83c83cbae41bab1
-      internalID: 1111103062
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Warp_28
-      rect:
-        serializedVersion: 2
-        x: 2325
-        y: 41
-        width: 15
-        height: 33
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 81b63c3493229ab4e8bde532d59527f2
-      internalID: -1447935494
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Warp_29
-      rect:
-        serializedVersion: 2
-        x: 2368
-        y: 69
-        width: 10
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: a40185534b0bd224d89d48121f6dbf7e
-      internalID: 791339430
       vertices: []
       indices: 
       edges: []
@@ -759,34 +381,16 @@ TextureImporter:
     nameFileIdTable:
       Warp_10: -481311818
       Warp_1: 988515702
-      Warp_25: 2004557181
       Warp_4: 1904306942
-      Warp_26: -902918025
-      Warp_29: 791339430
-      Warp_24: -1651795749
-      Warp_22: -2092509507
       Warp_0: -561130922
       Warp_11: -499620273
-      Warp_23: 1223185334
-      Warp_15: -681820740
-      Warp_21: 1345529265
       Warp_3: -1952180408
-      Warp_18: 1545456685
-      Warp_12: -724038948
-      Warp_19: -562917837
       Warp_6: 1083337314
       Warp_9: 1461178562
-      Warp_27: 1111103062
-      Warp_20: 1823462634
       Warp_2: 1544494213
       Warp_7: 1899973469
-      Warp_13: -214730497
-      Warp_14: 366040434
       Warp_5: 969310853
       Warp_8: -219709629
-      Warp_17: -2060368607
-      Warp_16: 1142935648
-      Warp_28: -1447935494
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

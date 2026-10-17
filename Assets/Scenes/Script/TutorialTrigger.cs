@@ -16,6 +16,7 @@ public class TutorialTrigger : MonoBehaviour
 
     [Header("🌟 รหัสจำการดู (ตั้งชื่อห้ามซ้ำกันในแต่ละจุด)")]
     public string tutorialKey = "HasSeenTrigger_01";
+    public bool alwaysShowForTest = false;
 
     private bool arrowMoved = false;
 
@@ -30,7 +31,7 @@ public class TutorialTrigger : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             // 🛑 1. เช็กความจำ: ถ้าค่ายังเป็น 0 (แปลว่ายังไม่เคยเหยียบจุดนี้)
-            if (PlayerPrefs.GetInt(tutorialKey, 0) == 0)
+            if (PlayerPrefs.GetInt(tutorialKey, 0) == 0 || alwaysShowForTest)
             {
                 ShowTutorial(); // เรียกฟังก์ชันโชว์ป๊อปอัปและหยุดเวลา
             }
@@ -72,6 +73,18 @@ public class TutorialTrigger : MonoBehaviour
         {
             UpdatePageDisplay(); // ถ้ายังไม่หมด ก็เปลี่ยนไปหน้าถัดไป
         }
+    }
+    public void PreviousPage()
+    {
+        currentPage--;
+
+        // ดักไว้ไม่ให้หน้าติดลบ (ถ้าอยู่หน้าแรกสุดแล้วกดย้อน ก็ให้อยู่หน้า 1 เหมือนเดิม)
+        if (currentPage < 0)
+        {
+            currentPage = 0;
+        }
+
+        UpdatePageDisplay(); // อัปเดตให้โชว์หน้าปัจจุบัน
     }
 
     void UpdatePageDisplay()
