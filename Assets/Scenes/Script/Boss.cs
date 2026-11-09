@@ -47,6 +47,7 @@ public class Boss : MonoBehaviour
     public GameObject exclamationPrefab;
     public float exclamationOffsetY = 3.5f; // 🌟 เพิ่มตัวแปรให้ไปปรับความสูง ! ใน Unity ได้เลย
     public GameObject dangerZonePrefab;
+    public GameObject circleDangerZonePrefab;
 
     [Header("Animation & Blackhole (เฟส 2)")]
     public Animator bossAnim;
@@ -291,34 +292,37 @@ public class Boss : MonoBehaviour
         if (playerTransform == null) yield break;
         isAttacking = true;
         FacePlayer();
-        if (rb != null) rb.velocity = Vector2.zero; // หยุดแรงไถลจากฟิสิกส์
-        velocity = Vector3.zero;                    // หยุดความเร็วของโค้ดลอยตาม
+        if (rb != null) rb.velocity = Vector2.zero;
+        velocity = Vector3.zero;
         currentCenterPos = transform.position;
 
-        ShowWarningExclamation(); // ⚠️ เก็บเตือนภัยไว้เฉพาะท่าหนักๆ
+        ShowWarningExclamation();
         spriteRenderer.color = Color.red;
+
+        // 🌟 ล็อคเป้าหมายตำแหน่งผู้เล่น "ณ วินาทีนี้" ไว้เลย ห้ามเปลี่ยน!
+        Vector3 lockedTargetPos = playerTransform.position;
+
         if (dangerZonePrefab != null)
         {
-            Vector3 lockTargetPos = playerTransform.position;
-
-            // 🌟 1. คำนวณทิศทางและองศาจากบอสไปหาผู้เล่น
-            Vector2 dir = lockTargetPos - transform.position;
+            Vector2 dir = lockedTargetPos - transform.position;
             float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
 
-            // 🌟 2. เสกเส้นเตือนที่ "ตัวบอส" (ไม่ใช่ตัวผู้เล่นแล้ว) และหมุนองศาชี้ไปหาเป้าหมาย
             GameObject danger = Instantiate(dangerZonePrefab, transform.position, Quaternion.Euler(0, 0, angle));
-
-            // 🌟 3. ยืดความยาวเส้นให้เท่ากับระยะทางระหว่างบอสถึงผู้เล่นพอดี (ถ้าเส้นยาวไป/สั้นไป ลองปรับแกน X ตรงนี้ดูครับ)
             float distance = dir.magnitude;
-            danger.transform.localScale = new Vector3(distance, 1.5f, 1f);
 
+            // ยืดเส้นเตือนให้ทะลุตัวผู้เล่นไปอีกนิดหน่อย (เพิ่มระยะ +2f) จะได้เห็นชัดเจนว่าพุ่งสุดตรงไหน
+            danger.transform.localScale = new Vector3(distance + 2f, 1.5f, 1f);
             Destroy(danger, 0.8f);
         }
 
-        yield return new WaitForSeconds(0.8f);
+        yield return new WaitForSeconds(0.8f); // รอให้ผู้เล่นเดินหลบ
 
-        Vector3 targetPosition = playerTransform.position;
+        // 🌟 บอสจะพุ่งไปที่ lockedTargetPos ที่ล็อคไว้แต่แรกเท่านั้น (ถ้าผู้เล่นเดินออกนอกเส้นก็จะไม่โดนแล้ว)
         Vector3 startPosition = transform.position;
+
+        // คำนวณระยะพุ่งให้ทะลุจุดที่ล็อคไว้ไปอีกนิด เพื่อความสมจริง
+        Vector3 dashEndPosition = startPosition + (lockedTargetPos - startPosition).normalized * (Vector3.Distance(startPosition, lockedTargetPos) + 2f);
+
         float dashTime = 0.4f;
         float t = 0f;
 
@@ -326,7 +330,7 @@ public class Boss : MonoBehaviour
         {
             if (isBroken) break;
             t += Time.deltaTime / dashTime;
-            transform.position = Vector3.Lerp(startPosition, targetPosition, t);
+            transform.position = Vector3.Lerp(startPosition, dashEndPosition, t);
             yield return null;
         }
 
@@ -344,20 +348,64 @@ public class Boss : MonoBehaviour
         FacePlayer();
 
         ShowWarningExclamation();
-        spriteRenderer.color = Color.red;
+        spriteRenderer.color = Color.white;
 
+        // บอสลอยขึ้นไปเตรียมยิง
         Vector3 sweepStartPos = new Vector3(transform.position.x, transform.position.y + 3f, 0);
         float t = 0;
         while (t < 1f) { transform.position = Vector3.Lerp(transform.position, sweepStartPos, t); t += Time.deltaTime * 3f; yield return null; }
 
         yield return new WaitForSeconds(0.5f);
 
-        if (bossAnim != null) bossAnim.SetTrigger("CastLaser");
+        // 🌟 1. สั่งเล่นอนิเมชัน "ชาร์จพลัง + เปิดเสื้อ"
+        if (bossAnim != null)
+        {
+            bossAnim.SetTrigger("CastLaser"); // เล่นท่าชาร์จ
+            bossAnim.SetBool("IsShooting", true); // สั่งให้ค้างท่ายิงเลเซอร์ไว้
+        }
+
         yield return new WaitForSeconds(0.2f);
         if (laserMuzzleFlash != null) laserMuzzleFlash.SetActive(true);
 
-        yield return new WaitForSeconds(1.5f);
+        // คำนวณมุมกวาดล่วงหน้า
+        Vector2 aimDirection = (playerTransform.position - transform.position).normalized;
+        float aimAngle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
+        float sweepRange = 45f;
+        float startAngle = aimAngle - sweepRange;
+        float endAngle = aimAngle + sweepRange;
 
+        GameObject warningStart = null;
+        GameObject warningEnd = null;
+
+        // เสกเส้นเตือน 2 เส้น (บอกขอบเขตเขตอันตราย)
+        if (dangerZonePrefab != null)
+        {
+            warningStart = Instantiate(dangerZonePrefab, transform.position, Quaternion.Euler(0, 0, startAngle), transform);
+            warningEnd = Instantiate(dangerZonePrefab, transform.position, Quaternion.Euler(0, 0, endAngle), transform);
+        }
+
+        // อนิเมชันกระพริบเตือนขอบเขต 1.5 วินาที
+        float chargeDuration = 1.5f;
+        float chargeTimer = 0f;
+
+        while (chargeTimer < chargeDuration && currentHealth > 0)
+        {
+            chargeTimer += Time.deltaTime;
+            float percent = chargeTimer / chargeDuration;
+
+            if (warningStart != null && warningEnd != null)
+            {
+                float currentLength = Mathf.Lerp(0f, 30f, percent);
+                Vector3 newScale = new Vector3(currentLength, 0.15f, 1f);
+                warningStart.transform.localScale = newScale;
+                warningEnd.transform.localScale = newScale;
+            }
+            yield return null;
+        }
+
+        // ลบเส้นขอบเขตทิ้ง แล้วยิงเลเซอร์จริง
+        if (warningStart != null) Destroy(warningStart);
+        if (warningEnd != null) Destroy(warningEnd);
         if (laserMuzzleFlash != null) laserMuzzleFlash.SetActive(false);
         if (laserBeamLine != null) laserBeamLine.SetActive(true);
 
@@ -367,12 +415,7 @@ public class Boss : MonoBehaviour
             bossAudio.Play();
         }
 
-        Vector2 direction = (playerTransform.position - transform.position).normalized;
-        float centerAngleStandard = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-
-        float sweepRange = 45f;
-        float startAngle = centerAngleStandard - sweepRange;
-        float endAngle = centerAngleStandard + sweepRange;
+        // เริ่มกวาดเลเซอร์ของจริง
         float sweepDuration = 1.5f;
         float timer = 0f;
 
@@ -382,6 +425,12 @@ public class Boss : MonoBehaviour
             float currentAngleStandard = Mathf.Lerp(startAngle, endAngle, timer / sweepDuration);
             if (laserBeamLine != null) laserBeamLine.transform.rotation = Quaternion.Euler(0, 0, currentAngleStandard);
             yield return null;
+        }
+
+        // 🌟 2. ยิงเสร็จแล้ว สั่งให้เลิกค้างท่ายิง (กลับไปท่ายืนปกติ)
+        if (bossAnim != null)
+        {
+            bossAnim.SetBool("IsShooting", false);
         }
 
         if (laserBeamLine != null) laserBeamLine.SetActive(false);
@@ -410,9 +459,11 @@ public class Boss : MonoBehaviour
         spriteRenderer.color = Color.red;
 
         Vector3 slamTarget = new Vector3(transform.position.x, playerTransform.position.y, 0);
-        if (dangerZonePrefab != null)
+
+        // 🌟 เรียกใช้ Prefab วงกลม (circleDangerZonePrefab) แทนสี่เหลี่ยม
+        if (circleDangerZonePrefab != null)
         {
-            GameObject danger = Instantiate(dangerZonePrefab, slamTarget, Quaternion.identity);
+            GameObject danger = Instantiate(circleDangerZonePrefab, slamTarget, Quaternion.identity);
             Destroy(danger, 0.7f);
         }
 

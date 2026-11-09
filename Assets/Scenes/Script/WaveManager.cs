@@ -5,17 +5,16 @@ using TMPro;
 
 public class WaveManager : MonoBehaviour
 {
+    public static WaveManager instance;
+
     [Header("UI แสดงผลบนหน้าจอ")]
     public TextMeshProUGUI waveCountText;
     public TextMeshProUGUI warningDirectionText;
 
     [Header("ตั้งค่าเวฟ (Wave Settings)")]
-    public int totalWaves = 5;
+    public int totalWaves = 1; // ตั้งไว้ 1 สำหรับเทสต์
     private int currentWave = 0;
 
-    // ==========================================
-    // 🌟 ระบบแยกมอนสเตอร์ตามเวฟ (Tutorial System)
-    // ==========================================
     [Header("ศัตรูแยกตามเวฟ (Tutorial)")]
     public GameObject[] wave1Enemies;
     public GameObject[] wave2Enemies;
@@ -33,16 +32,33 @@ public class WaveManager : MonoBehaviour
     private bool isBossSpawned = false;
     private bool isRoomCleared = false;
     private bool isSpawning = false;
-
     private bool isWaitingForReward = false;
+    private bool hasClearedFirstBoss = false; // 🌟 เช็กว่าผ่านบอสตัวแรกไปหรือยัง
 
     [Header("ระบบแท่นอัปเกรด & แจ้งเตือน")]
     public GameObject upgradeShrinePrefab;
     public Transform spawnPoint;
     public GameObject warningPrefab;
 
+    [Header("🌟 ระบบร้านค้าหลังตีบอส")]
+    public GameObject npcShopPrefab;
+    public Transform shopSpawnPoint;
+    private GameObject currentShopInstance;
+
+    [Header("🌟 ประตูมิติไปเวฟต่อไป")]
+    public GameObject portalPrefab;
+    public Transform portalSpawnPoint;
+    private GameObject currentPortalInstance;
+
     public bool gameStarted = false;
     public GameObject startTrigger;
+
+
+    void Awake()
+    {
+        instance = this;
+    }
+
     void Start()
     {
         if (ArrowIndicator.instance != null && startTrigger != null)
@@ -60,10 +76,10 @@ public class WaveManager : MonoBehaviour
             isWaitingForReward = false;
             isSpawning = false;
             currentWave = 0;
+            hasClearedFirstBoss = false; // เริ่มเกมใหม่ รีเซ็ตสถานะบอส
 
             StopAllCoroutines();
             StartCoroutine(StartNextWave());
-            Debug.Log("Game Started!");
         }
     }
 
@@ -73,7 +89,6 @@ public class WaveManager : MonoBehaviour
 
         aliveEnemies.RemoveAll(item => item == null);
 
-        // 🌟 จังหวะที่ศัตรูตายหมดเวฟ!
         if (aliveEnemies.Count == 0 && currentWave > 0 && !isWaitingForReward)
         {
             isWaitingForReward = true;
@@ -86,25 +101,24 @@ public class WaveManager : MonoBehaviour
             {
                 OnWaveClear();
             }
-            else if (isBossSpawned)
+            else
             {
-                // 🌟 ดึงบัฟเวฟเล็กออก (แต่บัฟบอสถาวรจะยังอยู่)
-                if (BuffManager.instance != null)
-                {
-                    BuffManager.instance.OnWaveEnded();
-                }
+                if (BuffManager.instance != null) BuffManager.instance.OnWaveEnded();
 
-                // 🌟 [เปลี่ยนใหม่] เมื่อฆ่าบอสสำเร็จ แทนที่จะจบเกม ให้เสก "เสาบอส" แทน!
                 GameObject shrine = Instantiate(upgradeShrinePrefab, spawnPoint.position, Quaternion.identity);
-
-                // ติ๊กบอกว่าเป็นเสาบอส เพื่อสุ่มการ์ดสัญญามรณะ
                 UpgradeShrine shrineScript = shrine.GetComponent<UpgradeShrine>();
                 if (shrineScript != null) shrineScript.isBossShrine = true;
 
-                if (ArrowIndicator.instance != null)
+                if (npcShopPrefab != null && shopSpawnPoint != null)
                 {
-                    ArrowIndicator.instance.SetTarget(shrine.transform);
+                    currentShopInstance = Instantiate(npcShopPrefab, shopSpawnPoint.position, Quaternion.identity);
                 }
+                if (portalPrefab != null && portalSpawnPoint != null)
+                {
+                    currentPortalInstance = Instantiate(portalPrefab, portalSpawnPoint.position, Quaternion.identity);
+                }
+
+                if (ArrowIndicator.instance != null) ArrowIndicator.instance.SetTarget(shrine.transform);
             }
         }
     }
@@ -123,12 +137,21 @@ public class WaveManager : MonoBehaviour
         yield return new WaitForSeconds(2f);
 
         int enemiesToSpawn = currentWave + 2;
-
         GameObject[] currentEnemyPool;
-        if (currentWave == 1) currentEnemyPool = wave1Enemies;
-        else if (currentWave == 2) currentEnemyPool = wave2Enemies;
-        else if (currentWave == 3) currentEnemyPool = wave3Enemies;
-        else currentEnemyPool = normalEnemies;
+
+        // 🌟 ถ้ารอบแรกยังไม่เจอ Boss ให้ใช้ระบบแยกเวฟ 1, 2, 3 ตามปกติ
+        // แต่ถ้าผ่านบอสตัวแรกมาแล้ว (Endless Loop) จะดึงจาก normalEnemies มาคละกันทุกเวฟยาวๆ
+        if (hasClearedFirstBoss)
+        {
+            currentEnemyPool = normalEnemies;
+        }
+        else
+        {
+            if (currentWave == 1) currentEnemyPool = wave1Enemies;
+            else if (currentWave == 2) currentEnemyPool = wave2Enemies;
+            else if (currentWave == 3) currentEnemyPool = wave3Enemies;
+            else currentEnemyPool = normalEnemies;
+        }
 
         if (currentEnemyPool.Length == 0) currentEnemyPool = normalEnemies;
 
@@ -140,25 +163,21 @@ public class WaveManager : MonoBehaviour
             GameObject randomEnemy = currentEnemyPool[Random.Range(0, currentEnemyPool.Length)];
             Transform chosenPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
 
-            if (currentWave == 1)
+            if (!hasClearedFirstBoss && currentWave == 1)
             {
                 foreach (Transform pt in spawnPoints) { if (pt.position.x > centerX) { chosenPoint = pt; break; } }
             }
-            else if (currentWave == 2)
+            else if (!hasClearedFirstBoss && currentWave == 2)
             {
                 foreach (Transform pt in spawnPoints) { if (pt.position.x < centerX) { chosenPoint = pt; break; } }
-
-            }
-            if (ArrowIndicator.instance != null)
-            {
-                ArrowIndicator.instance.SetTarget(chosenPoint);
             }
 
+            if (ArrowIndicator.instance != null) ArrowIndicator.instance.SetTarget(chosenPoint);
 
             if (warningDirectionText != null)
             {
                 string direction = (chosenPoint.position.x < centerX) ? "ซ้าย" : "ขวา";
-                warningDirectionText.text = "⚠️ ระวัง! ศัตรูมาทาง" + direction + "!";
+                warningDirectionText.text = "ระวัง ศัตรูมาทาง" + direction;
                 warningDirectionText.gameObject.SetActive(true);
             }
 
@@ -171,22 +190,14 @@ public class WaveManager : MonoBehaviour
             if (warning != null) Destroy(warning);
 
             GameObject spawnedEnemy = Instantiate(randomEnemy, chosenPoint.position, Quaternion.identity);
-            if (ArrowIndicator.instance != null)
-            {
-                ArrowIndicator.instance.ClearTarget();
-            }
+            if (ArrowIndicator.instance != null) ArrowIndicator.instance.ClearTarget();
 
             Enemy enemyScript = spawnedEnemy.GetComponent<Enemy>();
-            if (enemyScript != null)
-            {
-                enemyScript.SetTutorialWave(currentWave, i);
-            }
+            if (enemyScript != null) enemyScript.SetTutorialWave(currentWave, i);
 
             aliveEnemies.Add(spawnedEnemy);
-
             yield return new WaitForSeconds(0.5f);
         }
-
         isSpawning = false;
     }
 
@@ -197,13 +208,12 @@ public class WaveManager : MonoBehaviour
 
         if (warningDirectionText != null)
         {
-            warningDirectionText.text = "⚠️ คำเตือน! บอสปรากฏตัว!";
+            warningDirectionText.text = "คำเตือน บอสปรากฏตัว";
             warningDirectionText.color = Color.red;
             warningDirectionText.gameObject.SetActive(true);
         }
 
         yield return new WaitForSeconds(3f);
-
         if (warningDirectionText != null) warningDirectionText.gameObject.SetActive(false);
 
         Transform bossPoint = spawnPoints[0];
@@ -221,43 +231,22 @@ public class WaveManager : MonoBehaviour
         aliveEnemies.Add(spawnedBoss);
 
         BossCutscene cutsceneManager = FindObjectOfType<BossCutscene>();
-        if (cutsceneManager != null)
-        {
-            cutsceneManager.PlayCutscene(spawnedBoss.transform);
-        }
+        if (cutsceneManager != null) cutsceneManager.PlayCutscene(spawnedBoss.transform);
 
         isSpawning = false;
     }
 
-    // ==========================================
-    // 🌟 ฟังก์ชันจัดการเมื่อจบเวฟ
-    // ==========================================
     void OnWaveClear()
     {
-        if (BuffManager.instance != null)
-        {
-            BuffManager.instance.OnWaveEnded();
-        }
-
+        if (BuffManager.instance != null) BuffManager.instance.OnWaveEnded();
         GameObject shrine = Instantiate(upgradeShrinePrefab, spawnPoint.position, Quaternion.identity);
-
-        if (ArrowIndicator.instance != null)
-        {
-            ArrowIndicator.instance.SetTarget(shrine.transform);
-        }
+        if (ArrowIndicator.instance != null) ArrowIndicator.instance.SetTarget(shrine.transform);
     }
 
     public void ResumeWave()
     {
-        if (isRoomCleared || !isWaitingForReward || isSpawning)
-        {
-            return;
-        }
-
-        if (ArrowIndicator.instance != null)
-        {
-            ArrowIndicator.instance.ClearTarget();
-        }
+        if (isRoomCleared || !isWaitingForReward || isSpawning) return;
+        if (ArrowIndicator.instance != null) ArrowIndicator.instance.ClearTarget();
 
         isWaitingForReward = false;
 
@@ -269,13 +258,20 @@ public class WaveManager : MonoBehaviour
         {
             StartCoroutine(SpawnBoss());
         }
-        else
-        {
-            // 🌟 [ระบบวนลูป Endless] หลังจากเลือกการ์ดบอสเสร็จ รีเซ็ตและเริ่มเวฟใหม่ที่ยากขึ้น
-            isBossSpawned = false;
-            currentWave = 0;
-            totalWaves += 2; // เพิ่มจำนวนเวฟให้ยาวขึ้นในรอบถัดไป
-            StartCoroutine(StartNextWave());
-        }
+    }
+
+    // 🌟 พอผ่านบอสตัวแรกแล้วเข้าประตู จะเริ่มลูป Endless โดยบังคับใช้ Normal Enemies คละกันยาวๆ
+    public void StartEndlessLoop()
+    {
+        if (currentShopInstance != null) Destroy(currentShopInstance);
+        if (currentPortalInstance != null) Destroy(currentPortalInstance);
+
+        currentWave = 0;
+        totalWaves = 3;        // เมื่อทำจริงปรับเป็น 3 เวฟต่อบอส 1 ตัวได้เลยครับ
+        isBossSpawned = false;
+        isWaitingForReward = false;
+        hasClearedFirstBoss = true; // ล็อกสถานะให้ใช้ Normal Enemies ทันทีในลูปถัดไป
+
+        StartCoroutine(StartNextWave());
     }
 }

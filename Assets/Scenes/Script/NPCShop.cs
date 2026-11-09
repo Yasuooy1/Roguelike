@@ -1,13 +1,16 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using UnityEngine.EventSystems; // คุม UI ด้วยจอยสติ๊ก/คีย์บอร์ด
 
 public class NPCShop : MonoBehaviour
 {
     [Header("Shop UI")]
     public GameObject shopCanvas;
     public Text messageText;
-    public GameObject firstShopButton; // ลากปุ่มแรก (เช่น ซื้อยาเลือด) มาใส่ช่องนี้
+    public GameObject firstShopButton;
+
+    [Header("ปุ่ม F ลอยบนหัว (Interact UI)")]
+    public GameObject interactUI;
 
     [Header("Item To Sell (ยาเลือด)")]
     public string potionName = "HealPotion";
@@ -22,13 +25,37 @@ public class NPCShop : MonoBehaviour
     public float manaPotionCooldown = 2f;
 
     private PlayerInventory playerInventory;
-
-    [Header("Upgrade Skills")]
-    public int fireUpgradePrice = 100;
+    private bool canInteract = false;
+    private bool isShopOpen = false;
 
     void Start()
     {
+        // 🌟 ค้นหา Canvas อัตโนมัติถ้าช่องยังว่าง
+        if (shopCanvas == null)
+        {
+            Transform canvasTrans = transform.Find("Shop Canvas");
+            if (canvasTrans == null) canvasTrans = transform.Find("Canvas");
+            if (canvasTrans == null) canvasTrans = transform.Find("ShopPanel");
+
+            if (canvasTrans != null) shopCanvas = canvasTrans.gameObject;
+            else
+            {
+                Canvas foundCanvas = GetComponentInChildren<Canvas>(true);
+                if (foundCanvas != null) shopCanvas = foundCanvas.gameObject;
+            }
+        }
+
         if (shopCanvas != null) shopCanvas.SetActive(false);
+        if (interactUI != null) interactUI.SetActive(false);
+    }
+
+    void Update()
+    {
+        // ถ้าผู้เล่นอยู่ในระยะ และกดปุ่ม F
+        if (canInteract && Input.GetKeyDown(KeyCode.F))
+        {
+            ToggleShop();
+        }
     }
 
     // ฟังก์ชันเปิด/ปิดหน้าร้านค้า
@@ -36,15 +63,13 @@ public class NPCShop : MonoBehaviour
     {
         if (shopCanvas != null)
         {
-            bool isActive = !shopCanvas.activeSelf;
-            shopCanvas.SetActive(isActive);
+            isShopOpen = !shopCanvas.activeSelf;
+            shopCanvas.SetActive(isShopOpen);
 
-            // หยุดเวลาตอนเปิดร้าน
-            Time.timeScale = isActive ? 0f : 1f;
+            Time.timeScale = isShopOpen ? 0f : 1f;
 
-            if (isActive)
+            if (isShopOpen)
             {
-                // ล็อกเป้าให้จอยสติ๊กไปที่ปุ่มแรก
                 EventSystem.current.SetSelectedGameObject(null);
                 EventSystem.current.SetSelectedGameObject(firstShopButton);
 
@@ -53,11 +78,16 @@ public class NPCShop : MonoBehaviour
                     int currentSouls = PlayerPrefs.GetInt("Player_Souls", 0);
                     messageText.text = "ยินดีต้อนรับ! ตอนนี้คุณมี " + currentSouls + " วิญญาณ\nต้องการซื้ออะไรดี?";
                 }
+
+                if (interactUI != null) interactUI.SetActive(false); // ซ่อนปุ่ม F ตอนเปิดร้าน
+            }
+            else
+            {
+                if (interactUI != null && canInteract) interactUI.SetActive(true); // โชว์ปุ่ม F กลับมาถ้ายังยืนอยู่ใกล้
             }
         }
     }
 
-    // ฟังก์ชันซื้อยาเลือด
     public void BuyPotion()
     {
         int currentSouls = PlayerPrefs.GetInt("Player_Souls", 0);
@@ -83,7 +113,6 @@ public class NPCShop : MonoBehaviour
         }
     }
 
-    // ฟังก์ชันซื้อยามานา
     public void BuyManaPotion()
     {
         int currentSouls = PlayerPrefs.GetInt("Player_Souls", 0);
@@ -109,31 +138,36 @@ public class NPCShop : MonoBehaviour
         }
     }
 
-    // ฟังก์ชันปิดหน้าร้านค้า
     public void CloseShop()
     {
         if (shopCanvas != null) shopCanvas.SetActive(false);
         Time.timeScale = 1f;
+        isShopOpen = false;
+        if (interactUI != null && canInteract) interactUI.SetActive(true);
     }
 
-    // ตรวจจับผู้เล่นเดินเข้าใกล้
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
         {
+            canInteract = true;
             playerInventory = collision.GetComponent<PlayerInventory>();
             if (playerInventory != null) playerInventory.currentNearbyShop = this;
+
+            if (interactUI != null && !isShopOpen) interactUI.SetActive(true);
         }
     }
 
-    // ตรวจจับผู้เล่นเดินออกห่าง
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
         {
+            canInteract = false;
+            if (interactUI != null) interactUI.SetActive(false);
+
             if (playerInventory != null) playerInventory.currentNearbyShop = null;
             playerInventory = null;
-            CloseShop(); // ปิดร้านค้าอัตโนมัติเมื่อเดินหนี
+            CloseShop();
         }
     }
 }

@@ -3,32 +3,76 @@
   "WorkspaceRootPath": "D:\\TSIT\\RogueliteProject\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\BuffManager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:Assets\\Scenes\\Script\\BuffManager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\PauseMenu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Scenes\\Script\\PauseMenu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|d:\\tsit\\rogueliteproject\\assets\\scenes\\script\\bufficonui.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\bufficonui.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|d:\\tsit\\rogueliteproject\\assets\\scenes\\script\\menubuttoncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\menubuttoncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|d:\\tsit\\rogueliteproject\\assets\\scenes\\script\\npcshop.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\npcshop.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\assets\\scenes\\script\\buttonjuice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\buttonjuice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\assets\\scenes\\script\\playerinventory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\playerinventory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\assets\\scenes\\script\\autoselectbutton.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\autoselectbutton.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\assets\\scenes\\script\\autoselectui.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\autoselectui.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\assets\\scenes\\script\\shopbuttonhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\shopbuttonhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\assets\\scenes\\script\\wavemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\wavemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\assets\\scenes\\script\\merchantinteract.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\merchantinteract.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\assets\\scenes\\script\\pausemenu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\pausemenu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\assets\\scenes\\script\\npcshop.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\npcshop.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\assets\\scenes\\script\\nextwaveportal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\nextwaveportal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\assets\\scenes\\script\\buffmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\buffmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\assets\\scenes\\script\\upgrademanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\upgrademanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\assets\\scenes\\script\\boss.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\boss.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\assets\\scenes\\script\\playerhealth.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\playerhealth.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\assets\\scenes\\script\\enemy.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\enemy.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\assets\\scenes\\script\\bufficonui.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\bufficonui.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\assets\\scenes\\script\\playerinventory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\playerinventory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\assets\\scenes\\script\\pausemenu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\pausemenu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\assets\\scenes\\script\\bosshealthui.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -51,28 +95,12 @@
       "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\cardselectioneffect.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\assets\\scenes\\script\\wavemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\wavemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\assets\\scenes\\script\\enemy.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\enemy.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\assets\\scenes\\script\\upgradeshrine.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\upgradeshrine.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\assets\\scenes\\script\\playerhealth.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\playerhealth.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\assets\\scenes\\script\\flyingenemy.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\flyingenemy.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\assets\\scenes\\script\\autoselectui.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\autoselectui.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\assets\\scenes\\script\\warpportal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -95,12 +123,16 @@
       "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\lightflicker.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\SpellMixer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:Assets\\Scenes\\Script\\SpellMixer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\HealthBarUI.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:Assets\\Scenes\\Script\\HealthBarUI.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:1:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\assets\\scenes\\script\\spellmixer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:1:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\spellmixer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:2:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|D:\\TSIT\\RogueliteProject\\assets\\scenes\\script\\spellmixer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:2:0:{F5A26442-B308-6E3F-DBDE-9F07BE23632F}|Assembly-CSharp.csproj|solutionrelative:assets\\scenes\\script\\spellmixer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -110,49 +142,121 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 10,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "BuffIconUI.cs",
-              "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\BuffIconUI.cs",
-              "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\BuffIconUI.cs",
-              "ToolTip": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\BuffIconUI.cs",
-              "RelativeToolTip": "Assets\\Scenes\\Script\\BuffIconUI.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAFAAAAAAAAAA==",
+              "Title": "MenuButtonController.cs",
+              "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\MenuButtonController.cs",
+              "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\MenuButtonController.cs",
+              "ToolTip": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\MenuButtonController.cs",
+              "RelativeToolTip": "Assets\\Scenes\\Script\\MenuButtonController.cs",
+              "ViewState": "AgIAACYAAAAAAAAAAAAAwFIAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-17T03:54:34.104Z",
+              "WhenOpened": "2026-11-09T00:10:32.897Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "PauseMenu.cs",
+              "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\PauseMenu.cs",
+              "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\PauseMenu.cs",
+              "ToolTip": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\PauseMenu.cs",
+              "RelativeToolTip": "Assets\\Scenes\\Script\\PauseMenu.cs",
+              "ViewState": "AgIAACUAAAAAAAAAAAAswEcAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-09T10:35:38.817Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "AutoSelectButton.cs",
+              "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\AutoSelectButton.cs",
+              "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\AutoSelectButton.cs",
+              "ToolTip": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\AutoSelectButton.cs",
+              "RelativeToolTip": "Assets\\Scenes\\Script\\AutoSelectButton.cs",
+              "ViewState": "AgIAABEAAAAAAAAAAAAwwCIAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-09T00:03:36.962Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "ShopButtonHandler.cs",
+              "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\ShopButtonHandler.cs",
+              "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\ShopButtonHandler.cs",
+              "ToolTip": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\ShopButtonHandler.cs",
+              "RelativeToolTip": "Assets\\Scenes\\Script\\ShopButtonHandler.cs",
+              "ViewState": "AgIAAD8AAAAAAAAAAAAUwFIAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-08T23:37:54.237Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "UpgradeManager.cs",
+              "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\UpgradeManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\UpgradeManager.cs",
+              "ToolTip": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\UpgradeManager.cs",
+              "RelativeToolTip": "Assets\\Scenes\\Script\\UpgradeManager.cs",
+              "ViewState": "AgIAAEoAAAAAAAAAAAAswAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-08T15:23:14.287Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "NPCShop.cs",
-              "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\NPCShop.cs",
-              "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\NPCShop.cs",
-              "ToolTip": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\NPCShop.cs",
-              "RelativeToolTip": "Assets\\Scenes\\Script\\NPCShop.cs",
-              "ViewState": "AgIAADkAAAAAAAAAAAAqwEoAAAAwAAAAAAAAAA==",
+              "Title": "ButtonJuice.cs",
+              "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\ButtonJuice.cs",
+              "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\ButtonJuice.cs",
+              "ToolTip": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\ButtonJuice.cs",
+              "RelativeToolTip": "Assets\\Scenes\\Script\\ButtonJuice.cs",
+              "ViewState": "AgIAADEAAAAAAAAAAAAUwGQAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-17T03:42:24.139Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-11-08T15:23:14.291Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 12,
+              "Title": "Boss.cs",
+              "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\Boss.cs",
+              "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\Boss.cs",
+              "ToolTip": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\Boss.cs",
+              "RelativeToolTip": "Assets\\Scenes\\Script\\Boss.cs",
+              "ViewState": "AgIAAEgBAAAAAAAAAAAIwFwBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-08T15:23:14.293Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 31,
+              "Title": "SpellMixer.cs",
+              "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\SpellMixer.cs",
+              "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\SpellMixer.cs",
+              "ToolTip": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\SpellMixer.cs",
+              "RelativeToolTip": "Assets\\Scenes\\Script\\SpellMixer.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAA7AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-08T15:23:14.309Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
               "Title": "MerchantInteract.cs",
               "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\MerchantInteract.cs",
               "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\MerchantInteract.cs",
               "ToolTip": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\MerchantInteract.cs",
               "RelativeToolTip": "Assets\\Scenes\\Script\\MerchantInteract.cs",
-              "ViewState": "AgIAABUAAAAAAAAAAAAgwCIAAAAyAAAAAAAAAA==",
+              "ViewState": "AgIAACgAAAAAAAAAAAAcwDUAAABBAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-17T03:01:46.79Z"
+              "WhenOpened": "2026-11-08T15:23:14.314Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 17,
               "Title": "PauseMenu.cs",
               "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\PauseMenu.cs",
               "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\PauseMenu.cs",
@@ -160,11 +264,11 @@
               "RelativeToolTip": "Assets\\Scenes\\Script\\PauseMenu.cs",
               "ViewState": "AgIAAA4AAAAAAAAAAAAIwC0AAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-17T02:22:54.863Z"
+              "WhenOpened": "2026-11-08T15:23:14.317Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 20,
               "Title": "TutorialTrigger.cs",
               "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\TutorialTrigger.cs",
               "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\TutorialTrigger.cs",
@@ -172,11 +276,11 @@
               "RelativeToolTip": "Assets\\Scenes\\Script\\TutorialTrigger.cs",
               "ViewState": "AgIAADQAAAAAAAAAAAAAwFcAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-16T22:04:49.714Z"
+              "WhenOpened": "2026-11-08T15:23:14.318Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 22,
               "Title": "CardSelectionEffect.cs",
               "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\CardSelectionEffect.cs",
               "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\CardSelectionEffect.cs",
@@ -184,35 +288,83 @@
               "RelativeToolTip": "Assets\\Scenes\\Script\\CardSelectionEffect.cs",
               "ViewState": "AgIAAAkAAAAAAAAAAAAQwDcAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-16T21:20:55.32Z"
+              "WhenOpened": "2026-11-08T15:23:14.321Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 6,
               "Title": "WaveManager.cs",
               "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\WaveManager.cs",
               "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\WaveManager.cs",
               "ToolTip": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\WaveManager.cs",
               "RelativeToolTip": "Assets\\Scenes\\Script\\WaveManager.cs",
-              "ViewState": "AgIAAP4AAAAAAAAAAAAgwBgBAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAPUAAAAAAAAAAAAiwBQBAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-16T20:56:45.635Z"
+              "WhenOpened": "2026-11-08T15:23:14.323Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 14,
               "Title": "Enemy.cs",
               "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\Enemy.cs",
               "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\Enemy.cs",
               "ToolTip": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\Enemy.cs",
               "RelativeToolTip": "Assets\\Scenes\\Script\\Enemy.cs",
-              "ViewState": "AgIAABoCAAAAAAAAAAAYwDcCAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAACcBAAAAAAAAAAAqwE4BAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-16T20:41:12.206Z"
+              "WhenOpened": "2026-11-08T15:23:14.324Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 4,
+              "Title": "AutoSelectUI.cs",
+              "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\AutoSelectUI.cs",
+              "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\AutoSelectUI.cs",
+              "ToolTip": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\AutoSelectUI.cs",
+              "RelativeToolTip": "Assets\\Scenes\\Script\\AutoSelectUI.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-08T15:23:14.338Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "NextWavePortal.cs",
+              "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\NextWavePortal.cs",
+              "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\NextWavePortal.cs",
+              "ToolTip": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\NextWavePortal.cs",
+              "RelativeToolTip": "Assets\\Scenes\\Script\\NextWavePortal.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-08T21:14:05.286Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "NPCShop.cs",
+              "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\NPCShop.cs",
+              "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\NPCShop.cs",
+              "ToolTip": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\NPCShop.cs",
+              "RelativeToolTip": "Assets\\Scenes\\Script\\NPCShop.cs",
+              "ViewState": "AgIAAHkAAAAAAAAAAAAUwKwAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-08T15:23:14.333Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "BuffManager.cs",
+              "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\BuffManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\BuffManager.cs",
+              "ToolTip": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\BuffManager.cs",
+              "RelativeToolTip": "Assets\\Scenes\\Script\\BuffManager.cs",
+              "ViewState": "AgIAANIAAAAAAAAAAAAqwJIAAABcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-08T15:23:14.299Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
               "Title": "UpgradeShrine.cs",
               "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\UpgradeShrine.cs",
               "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\UpgradeShrine.cs",
@@ -220,11 +372,11 @@
               "RelativeToolTip": "Assets\\Scenes\\Script\\UpgradeShrine.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-16T20:22:38.854Z"
+              "WhenOpened": "2026-11-08T15:23:14.326Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 19,
               "Title": "PlayerCombat.cs",
               "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\PlayerCombat.cs",
               "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\PlayerCombat.cs",
@@ -232,48 +384,35 @@
               "RelativeToolTip": "Assets\\Scenes\\Script\\PlayerCombat.cs",
               "ViewState": "AgIAADYAAAAAAAAAAAAcwE8AAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-23T04:20:38.441Z"
+              "WhenOpened": "2026-11-08T15:23:14.327Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "BuffManager.cs",
-              "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\BuffManager.cs",
-              "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\BuffManager.cs",
-              "ToolTip": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\BuffManager.cs",
-              "RelativeToolTip": "Assets\\Scenes\\Script\\BuffManager.cs",
-              "ViewState": "AgIAAMgAAAAAAAAAAAAQwNsAAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-16T20:21:18.918Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 13,
               "Title": "PlayerHealth.cs",
               "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\PlayerHealth.cs",
               "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\PlayerHealth.cs",
               "ToolTip": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\PlayerHealth.cs",
               "RelativeToolTip": "Assets\\Scenes\\Script\\PlayerHealth.cs",
-              "ViewState": "AgIAAKcAAAAAAAAAAADwv2QAAABKAAAAAAAAAA==",
+              "ViewState": "AgIAAKQAAAAAAAAAAAAcwL8AAAAuAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-02T21:04:19.572Z"
+              "WhenOpened": "2026-11-08T15:23:14.328Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
-              "Title": "AutoSelectUI.cs",
-              "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\AutoSelectUI.cs",
-              "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\AutoSelectUI.cs",
-              "ToolTip": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\AutoSelectUI.cs",
-              "RelativeToolTip": "Assets\\Scenes\\Script\\AutoSelectUI.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAABAAAAAAAAAA==",
+              "DocumentIndex": 15,
+              "Title": "BuffIconUI.cs",
+              "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\BuffIconUI.cs",
+              "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\BuffIconUI.cs",
+              "ToolTip": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\BuffIconUI.cs",
+              "RelativeToolTip": "Assets\\Scenes\\Script\\BuffIconUI.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-03T06:58:49.803Z"
+              "WhenOpened": "2026-11-08T15:23:14.336Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 16,
               "Title": "PlayerInventory.cs",
               "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\PlayerInventory.cs",
               "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\PlayerInventory.cs",
@@ -281,11 +420,11 @@
               "RelativeToolTip": "Assets\\Scenes\\Script\\PlayerInventory.cs",
               "ViewState": "AgIAACoAAAAAAAAAAAAgwEkAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-16T20:43:05.435Z"
+              "WhenOpened": "2026-11-08T15:23:14.341Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 18,
               "Title": "BossHealthUI.cs",
               "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\BossHealthUI.cs",
               "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\BossHealthUI.cs",
@@ -293,11 +432,11 @@
               "RelativeToolTip": "Assets\\Scenes\\Script\\BossHealthUI.cs",
               "ViewState": "AgIAAAcAAAAAAAAAAAAxwDUAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-17T01:33:38.527Z"
+              "WhenOpened": "2026-11-08T15:23:14.344Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 25,
               "Title": "WarpPortal.cs",
               "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\WarpPortal.cs",
               "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\WarpPortal.cs",
@@ -305,11 +444,11 @@
               "RelativeToolTip": "Assets\\Scenes\\Script\\WarpPortal.cs",
               "ViewState": "AgIAAB4AAAAAAAAAAAAAABoAAABmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-03T06:35:59.021Z"
+              "WhenOpened": "2026-11-08T15:23:14.346Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 27,
               "Title": "FixUIFlip.cs",
               "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\FixUIFlip.cs",
               "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\FixUIFlip.cs",
@@ -317,23 +456,11 @@
               "RelativeToolTip": "Assets\\Scenes\\Script\\FixUIFlip.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-02T22:59:58.816Z"
+              "WhenOpened": "2026-11-08T15:23:14.349Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "Boss.cs",
-              "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\Boss.cs",
-              "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\Boss.cs",
-              "ToolTip": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\Boss.cs",
-              "RelativeToolTip": "Assets\\Scenes\\Script\\Boss.cs",
-              "ViewState": "AgIAAKMAAAAAAAAAAAAAwLoAAABhAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-23T04:36:52.079Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 28,
               "Title": "MonsterPuzzle.cs",
               "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\MonsterPuzzle.cs",
               "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\MonsterPuzzle.cs",
@@ -341,11 +468,11 @@
               "RelativeToolTip": "Assets\\Scenes\\Script\\MonsterPuzzle.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-02T22:59:44.07Z"
+              "WhenOpened": "2026-11-08T15:23:14.351Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 21,
               "Title": "PlayerController.cs",
               "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\PlayerController.cs",
               "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\PlayerController.cs",
@@ -353,11 +480,11 @@
               "RelativeToolTip": "Assets\\Scenes\\Script\\PlayerController.cs",
               "ViewState": "AgIAAFEAAAAAAAAAAAAwwGYAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-23T04:20:36.753Z"
+              "WhenOpened": "2026-11-08T15:23:14.354Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 26,
               "Title": "UIPopup.cs",
               "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\UIPopup.cs",
               "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\UIPopup.cs",
@@ -365,11 +492,11 @@
               "RelativeToolTip": "Assets\\Scenes\\Script\\UIPopup.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-02T08:26:12.381Z"
+              "WhenOpened": "2026-11-08T15:23:14.355Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 30,
               "Title": "HealthBarUI.cs",
               "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\HealthBarUI.cs",
               "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\HealthBarUI.cs",
@@ -377,11 +504,11 @@
               "RelativeToolTip": "Assets\\Scenes\\Script\\HealthBarUI.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-02T21:00:31.362Z"
+              "WhenOpened": "2026-11-08T15:23:14.356Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 24,
               "Title": "FlyingEnemy.cs",
               "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\FlyingEnemy.cs",
               "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\FlyingEnemy.cs",
@@ -389,11 +516,11 @@
               "RelativeToolTip": "Assets\\Scenes\\Script\\FlyingEnemy.cs",
               "ViewState": "AgIAADoBAAAAAAAAAAAYwFcBAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-25T09:11:50.121Z"
+              "WhenOpened": "2026-11-08T15:23:14.357Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 29,
               "Title": "LightFlicker.cs",
               "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\LightFlicker.cs",
               "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\LightFlicker.cs",
@@ -401,11 +528,11 @@
               "RelativeToolTip": "Assets\\Scenes\\Script\\LightFlicker.cs",
               "ViewState": "AgIAABkAAAAAAAAAAAAkwDEAAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-25T10:31:25.844Z"
+              "WhenOpened": "2026-11-08T15:23:14.358Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 32,
               "Title": "SpellMixer.cs",
               "DocumentMoniker": "D:\\TSIT\\RogueliteProject\\Assets\\Scenes\\Script\\SpellMixer.cs",
               "RelativeDocumentMoniker": "Assets\\Scenes\\Script\\SpellMixer.cs",
@@ -413,7 +540,7 @@
               "RelativeToolTip": "Assets\\Scenes\\Script\\SpellMixer.cs",
               "ViewState": "AgIAAGQAAAAAAAAAAAAYwHEAAAAbAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-23T04:05:35.243Z"
+              "WhenOpened": "2026-11-08T15:23:14.36Z"
             }
           ]
         }

@@ -125,6 +125,15 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""PauseMenu"",
+                    ""type"": ""Button"",
+                    ""id"": ""61ed621c-68db-4308-b82d-be6946f9bf15"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -413,6 +422,28 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""action"": ""Fire"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2b01cb54-646f-416b-bb46-1137afec474a"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PauseMenu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""96efd490-1b10-419a-8618-c03a35481b27"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PauseMenu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -432,6 +463,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         m_Player_SwitchItem = m_Player.FindAction("SwitchItem", throwIfNotFound: true);
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
         m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
+        m_Player_PauseMenu = m_Player.FindAction("PauseMenu", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -502,6 +534,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_SwitchItem;
     private readonly InputAction m_Player_Interact;
     private readonly InputAction m_Player_Fire;
+    private readonly InputAction m_Player_PauseMenu;
     public struct PlayerActions
     {
         private @PlayerControls m_Wrapper;
@@ -517,6 +550,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         public InputAction @SwitchItem => m_Wrapper.m_Player_SwitchItem;
         public InputAction @Interact => m_Wrapper.m_Player_Interact;
         public InputAction @Fire => m_Wrapper.m_Player_Fire;
+        public InputAction @PauseMenu => m_Wrapper.m_Player_PauseMenu;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -559,6 +593,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Fire.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnFire;
                 @Fire.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnFire;
                 @Fire.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnFire;
+                @PauseMenu.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPauseMenu;
+                @PauseMenu.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPauseMenu;
+                @PauseMenu.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPauseMenu;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -596,6 +633,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Fire.started += instance.OnFire;
                 @Fire.performed += instance.OnFire;
                 @Fire.canceled += instance.OnFire;
+                @PauseMenu.started += instance.OnPauseMenu;
+                @PauseMenu.performed += instance.OnPauseMenu;
+                @PauseMenu.canceled += instance.OnPauseMenu;
             }
         }
     }
@@ -613,5 +653,6 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         void OnSwitchItem(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
         void OnFire(InputAction.CallbackContext context);
+        void OnPauseMenu(InputAction.CallbackContext context);
     }
 }

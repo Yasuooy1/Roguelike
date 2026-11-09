@@ -150,54 +150,57 @@ public class PlayerHealth : MonoBehaviour
 
     private IEnumerator DeathRoutine()
     {
+        // เป็นอมตะและถอด Tag ออก บอสจะได้เลิกเล็งเป้า
         isInvincible = true;
+        gameObject.tag = "Untagged";
 
         if (audioSource != null && deathSound != null)
         {
             audioSource.PlayOneShot(deathSound);
         }
 
+        // เล่นอนิเมชันล้มตาย
         if (anim != null)
         {
             anim.SetTrigger("Die");
         }
 
-        Collider2D col = GetComponent<Collider2D>();
-        if (col != null) col.enabled = false;
+        // ปิดระบบเดิน
+        PlayerController playerController = GetComponent<PlayerController>();
+        if (playerController != null)
+        {
+            playerController.isActionLocked = true;
+            playerController.enabled = false;
+        }
 
+        // หยุดวิ่งแกน X แต่ปล่อยแกน Y ไว้ให้ตกลงพื้นตามแรงโน้มถ่วงธรรมชาติ
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
         if (rb != null)
         {
-            rb.velocity = Vector2.zero;
-            rb.gravityScale = 0f;
+            rb.velocity = new Vector2(0, rb.velocity.y);
         }
 
-        PlayerController playerController = GetComponent<PlayerController>();
-        if (playerController != null) playerController.enabled = false;
-
-        // หมายเหตุ: สคริปต์ PlayerCombat 
-        // PlayerCombat playerCombat = GetComponent<PlayerCombat>();
-        // if (playerCombat != null) playerCombat.enabled = false;
-
-        float waitTime = 2f;
-        if (deathSound != null)
+        // 🌟 แก้ตัวจมแมพ: ไม่ปิด Collider แล้ว แต่สั่งให้มอนสเตอร์เดินทะลุศพไปเลยแทน
+        int playerLayer = LayerMask.NameToLayer("Player");
+        int enemyLayer = LayerMask.NameToLayer("Enemy");
+        if (playerLayer != -1 && enemyLayer != -1)
         {
-            waitTime = Mathf.Max(2f, deathSound.length);
+            Physics2D.IgnoreLayerCollision(playerLayer, enemyLayer, true);
         }
 
-        yield return new WaitForSeconds(waitTime);
+        // 🌟 แก้หน้าแพ้ขึ้นช้า: ตั้งเวลาฟิกซ์ไปเลย 1 วินาที (เปลี่ยนตัวเลขตรงนี้ให้เร็วขึ้น/ช้าลงได้)
+        yield return new WaitForSeconds(3.0f);
 
-        // หมายเหตุ: ถ้ายังไม่มีระบบ EndGameManager เจมิขอแนะนำให้คอมเมนต์บรรทัดนี้ไว้ก่อนครับ
+        // โชว์หน้าจอ Game Over เร็วทันใจ
         if (EndGameManager.instance != null) EndGameManager.instance.ShowGameOverScreen();
-         // สั่งเปิด Canvas หน้า Defeat
+
         if (defeatCanvas != null)
         {
             defeatCanvas.SetActive(true);
+
+            // หยุดเวลา
+            Time.timeScale = 0f;
         }
-
-        Destroy(gameObject); // บรรทัดทำลายตัวละครเดิมของคุณอาร์ม
-
-        Destroy(gameObject);
     }
 
     public void Heal(int healAmount)

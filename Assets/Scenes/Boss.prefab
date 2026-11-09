@@ -178,13 +178,14 @@ MonoBehaviour:
   exclamationPrefab: {fileID: 1644212554346942916, guid: bc868a70f83d5c14f88e05361a468b43, type: 3}
   exclamationOffsetY: 4
   dangerZonePrefab: {fileID: 3517068169389734369, guid: d147ff366ef2e6046aa4be0179f005d5, type: 3}
+  circleDangerZonePrefab: {fileID: 5723381021387523847, guid: a5a5533781b34b34b8bf2b9e557609d6, type: 3}
   bossAnim: {fileID: 3161971914436957177}
   backBlackhole: {fileID: 4995601369101157060}
   blackholeProjectilePrefab: {fileID: 3038160999028468534, guid: 91a4bae7ea887b442a6ab0da008f0281, type: 3}
   firePoint: {fileID: 3523057683580498182}
   laserMuzzleFlash: {fileID: 0}
   laserBeamLine: {fileID: 1804167317346354969}
-  isLaserUninterruptible: 0
+  isLaserUninterruptible: 1
   bgmSource: {fileID: 0}
   bossMusic: {fileID: 8300000, guid: 9a8f253ef2129074bb4c34631e5895f4, type: 3}
   bossAudio: {fileID: 3070655069865064489}
@@ -193,6 +194,7 @@ MonoBehaviour:
   hurtSound: {fileID: 8300000, guid: 443535d5d4424d64c80ad61494a03b67, type: 3}
   deathSound: {fileID: 8300000, guid: 0ee515ca1dcb0f244819e4d3bbfcb3e9, type: 3}
   victorySound: {fileID: 8300000, guid: 2c8248bf99a9d6f4c926bf8b1afc72f0, type: 3}
+  bossName: The Void Wizard
 --- !u!95 &3161971914436957177
 Animator:
   serializedVersion: 4
@@ -929,11 +931,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3124225323599444108, guid: 8d85ffaa66c92d646b70c845b92fd0b0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.02
+      value: -0.075
       objectReference: {fileID: 0}
     - target: {fileID: 3124225323599444108, guid: 8d85ffaa66c92d646b70c845b92fd0b0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.73
+      value: 1.034
       objectReference: {fileID: 0}
     - target: {fileID: 3124225323599444108, guid: 8d85ffaa66c92d646b70c845b92fd0b0, type: 3}
       propertyPath: m_LocalPosition.z

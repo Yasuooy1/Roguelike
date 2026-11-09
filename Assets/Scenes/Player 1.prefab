@@ -310,7 +310,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &7251072586935322328
 Transform:
   m_ObjectHideFlags: 0
@@ -1372,11 +1372,11 @@ MonoBehaviour:
   waterAnimController: {fileID: 9100000, guid: 35eaf5721f5c69d4fa773e10e5ed48a5, type: 2}
   lightningAnimController: {fileID: 9100000, guid: eb56b988d40014a4db817e94fe03467b, type: 2}
   orbOffsets:
-  - {x: -1.2, y: 1, z: 0}
-  - {x: 0, y: 1.8, z: 0}
-  - {x: 1.2, y: 1, z: 0}
+  - {x: -1.5, y: 1.2, z: 0}
+  - {x: 0, y: 2, z: 0}
+  - {x: 1.5, y: 1.2, z: 0}
   hoverSpeed: 3
-  hoverHeight: 0.2
+  hoverHeight: 0.3
 --- !u!82 &266554665631505318
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1924,7 +1924,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -1.199997, y: 43.600002}
+  m_AnchoredPosition: {x: -1.199997, y: 46.1}
   m_SizeDelta: {x: 125.742096, y: 56.1476}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3310605391153333472
@@ -1982,8 +1982,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 10
-  m_fontSizeBase: 10
+  m_fontSize: 15
+  m_fontSizeBase: 15
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

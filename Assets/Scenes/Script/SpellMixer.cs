@@ -22,9 +22,9 @@ public class SpellMixer : MonoBehaviour
 
     [Header("ตำแหน่งการลอยรอบตัว (แบบ Invoker)")]
     public Vector3[] orbOffsets = new Vector3[] {
-        new Vector3(-1.2f, 1f, 0f),  // ลูกที่ 1: ไหล่ซ้าย
-        new Vector3(0f, 1.8f, 0f),   // ลูกที่ 2: เหนือหัว
-        new Vector3(1.2f, 1f, 0f)    // ลูกที่ 3: ไหล่ขวา
+        new Vector3(-1.2f, 5.2f, 0f),  // ลูกที่ 1: ไหล่ซ้าย
+        new Vector3(0f, 5.8f, 0f),   // ลูกที่ 2: เหนือหัว
+        new Vector3(1.2f, 5.2f, 0f)    // ลูกที่ 3: ไหล่ขวา
     };
     public float hoverSpeed = 3f;
     public float hoverHeight = 0.2f;

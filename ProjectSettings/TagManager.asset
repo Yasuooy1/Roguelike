@@ -10,6 +10,7 @@ TagManager:
   - BossPillarSpawn
   - Boss
   - Bullet
+  - Npc
   layers:
   - Default
   - TransparentFX

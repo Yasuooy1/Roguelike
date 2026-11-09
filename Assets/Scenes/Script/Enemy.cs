@@ -298,27 +298,38 @@ public class Enemy : MonoBehaviour
         isAttacking = true;
         isOnCooldown = true;
 
+        // 1. จังหวะง้าง (Telegraph) - หยุดเดินและเปลี่ยนสีเตือน
         rb.velocity = new Vector2(0, rb.velocity.y);
-        transform.localScale = new Vector3(transform.localScale.x, 0.8f, 1f);
+
+        // 🌟 ตัดการย่อตัวออกไปแล้ว เหลือแค่เปลี่ยนสีเป็นสีแดงเตือนว่าจะพุ่ง!
+        if (spriteRenderer != null) spriteRenderer.color = new Color(1f, 0.5f, 0.5f);
+
+        // รอเวลาง้าง 0.4 วินาที ให้ผู้เล่นเตรียมหลบ
         yield return new WaitForSeconds(0.4f);
 
-        if (isDead || isKnockedBack) { isAttacking = false; yield break; }
-
-        transform.localScale = new Vector3(transform.localScale.x, 1f, 1f);
-        float dashDirection = (transform.eulerAngles.y == 0) ? 1f : -1f;
-
-        float currentJumpForce = rb.velocity.y;
-        if (player != null && player.position.y > transform.position.y + 1f)
+        // คืนสีเดิม (ถ้าเกราะแตกอยู่ให้เป็นสีเทาตามเดิม)
+        if (spriteRenderer != null)
         {
-            currentJumpForce = jumpForce;
+            spriteRenderer.color = isBroken ? Color.gray : Color.white;
         }
 
-        rb.velocity = new Vector2(dashDirection * dashForce, currentJumpForce);
+        // เช็กเผื่อตายหรือโดนตีปลิวก่อนจะได้พุ่ง
+        if (isDead || isKnockedBack) { isAttacking = false; yield break; }
+
+        // 2. จังหวะพุ่งเสียบแนวราบ (Grounded Lunge)
+        float dashDirection = (transform.eulerAngles.y == 0) ? 1f : -1f;
+
+        // พุ่งไปข้างหน้าอย่างเดียว
+        rb.velocity = new Vector2(dashDirection * dashForce, rb.velocity.y);
+
+        // ปล่อยให้พุ่งไปตามเวลาที่ตั้งไว้
         yield return new WaitForSeconds(dashTime);
 
+        // 3. จบการโจมตี - เบรกตัวหยุด
         rb.velocity = new Vector2(0, rb.velocity.y);
         isAttacking = false;
 
+        // ติดคูลดาวน์ก่อนจะโจมตีรอบต่อไป
         yield return new WaitForSeconds(attackCooldown);
         isOnCooldown = false;
     }

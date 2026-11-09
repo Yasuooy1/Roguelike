@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.Collections; // 🌟 เพิ่มเนมสเปซนี้เพื่อให้ใช้งาน Coroutine ได้
 
 [System.Serializable]
 public class BuffCard
@@ -18,7 +19,7 @@ public class ActiveBuff
     public string buffName;
     public int remainingWaves;
     public bool isPermanent;
-    public Sprite buffIcon; // 🌟 เพิ่มตัวแปรเก็บรูปภาพไอคอน
+    public Sprite buffIcon;
 }
 
 public class BuffManager : MonoBehaviour
@@ -28,12 +29,13 @@ public class BuffManager : MonoBehaviour
     [Header("UI หน้าต่างเลือกการ์ด")]
     public GameObject buffPanel;
     public Button[] buffButtons;
+    public Image[] buffIcons;
     public TextMeshProUGUI[] buffTexts;
     public TextMeshProUGUI[] buffDescTexts;
 
     [Header("UI โชว์สถานะบัฟใต้หลอดมานา (แบบไอคอน)")]
-    public Transform buffIconContainer; // 🌟 กล่องจัดเรียงไอคอน
-    public GameObject buffIconPrefab;   // 🌟 ชิ้นส่วนไอคอนต้นแบบ
+    public Transform buffIconContainer;
+    public GameObject buffIconPrefab;
 
     [Header("🎵 เสียงประกอบ")]
     public AudioSource uiAudioSource;
@@ -74,13 +76,12 @@ public class BuffManager : MonoBehaviour
 
             currentOptions.Add(selectedCard);
 
-            if (buffTexts[i] != null) buffTexts[i].text = selectedCard.buffName;
-            if (buffDescTexts[i] != null) buffDescTexts[i].text = selectedCard.description;
+            if (buffTexts.Length > i && buffTexts[i] != null) buffTexts[i].text = selectedCard.buffName;
+            if (buffDescTexts.Length > i && buffDescTexts[i] != null) buffDescTexts[i].text = selectedCard.description;
 
-            if (buffButtons[i] != null && selectedCard.cardSprite != null)
+            if (buffIcons.Length > i && buffIcons[i] != null && selectedCard.cardSprite != null)
             {
-                Image btnImage = buffButtons[i].GetComponent<Image>();
-                if (btnImage != null) btnImage.sprite = selectedCard.cardSprite;
+                buffIcons[i].sprite = selectedCard.cardSprite;
             }
 
             tempCards.RemoveAt(randIndex);
@@ -93,9 +94,25 @@ public class BuffManager : MonoBehaviour
         }
     }
 
+    // ==========================================
+    // 🌟 1. ปรับแก้ SelectBuff ให้ส่งต่อผ่าน Coroutine (แก้ปัญหาโค้ดตีกัน)
+    // ==========================================
     public void SelectBuff(int buttonIndex)
     {
-        if (uiAudioSource != null && clickSound != null) uiAudioSource.PlayOneShot(clickSound);
+        StartCoroutine(SelectBuffRoutine(buttonIndex));
+    }
+
+    private IEnumerator SelectBuffRoutine(int buttonIndex)
+    {
+        // เล่นเสียงคลิกตอนกดเลือก
+        if (uiAudioSource != null && clickSound != null)
+        {
+            uiAudioSource.PlayOneShot(clickSound);
+        }
+
+        // 🌟 หน่วงเวลา 0.15 วินาที เพื่อให้ ButtonJuice เล่นแอนิเมชันปุ่มยุบตัวให้เสร็จก่อนปิดจอ
+        // ใช้ WaitForSecondsRealtime เพราะเวลาในเกมถูกหยุดด้วย Time.timeScale = 0
+        yield return new WaitForSecondsRealtime(0.15f);
 
         string chosenBuffName = currentOptions[buttonIndex].buffName;
 
@@ -111,17 +128,29 @@ public class BuffManager : MonoBehaviour
                 buffName = chosenBuffName,
                 remainingWaves = isSelectingBossBuff ? 999 : 2,
                 isPermanent = isSelectingBossBuff,
-                buffIcon = currentOptions[buttonIndex].cardSprite // 🌟 จำรูปการ์ดมาโชว์เป็นไอคอน
+                buffIcon = currentOptions[buttonIndex].cardSprite
             });
             ApplyBuff(chosenBuffName);
         }
 
         UpdateBuffUI();
+
+        // ปิดหน้าต่างการ์ด และคืนเวลาเกมตามปกติ
         buffPanel.SetActive(false);
         Time.timeScale = 1f;
 
         WaveManager waveManager = FindObjectOfType<WaveManager>();
-        if (waveManager != null) waveManager.ResumeWave();
+        if (waveManager != null)
+        {
+            
+                // 🌟 เช็กว่าถ้าเป็นเวฟปกติ ให้ลุยเวฟต่อไป
+                // 🌟 แต่ถ้าเป็นการ์ดบอส จะไม่สั่งเริ่มเวฟ ปล่อยให้ผู้เล่นเดินไปเข้าประตูเอง
+                if (!isSelectingBossBuff)
+                {
+                    waveManager.ResumeWave();
+                }
+            
+        }    
     }
 
     private void ApplyBuff(string buffName)
@@ -168,11 +197,8 @@ public class BuffManager : MonoBehaviour
         UpdateBuffUI();
     }
 
-    // 🌟 ฟังก์ชันอัปเดต UI ไอคอน
-    // 🌟 ฟังก์ชันอัปเดต UI ไอคอน (แก้ใหม่ให้ค้นหาอัตโนมัติจาก Player)
     private void UpdateBuffUI()
     {
-        // 1. ถ้าช่องมันว่างอยู่ ให้ควานหาจากตัว Player ที่อยู่ในฉาก
         if (buffIconContainer == null)
         {
             GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -181,26 +207,22 @@ public class BuffManager : MonoBehaviour
                 Transform[] allTransforms = player.GetComponentsInChildren<Transform>(true);
                 foreach (Transform t in allTransforms)
                 {
-                    // ค้นหา Object ที่ชื่อ "BuffIconContainer"
                     if (t.name == "BuffIconContainer")
                     {
                         buffIconContainer = t;
-                        break; // เจอแล้วหยุดหา
+                        break;
                     }
                 }
             }
         }
 
-        // ถ้ายังหาไม่เจออีก หรือลืมใส่ Prefab ไอคอน ให้หยุดทำงาน
         if (buffIconContainer == null || buffIconPrefab == null) return;
 
-        // 2. ล้างไอคอนเก่าออกให้หมดก่อน
         foreach (Transform child in buffIconContainer)
         {
             Destroy(child.gameObject);
         }
 
-        // 3. สร้างไอคอนใหม่ตามจำนวนบัฟที่มีอยู่
         foreach (var buff in currentActiveBuffs)
         {
             GameObject newIcon = Instantiate(buffIconPrefab, buffIconContainer);
@@ -208,11 +230,10 @@ public class BuffManager : MonoBehaviour
 
             if (iconUI != null)
             {
-                iconUI.Setup(buff); // ส่งข้อมูลบัฟไปให้สคริปต์จัดการ UI
+                iconUI.Setup(buff);
             }
             else
             {
-                // กันเหนียว กรณีลืมแปะสคริปต์
                 Image img = newIcon.GetComponent<Image>();
                 if (img != null) img.sprite = buff.buffIcon;
             }

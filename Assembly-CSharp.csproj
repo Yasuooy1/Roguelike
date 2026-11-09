@@ -77,8 +77,11 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ChatController.cs" />
     <Compile Include="Assets\Scenes\Script\HubRoomGuide.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextMeshProFloatingText.cs" />
+    <Compile Include="Assets\Scenes\Script\PauseMenu.cs" />
     <Compile Include="Assets\Scenes\Script\PlayerSpawn.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeB.cs" />
+    <Compile Include="Assets\Scenes\Script\MenuButtonController.cs" />
+    <Compile Include="Assets\Scenes\Script\ButtonJuice.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\EnvMapAnimator.cs" />
     <Compile Include="Assets\Scenes\Script\NPCShop.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_UiFrameRateCounter.cs" />
@@ -96,6 +99,7 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ObjectSpin.cs" />
     <Compile Include="Assets\Scenes\Script\FixUIFlip.cs" />
     <Compile Include="Assets\Scenes\Script\StartWaveCrystal.cs" />
+    <Compile Include="Assets\Scenes\Script\ShopButtonHandler.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextInfoDebugTool.cs" />
     <Compile Include="Assets\Scenes\Script\BossCutscene.cs" />
     <Compile Include="Assets\Scenes\Script\Boss.cs" />
@@ -107,6 +111,7 @@
     <Compile Include="Assets\Scenes\Script\LevelManager.cs" />
     <Compile Include="Assets\Scenes\Script\EndGameManager.cs" />
     <Compile Include="Assets\Scenes\Script\ItemData.cs" />
+    <Compile Include="Assets\Scenes\Script\NextWavePortal.cs" />
     <Compile Include="Assets\Scenes\Script\LaserDamage.cs" />
     <Compile Include="Assets\Scenes\Script\FlyingEnemy.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\WarpTextExample.cs" />
@@ -114,6 +119,7 @@
     <Compile Include="Assets\SelfDestruct.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_DigitValidator.cs" />
     <Compile Include="Assets\Scenes\Script\ArrowIndicator.cs" />
+    <Compile Include="Assets\Scenes\Script\BuffIconUI.cs" />
     <Compile Include="Assets\Scenes\Script\GameFeelManager.cs" />
     <Compile Include="Assets\Scenes\Script\Soul.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark02.cs" />
@@ -134,10 +140,13 @@
     <Compile Include="Assets\Scenes\Script\PlayerHealth.cs" />
     <Compile Include="Assets\Scenes\Script\LightFlicker.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextSelector_B.cs" />
+    <Compile Include="Assets\Scenes\Script\AutoSelectButton.cs" />
     <Compile Include="Assets\Scenes\AuraEffect.cs" />
+    <Compile Include="Assets\Scenes\Script\MerchantInteract.cs" />
     <Compile Include="Assets\Scenes\Script\MainMenuController.cs" />
     <Compile Include="Assets\Scenes\Script\LevelGenerator.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\DropdownSample.cs" />
+    <Compile Include="Assets\Scenes\Script\CardSelectionEffect.cs" />
     <Compile Include="Assets\Scenes\Script\ParallaxBackground.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_PhoneNumberValidator.cs" />
     <Compile Include="Assets\Scenes\Script\BossSkillManager.cs" />
@@ -150,10 +159,6 @@
     <Compile Include="Assets\Scenes\Script\BossHealthUI.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01.cs" />
     <Compile Include="Assets\Scenes\Script\UpgradeManager.cs" />
-    <Compile Include="Assets\Scenes\Script\CardSelectionEffect.cs" />
-    <Compile Include="Assets\Scenes\Script\PauseMenu.cs" />
-    <Compile Include="Assets\Scenes\Script\MerchantInteract.cs" />
-    <Compile Include="Assets\Scenes\Script\BuffIconUI.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
