@@ -22,12 +22,14 @@ public class PlayerCombat : MonoBehaviour
     public GameObject bulletTimeVFX;
     public float ultimateDuration = 2.6f;
 
-    [Header("ระบบคูลดาวน์")]
+    [Header("ระบบคูลดาวน์ & ดาเมจ")]
     public float fireCooldown = 0.5f;
     private float nextFireTime = 0f;
-
     public float bulletSizeMultiplier = 1f;
     public int ultimateManaDiscount = 0;
+
+    // 🌟 เพิ่มตัวแปรเก็บดาเมจพิเศษจากการ์ด
+    public int bonusDamage = 0;
 
     private PlayerMana playerMana;
     private SpellMixer spellMixer;
@@ -46,7 +48,6 @@ public class PlayerCombat : MonoBehaviour
         spellMixer = GetComponent<SpellMixer>();
         nextFireTime = Time.time + 0.5f;
         if (spellMixer != null) spellMixer.ClearOrbs();
-
         if (bulletTimeVFX != null) bulletTimeVFX.SetActive(false);
     }
 
@@ -57,7 +58,7 @@ public class PlayerCombat : MonoBehaviour
         if (value.isPressed && spellMixer != null)
         {
             spellMixer.AddOrb(SpellMixer.Element.Fire);
-            if (playerAnimator != null) playerAnimator.SetTrigger("CastFire"); // 🌟 สั่งเล่นแอนิเมชันร่ายไฟ
+            if (playerAnimator != null) playerAnimator.SetTrigger("CastFire");
         }
     }
 
@@ -66,7 +67,7 @@ public class PlayerCombat : MonoBehaviour
         if (value.isPressed && spellMixer != null)
         {
             spellMixer.AddOrb(SpellMixer.Element.Water);
-            if (playerAnimator != null) playerAnimator.SetTrigger("CastWater"); // 🌟 สั่งเล่นแอนิเมชันร่ายน้ำ
+            if (playerAnimator != null) playerAnimator.SetTrigger("CastWater");
         }
     }
 
@@ -75,7 +76,7 @@ public class PlayerCombat : MonoBehaviour
         if (value.isPressed && spellMixer != null)
         {
             spellMixer.AddOrb(SpellMixer.Element.Lightning);
-            if (playerAnimator != null) playerAnimator.SetTrigger("CastLightning"); // 🌟 สั่งเล่นแอนิเมชันร่ายสายฟ้า
+            if (playerAnimator != null) playerAnimator.SetTrigger("CastLightning");
         }
     }
 
@@ -83,7 +84,6 @@ public class PlayerCombat : MonoBehaviour
     {
         if (value.isPressed)
         {
-            // 🛑 ถ้าธาตุยังไม่ครบ 3 ลูก บล็อกไม่ให้โจมตีและไม่สะบัดไม้คฑา
             if (spellMixer != null && spellMixer.currentOrbs.Count < 3)
             {
                 if (playerAnimator != null) playerAnimator.SetBool("CanAttack", false);
@@ -91,13 +91,12 @@ public class PlayerCombat : MonoBehaviour
                 return;
             }
 
-            // ✨ ถ้าธาตุครบ 3 ลูกแล้ว อนุญาตให้โจมตีได้
             if (spellMixer != null && spellMixer.currentOrbs.Count >= 3 && Time.time >= nextFireTime)
             {
                 if (playerAnimator != null)
                 {
                     playerAnimator.SetBool("CanAttack", true);
-                    playerAnimator.SetTrigger("Attack"); // สั่งเล่นท่าโจมตี
+                    playerAnimator.SetTrigger("Attack");
                 }
                 PlayerController controller = GetComponent<PlayerController>();
                 if (controller != null) controller.LockMovement(0.5f);
@@ -148,8 +147,8 @@ public class PlayerCombat : MonoBehaviour
                 bulletScript.puzzleRecipe = recipe;
                 int damageUpgradeLevel = PlayerPrefs.GetInt("Upgrade_Damage", 0);
 
-                // 🌟 แก้ไขจุดที่ตัวหนังสือติดกันให้ถูกต้องเรียบร้อยครับ
-                bulletScript.damage = 10f + (damageUpgradeLevel * 2f);
+                // 🌟 นำ bonusDamage จากการ์ดมาบวกเพิ่มในดาเมจกระสุน
+                bulletScript.damage = 10f + (damageUpgradeLevel * 2f) + bonusDamage;
             }
         }
         spellMixer.ClearOrbs();
@@ -202,7 +201,6 @@ public class PlayerCombat : MonoBehaviour
     void CastUltimateSkill()
     {
         int finalCost = Mathf.Max(0, ultimateManaCost - ultimateManaDiscount);
-
         if (Time.timeScale < 1f) return;
 
         if (playerMana != null && playerMana.UseMana(finalCost))
@@ -213,13 +211,9 @@ public class PlayerCombat : MonoBehaviour
 
     private IEnumerator SupportBulletTimeRoutine()
     {
-        if (audioSource != null && timeStopSound != null)
-        {
-            audioSource.PlayOneShot(timeStopSound);
-        }
+        if (audioSource != null && timeStopSound != null) audioSource.PlayOneShot(timeStopSound);
 
         Time.timeScale = 0.05f;
-
         Image overlayImage = null;
         float maxAlpha = 0.5f;
         Color grayColor = new Color(0.2f, 0.2f, 0.2f, maxAlpha);
@@ -229,14 +223,9 @@ public class PlayerCombat : MonoBehaviour
             bulletTimeVFX.SetActive(true);
             overlayImage = bulletTimeVFX.GetComponent<Image>();
         }
-
-        if (overlayImage != null)
-        {
-            overlayImage.color = new Color(1f, 1f, 1f, 0.7f);
-        }
+        if (overlayImage != null) overlayImage.color = new Color(1f, 1f, 1f, 0.7f);
 
         yield return new WaitForSecondsRealtime(0.15f);
-
         Time.timeScale = 0.4f;
 
         if (overlayImage != null)
@@ -263,7 +252,6 @@ public class PlayerCombat : MonoBehaviour
                 yield return null;
             }
         }
-
         Time.timeScale = 1f;
         if (bulletTimeVFX != null) bulletTimeVFX.SetActive(false);
     }

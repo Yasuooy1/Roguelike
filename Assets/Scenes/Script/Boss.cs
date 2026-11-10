@@ -7,7 +7,7 @@ public class Boss : MonoBehaviour
 {
     [Header("Boss Stats")]
     public int maxHealth = 200;
-    private int currentHealth;
+    [SerializeField]  private int currentHealth;
 
     [Header("Movement (เฟส 1 บินตาม)")]
     public float smoothTime = 1.2f;
@@ -206,6 +206,15 @@ public class Boss : MonoBehaviour
             else if (puzzleList[i] == "Lightning") puzzleSlots[i].sprite = lightningSprite;
         }
         if (puzzleCanvas != null) puzzleCanvas.SetActive(true);
+    }
+    public void SetLoopDifficulty(bool isEndless, int currentLoop)
+    {
+        if (!isEndless) return;
+
+        // บอสอึดขึ้นรอบละ 100 HP
+        int bonusHealth = currentLoop * 200;
+        maxHealth += bonusHealth;
+        currentHealth = maxHealth;
     }
 
     IEnumerator ActionRoutine()

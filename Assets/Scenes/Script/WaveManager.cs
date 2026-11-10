@@ -53,6 +53,10 @@ public class WaveManager : MonoBehaviour
     public bool gameStarted = false;
     public GameObject startTrigger;
 
+    [Header("สถานะปัจจุบัน (ห้ามแก้)")]
+   
+    public int loopCount = 0; // 🌟 เพิ่มตัวแปรนับรอบ Loop
+
 
     void Awake()
     {
@@ -77,6 +81,8 @@ public class WaveManager : MonoBehaviour
             isSpawning = false;
             currentWave = 0;
             hasClearedFirstBoss = false; // เริ่มเกมใหม่ รีเซ็ตสถานะบอส
+            loopCount = 0; //
+            aliveEnemies.Clear();
 
             StopAllCoroutines();
             StartCoroutine(StartNextWave());
@@ -125,13 +131,26 @@ public class WaveManager : MonoBehaviour
 
     void UpdateWaveUI()
     {
-        if (waveCountText != null) waveCountText.text = "Wave: " + currentWave + " / " + totalWaves;
+        if (waveCountText != null)
+        {
+            if (hasClearedFirstBoss)
+            {
+                // ถ้าเข้า Endless โหมดแล้ว โชว์แค่นี้พอ เช่น "Wave: 4", "Wave: 5"
+                waveCountText.text = "Wave: " + currentWave;
+            }
+            else
+            {
+                // ช่วงแรกยังโชว์ปกติ เช่น "Wave: 1 / 3"
+                waveCountText.text = "Wave: " + currentWave + " / " + totalWaves;
+            }
+        }
     }
 
     IEnumerator StartNextWave()
     {
         isSpawning = true;
         currentWave++;
+        if (ScoreManager.instance != null) ScoreManager.instance.UpdateWave(currentWave);
         UpdateWaveUI();
 
         yield return new WaitForSeconds(2f);
@@ -191,8 +210,21 @@ public class WaveManager : MonoBehaviour
 
             GameObject spawnedEnemy = Instantiate(randomEnemy, chosenPoint.position, Quaternion.identity);
             if (ArrowIndicator.instance != null) ArrowIndicator.instance.ClearTarget();
-
+            // 🌟 เช็กมอนสเตอร์เดินพื้น
             Enemy enemyScript = spawnedEnemy.GetComponent<Enemy>();
+            if (enemyScript != null)
+            {
+                enemyScript.SetTutorialWave(currentWave, i);
+                enemyScript.SetLoopDifficulty(hasClearedFirstBoss, loopCount, currentWave);
+            }
+            FlyingEnemy flyingEnemyScript = spawnedEnemy.GetComponent<FlyingEnemy>();
+            if (flyingEnemyScript != null)
+            {
+                flyingEnemyScript.SetLoopDifficulty(hasClearedFirstBoss, loopCount, currentWave);
+            }
+            
+
+            
             if (enemyScript != null) enemyScript.SetTutorialWave(currentWave, i);
 
             aliveEnemies.Add(spawnedEnemy);
@@ -229,6 +261,11 @@ public class WaveManager : MonoBehaviour
 
         GameObject spawnedBoss = Instantiate(bossPrefab, bossPoint.position, Quaternion.identity);
         aliveEnemies.Add(spawnedBoss);
+        Boss bossScript = spawnedBoss.GetComponent<Boss>();
+        if (bossScript != null)
+        {
+            bossScript.SetLoopDifficulty(hasClearedFirstBoss, loopCount);
+        }
 
         BossCutscene cutsceneManager = FindObjectOfType<BossCutscene>();
         if (cutsceneManager != null) cutsceneManager.PlayCutscene(spawnedBoss.transform);
@@ -261,16 +298,20 @@ public class WaveManager : MonoBehaviour
     }
 
     // 🌟 พอผ่านบอสตัวแรกแล้วเข้าประตู จะเริ่มลูป Endless โดยบังคับใช้ Normal Enemies คละกันยาวๆ
+    // 🌟 พอผ่านบอสตัวแรกแล้วเข้าประตู จะเริ่มลูป Endless
     public void StartEndlessLoop()
     {
         if (currentShopInstance != null) Destroy(currentShopInstance);
         if (currentPortalInstance != null) Destroy(currentPortalInstance);
 
-        currentWave = 0;
-        totalWaves = 3;        // เมื่อทำจริงปรับเป็น 3 เวฟต่อบอส 1 ตัวได้เลยครับ
+        
+        // ✅ ให้เป้าหมายเวฟของบอสตัวถัดไป ขยับออกไปอีก 3 เวฟ
+        totalWaves = currentWave + 3;
+
         isBossSpawned = false;
         isWaitingForReward = false;
-        hasClearedFirstBoss = true; // ล็อกสถานะให้ใช้ Normal Enemies ทันทีในลูปถัดไป
+        hasClearedFirstBoss = true;
+        loopCount++;
 
         StartCoroutine(StartNextWave());
     }

@@ -159,6 +159,7 @@
     <Compile Include="Assets\Scenes\Script\BossHealthUI.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01.cs" />
     <Compile Include="Assets\Scenes\Script\UpgradeManager.cs" />
+    <Compile Include="Assets\Scenes\Script\ScoreManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

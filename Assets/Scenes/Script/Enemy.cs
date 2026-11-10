@@ -42,7 +42,7 @@ public class Enemy : MonoBehaviour
 
     [Header("Health & Armor")]
     public int maxHealth = 30;
-    private int currentHealth;
+    [SerializeField]  private int currentHealth;
 
     public bool isBroken = false;
     public float breakDuration = 3f;
@@ -116,6 +116,21 @@ public class Enemy : MonoBehaviour
         currentWaveMode = waveNumber;
         mySpawnIndex = spawnIndex;
         GenerateRandomPuzzle();
+    }
+    public void SetLoopDifficulty(bool isEndless, int currentLoop, int waveNumber)
+    {
+        // ถ้ายังไม่เข้าประตูมิติ (รอบ 3 เวฟแรก) ใช้เลือดฐานเดิม (30 HP)
+        if (!isEndless)
+        {
+            currentHealth = maxHealth;
+            return;
+        }
+
+        // เมื่อผ่านประตูมิติเข้า Loop แล้ว เพิ่มเลือดตามรอบ Loop + เวฟปัจจุบัน
+        int bonusHealth = (currentLoop * 30) + ((waveNumber - 1) * 15);
+
+        maxHealth += bonusHealth;
+        currentHealth = maxHealth;
     }
 
     void GenerateRandomPuzzle()
@@ -332,7 +347,7 @@ public class Enemy : MonoBehaviour
         // ติดคูลดาวน์ก่อนจะโจมตีรอบต่อไป
         yield return new WaitForSeconds(attackCooldown);
         isOnCooldown = false;
-    }
+    }   
 
     void OnCollisionEnter2D(Collision2D collision)
     {
@@ -557,6 +572,16 @@ public class Enemy : MonoBehaviour
     {
         if (isDead) return;
         isDead = true;
+
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null) col.enabled = false;
+
+        // ปิด Rigidbody ไม่ให้รับแรงฟิสิกส์ต่อ
+        if (rb != null)
+        {
+            rb.velocity = Vector2.zero;
+            rb.simulated = false; // หยุดการจำลองฟิสิกส์ของตัวนี้ทันที
+        }
 
         if (deathSound != null) AudioSource.PlayClipAtPoint(deathSound, transform.position, 1f);
 

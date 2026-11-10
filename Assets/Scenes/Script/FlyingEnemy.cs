@@ -32,7 +32,7 @@ public class FlyingEnemy : MonoBehaviour
 
     [Header("Health & Armor")]
     public int maxHealth = 15;
-    private int currentHealth;
+    [SerializeField]  private int currentHealth;
 
     public bool isBroken = false;
     public float breakDuration = 3f;
@@ -91,6 +91,21 @@ public class FlyingEnemy : MonoBehaviour
     {
         yield return new WaitForSeconds(Random.Range(1f, 4.5f));
         isOnCooldown = false;
+    }
+    public void SetLoopDifficulty(bool isEndless, int currentLoop, int waveNumber)
+    {
+        // ถ้ายังไม่เข้าประตูมิติ ใช้เลือดฐานเดิม (15 HP)
+        if (!isEndless)
+        {
+            currentHealth = maxHealth;
+            return;
+        }
+
+        // ค้างคาวเลือดน้อยกว่ามอนพื้น เพิ่มตามสเกลที่เหมาะสม (+10 ต่อ Loop, +5 ต่อเวฟ)
+        int bonusHealth = (currentLoop * 20) + ((waveNumber - 1) * 10);
+
+        maxHealth += bonusHealth;
+        currentHealth = maxHealth;
     }
 
     void GenerateRandomPuzzle()
@@ -296,6 +311,15 @@ public class FlyingEnemy : MonoBehaviour
     {
         if (isDead) return;
         isDead = true;
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null) col.enabled = false;
+
+        // ปิด Rigidbody ไม่ให้รับแรงฟิสิกส์ต่อ
+        if (rb != null)
+        {
+            rb.velocity = Vector2.zero;
+            rb.simulated = false; // หยุดการจำลองฟิสิกส์ของตัวนี้ทันที
+        }
         if (deathSound != null)
         {
             AudioSource.PlayClipAtPoint(deathSound, transform.position, 1f);

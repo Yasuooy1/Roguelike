@@ -161,12 +161,12 @@ MonoBehaviour:
   attackCooldown: 2
   maxHealth: 30
   isBroken: 0
-  breakDuration: 5
+  breakDuration: 2
   knockbackForce: 5
   knockbackUpward: 3
   knockbackTime: 0.3
-  isDynamicPuzzle: 1
-  shuffleTime: 2
+  isDynamicPuzzle: 0
+  shuffleTime: 5
   requiredRecipe: 
   puzzleCanvas: {fileID: 2299062589519845076}
   puzzleSlots:

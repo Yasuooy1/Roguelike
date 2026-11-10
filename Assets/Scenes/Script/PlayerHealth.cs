@@ -1,20 +1,19 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
-using UnityEngine.InputSystem;
-
+using TMPro; // 🌟 เพิ่มบรรทัดนี้เพื่อเรียกใช้ TextMeshPro
 
 public class PlayerHealth : MonoBehaviour
 {
     [Header("Health Stats")]
-    public int maxHealth = 5; // กลับมาใช้เลือด 5 หน่วยเพื่อให้ตรงกับรูป
+    public int maxHealth = 5;
     public int currentHealth;
 
     [Header("UI System (แบบสลับรูป)")]
-    // 🌟 เปลี่ยนจาก Slider มาเป็น Image แบบสลับรูป
     public Image healthBarImage;
-    public Sprite[] healthBarSprites; // Array สำหรับใส่รูป 6 เฟรม (เลือด 0 ถึง 5)
+    public Sprite[] healthBarSprites;
+    // 🌟 เพิ่มตัวแปรสำหรับข้อความ +เลือด
+    public TextMeshProUGUI bonusHealthText;
 
     [Header("I-Frames (อมตะชั่วคราว)")]
     public float iFrameDuration = 1.5f;
@@ -23,7 +22,6 @@ public class PlayerHealth : MonoBehaviour
     private bool isInvincible = false;
     private SpriteRenderer spriteRenderer;
     public bool hasShield = false;
-
     private Animator anim;
 
     [Header("ระบบเสียงบาดเจ็บและตาย")]
@@ -32,20 +30,26 @@ public class PlayerHealth : MonoBehaviour
     public AudioClip deathSound;
     private bool isDead = false;
     public AudioClip healSound;
+
     [Header("หน้าจอจบเกม")]
     public GameObject defeatCanvas;
 
     void Start()
     {
-        // คำนวณเลือด
+        int playerLayer = LayerMask.NameToLayer("Player");
+        int enemyLayer = LayerMask.NameToLayer("Enemy");
+        if (playerLayer != -1 && enemyLayer != -1)
+        {
+            Physics2D.IgnoreLayerCollision(playerLayer, enemyLayer, false);
+        }
+
         int bonusHealth = PlayerPrefs.GetInt("Upgrade_Health", 0);
-        maxHealth = 5 + bonusHealth; // ปรับฐานเลือดกลับเป็น 5
+        maxHealth = 5 + bonusHealth;
         currentHealth = maxHealth;
 
         spriteRenderer = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
 
-        // 🌟 อัปเดตรูปหลอดเลือดตอนเริ่มเกม
         UpdateHealthUI();
     }
 
@@ -58,7 +62,6 @@ public class PlayerHealth : MonoBehaviour
             Debug.Log("💥 เกราะแตก! รอดตัวไปที ไม่เสียเลือด!");
             return;
         }
-
         if (isInvincible) return;
 
         PlayerController pc = GetComponent<PlayerController>();
@@ -72,38 +75,22 @@ public class PlayerHealth : MonoBehaviour
         currentHealth -= damage;
         if (currentHealth < 0) currentHealth = 0;
 
-        // 🌟 อัปเดตหลอดเลือดให้เปลี่ยนรูป
         UpdateHealthUI();
 
-        Debug.Log("โดนโจมตี! เลือดเหลือ: " + currentHealth);
-
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
-        else
-        {
-            StartCoroutine(InvincibilityRoutine());
-        }
+        if (currentHealth <= 0) Die();
+        else StartCoroutine(InvincibilityRoutine());
     }
 
     private IEnumerator InvincibilityRoutine()
     {
         isInvincible = true;
 
-        
         int playerLayer = LayerMask.NameToLayer("Player");
         int enemyLayer = LayerMask.NameToLayer("Enemy");
-
-        
         if (playerLayer != -1 && enemyLayer != -1)
-        {
             Physics2D.IgnoreLayerCollision(playerLayer, enemyLayer, true);
-        }
 
         float flashDuration = iFrameDuration / (numberOfFlashes * 2f);
-
-        
         for (int i = 0; i < numberOfFlashes; i++)
         {
             spriteRenderer.color = new Color(1f, 0f, 0f, 0.5f);
@@ -112,25 +99,38 @@ public class PlayerHealth : MonoBehaviour
             spriteRenderer.color = Color.white;
             yield return new WaitForSeconds(flashDuration);
         }
-
         spriteRenderer.color = Color.white;
         isInvincible = false;
 
-        
         if (playerLayer != -1 && enemyLayer != -1)
-        {
             Physics2D.IgnoreLayerCollision(playerLayer, enemyLayer, false);
-        }
     }
 
-    // 🌟 ฟังก์ชันอัปเดต UI แบบสลับรูป
+    // 🌟 ระบบอัปเดต UI แบบใหม่ (โชว์หลอดเต็ม + โชว์ตัวเลขส่วนเกิน)
     void UpdateHealthUI()
     {
         if (healthBarImage != null && healthBarSprites != null && healthBarSprites.Length > 0)
         {
-            // ป้องกัน Error โดยการล็อกค่าให้อยู่ในช่วง 0 ถึงจำนวนรูปที่มี
-            int index = Mathf.Clamp(currentHealth, 0, healthBarSprites.Length - 1);
-            healthBarImage.sprite = healthBarSprites[index];
+            int baseMax = healthBarSprites.Length - 1; // ค่าสูงสุดของรูปคือ 5
+
+            if (currentHealth <= baseMax)
+            {
+                // ถ้าเลือดไม่เกิน 5 โชว์รูประดับเลือดปกติ และซ่อนตัวเลข
+                healthBarImage.sprite = healthBarSprites[currentHealth];
+                if (bonusHealthText != null) bonusHealthText.gameObject.SetActive(false);
+            }
+            else
+            {
+                // ถ้าเลือดเกิน 5 โชว์รูป "หลอดเต็ม" ตลอดเวลา แล้วเปิดโชว์ตัวเลข +X
+                healthBarImage.sprite = healthBarSprites[baseMax];
+
+                if (bonusHealthText != null)
+                {
+                    bonusHealthText.gameObject.SetActive(true);
+                    int overHeal = currentHealth - baseMax;
+                    bonusHealthText.text = "+" + overHeal.ToString();
+                }
+            }
         }
     }
 
@@ -144,28 +144,17 @@ public class PlayerHealth : MonoBehaviour
             pc.walkAudioSource.Stop();
             pc.enabled = false;
         }
-        Debug.Log("💀 Player Died!");
         StartCoroutine(DeathRoutine());
     }
 
     private IEnumerator DeathRoutine()
     {
-        // เป็นอมตะและถอด Tag ออก บอสจะได้เลิกเล็งเป้า
         isInvincible = true;
         gameObject.tag = "Untagged";
 
-        if (audioSource != null && deathSound != null)
-        {
-            audioSource.PlayOneShot(deathSound);
-        }
+        if (audioSource != null && deathSound != null) audioSource.PlayOneShot(deathSound);
+        if (anim != null) anim.SetTrigger("Die");
 
-        // เล่นอนิเมชันล้มตาย
-        if (anim != null)
-        {
-            anim.SetTrigger("Die");
-        }
-
-        // ปิดระบบเดิน
         PlayerController playerController = GetComponent<PlayerController>();
         if (playerController != null)
         {
@@ -173,32 +162,21 @@ public class PlayerHealth : MonoBehaviour
             playerController.enabled = false;
         }
 
-        // หยุดวิ่งแกน X แต่ปล่อยแกน Y ไว้ให้ตกลงพื้นตามแรงโน้มถ่วงธรรมชาติ
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
-        if (rb != null)
-        {
-            rb.velocity = new Vector2(0, rb.velocity.y);
-        }
+        if (rb != null) rb.velocity = new Vector2(0, rb.velocity.y);
 
-        // 🌟 แก้ตัวจมแมพ: ไม่ปิด Collider แล้ว แต่สั่งให้มอนสเตอร์เดินทะลุศพไปเลยแทน
         int playerLayer = LayerMask.NameToLayer("Player");
         int enemyLayer = LayerMask.NameToLayer("Enemy");
         if (playerLayer != -1 && enemyLayer != -1)
-        {
             Physics2D.IgnoreLayerCollision(playerLayer, enemyLayer, true);
-        }
 
-        // 🌟 แก้หน้าแพ้ขึ้นช้า: ตั้งเวลาฟิกซ์ไปเลย 1 วินาที (เปลี่ยนตัวเลขตรงนี้ให้เร็วขึ้น/ช้าลงได้)
         yield return new WaitForSeconds(3.0f);
 
-        // โชว์หน้าจอ Game Over เร็วทันใจ
         if (EndGameManager.instance != null) EndGameManager.instance.ShowGameOverScreen();
-
+        if (ScoreManager.instance != null) ScoreManager.instance.GameOver();
         if (defeatCanvas != null)
         {
             defeatCanvas.SetActive(true);
-
-            // หยุดเวลา
             Time.timeScale = 0f;
         }
     }
@@ -206,21 +184,13 @@ public class PlayerHealth : MonoBehaviour
     public void Heal(int healAmount)
     {
         if (currentHealth >= maxHealth) return;
-
         currentHealth += healAmount;
         if (currentHealth > maxHealth) currentHealth = maxHealth;
-
-        // 🌟 อัปเดตหลอดเลือด
         UpdateHealthUI();
     }
 
     public void RefreshHealthStat()
     {
-        int bonusHealth = PlayerPrefs.GetInt("Upgrade_Health", 0);
-        maxHealth = 5 + bonusHealth;
-        currentHealth = maxHealth;
-
-        // 🌟 อัปเดตหลอดเลือด
         UpdateHealthUI();
     }
 }

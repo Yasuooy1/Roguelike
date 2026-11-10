@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using System.Collections; // 🌟 เพิ่มเนมสเปซนี้เพื่อให้ใช้งาน Coroutine ได้
+using System.Collections;
 
 [System.Serializable]
 public class BuffCard
@@ -17,7 +17,7 @@ public class BuffCard
 public class ActiveBuff
 {
     public string buffName;
-    public int remainingWaves;
+    public int stackCount;
     public bool isPermanent;
     public Sprite buffIcon;
 }
@@ -50,6 +50,7 @@ public class BuffManager : MonoBehaviour
     public List<ActiveBuff> currentActiveBuffs = new List<ActiveBuff>();
 
     private bool isSelectingBossBuff = false;
+    private bool isProcessingChoice = false; // ตัวล็อกกันคลิกเบิ้ล
 
     void Awake()
     {
@@ -59,6 +60,7 @@ public class BuffManager : MonoBehaviour
 
     public void ShowBuffSelection(bool isBossWave = false)
     {
+        isProcessingChoice = false;
         isSelectingBossBuff = isBossWave;
         Time.timeScale = 0f;
         buffPanel.SetActive(true);
@@ -73,6 +75,16 @@ public class BuffManager : MonoBehaviour
             if (tempCards.Count == 0) break;
             int randIndex = Random.Range(0, tempCards.Count);
             BuffCard selectedCard = tempCards[randIndex];
+            string cardNameLower = selectedCard.buffName.Trim().ToLower();
+
+            // 🌟 เช็กเงื่อนไข: ถ้าเป็นการ์ดห้ามซ้ำ (Time Weaver, Mana Flow หรือเปิดจากกองบอส) และผู้เล่นมีอยู่แล้ว จะไม่สุ่มขึ้นมาให้เลือกซ้ำ
+            bool isUniqueCard = (cardNameLower == "time weaver" || cardNameLower == "mana flow" || isBossWave);
+            if (isUniqueCard && currentActiveBuffs.Exists(b => b.buffName.Trim().ToLower() == cardNameLower))
+            {
+                tempCards.RemoveAt(randIndex);
+                i--;
+                continue;
+            }
 
             currentOptions.Add(selectedCard);
 
@@ -94,9 +106,6 @@ public class BuffManager : MonoBehaviour
         }
     }
 
-    // ==========================================
-    // 🌟 1. ปรับแก้ SelectBuff ให้ส่งต่อผ่าน Coroutine (แก้ปัญหาโค้ดตีกัน)
-    // ==========================================
     public void SelectBuff(int buttonIndex)
     {
         StartCoroutine(SelectBuffRoutine(buttonIndex));
@@ -104,30 +113,51 @@ public class BuffManager : MonoBehaviour
 
     private IEnumerator SelectBuffRoutine(int buttonIndex)
     {
-        // เล่นเสียงคลิกตอนกดเลือก
+        if (isProcessingChoice) yield break;
+        isProcessingChoice = true;
+
         if (uiAudioSource != null && clickSound != null)
         {
             uiAudioSource.PlayOneShot(clickSound);
         }
 
-        // 🌟 หน่วงเวลา 0.15 วินาที เพื่อให้ ButtonJuice เล่นแอนิเมชันปุ่มยุบตัวให้เสร็จก่อนปิดจอ
-        // ใช้ WaitForSecondsRealtime เพราะเวลาในเกมถูกหยุดด้วย Time.timeScale = 0
         yield return new WaitForSecondsRealtime(0.15f);
 
         string chosenBuffName = currentOptions[buttonIndex].buffName;
+        string cardNameLower = chosenBuffName.Trim().ToLower();
 
-        ActiveBuff existingBuff = currentActiveBuffs.Find(b => b.buffName == chosenBuffName);
+        // เช็กว่าเป็นกลุ่มการ์ดห้ามซ้ำเด็ดขาดไหม (Time Weaver, Mana Flow, หรือเปิดจากกองบอส)
+        bool isUniqueCard = (cardNameLower == "time weaver" || cardNameLower == "mana flow" || isSelectingBossBuff);
+
+        ActiveBuff existingBuff = currentActiveBuffs.Find(b => b.buffName.Trim().ToLower() == cardNameLower);
+
         if (existingBuff != null)
         {
-            if (!existingBuff.isPermanent) existingBuff.remainingWaves = 2;
+            if (isUniqueCard)
+            {
+                Debug.Log("การ์ดนี้จำกัดให้มีได้แค่ 1 ใบเท่านั้น!");
+            }
+            else
+            {
+                // 🌟 การ์ดทั่วไป อนุญาตให้สแตกได้ แต่จำกัดเพดานสูงสุดไม่เกิน 5 ครั้ง
+                if (existingBuff.stackCount < 5)
+                {
+                    existingBuff.stackCount++;
+                    ApplyBuff(chosenBuffName);
+                }
+                else
+                {
+                    Debug.Log("การ์ดนี้สะสมครบเพดานสูงสุด 5 ครั้งแล้ว!");
+                }
+            }
         }
         else
         {
             currentActiveBuffs.Add(new ActiveBuff
             {
                 buffName = chosenBuffName,
-                remainingWaves = isSelectingBossBuff ? 999 : 2,
-                isPermanent = isSelectingBossBuff,
+                stackCount = 1,
+                isPermanent = true,
                 buffIcon = currentOptions[buttonIndex].cardSprite
             });
             ApplyBuff(chosenBuffName);
@@ -135,22 +165,17 @@ public class BuffManager : MonoBehaviour
 
         UpdateBuffUI();
 
-        // ปิดหน้าต่างการ์ด และคืนเวลาเกมตามปกติ
         buffPanel.SetActive(false);
         Time.timeScale = 1f;
 
         WaveManager waveManager = FindObjectOfType<WaveManager>();
         if (waveManager != null)
         {
-            
-                // 🌟 เช็กว่าถ้าเป็นเวฟปกติ ให้ลุยเวฟต่อไป
-                // 🌟 แต่ถ้าเป็นการ์ดบอส จะไม่สั่งเริ่มเวฟ ปล่อยให้ผู้เล่นเดินไปเข้าประตูเอง
-                if (!isSelectingBossBuff)
-                {
-                    waveManager.ResumeWave();
-                }
-            
-        }    
+            if (!isSelectingBossBuff)
+            {
+                waveManager.ResumeWave();
+            }
+        }
     }
 
     private void ApplyBuff(string buffName)
@@ -159,43 +184,48 @@ public class BuffManager : MonoBehaviour
         if (player == null) return;
         PlayerController movement = player.GetComponent<PlayerController>();
         PlayerCombat combat = player.GetComponent<PlayerCombat>();
+        PlayerHealth health = player.GetComponent<PlayerHealth>();
 
-        if (buffName == "Wind Walker" && movement != null) movement.moveSpeed *= 1.25f;
-        else if (buffName == "Fast Cast" && combat != null) combat.fireCooldown *= 0.70f;
-        else if (buffName == "Time Weaver" && combat != null) combat.ultimateDuration += 1.5f;
-        else if (buffName == "Mana Flow" && combat != null) combat.ultimateManaDiscount += 1;
-        else if (buffName == "Void Blink" && movement != null) movement.teleportCooldown *= 2.5f;
-    }
-
-    private void RemoveBuffEffects(string buffName)
-    {
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player == null) return;
-        PlayerController movement = player.GetComponent<PlayerController>();
-        PlayerCombat combat = player.GetComponent<PlayerCombat>();
-
-        if (buffName == "Wind Walker" && movement != null) movement.moveSpeed /= 1.25f;
-        else if (buffName == "Fast Cast" && combat != null) combat.fireCooldown /= 0.70f;
-        else if (buffName == "Time Weaver" && combat != null) combat.ultimateDuration -= 1.5f;
-        else if (buffName == "Mana Flow" && combat != null) combat.ultimateManaDiscount -= 1;
-        else if (buffName == "Void Blink" && movement != null) movement.teleportCooldown /= 2.5f;
-    }
-
-    public void OnWaveEnded()
-    {
-        for (int i = currentActiveBuffs.Count - 1; i >= 0; i--)
+        if (buffName == "Wind Walker" && movement != null)
         {
-            if (currentActiveBuffs[i].isPermanent) continue;
-
-            currentActiveBuffs[i].remainingWaves--;
-            if (currentActiveBuffs[i].remainingWaves <= 0)
+            movement.moveSpeed *= 1.15f;
+            if (movement.moveSpeed > 12f) movement.moveSpeed = 12f;
+        }
+        else if (buffName == "Fast Cast" && combat != null)
+        {
+            combat.fireCooldown *= 0.85f;
+            if (combat.fireCooldown < 0.15f) combat.fireCooldown = 0.15f;
+        }
+        else if (buffName == "Time Weaver" && combat != null)
+        {
+            combat.ultimateDuration += 1.5f;
+            if (combat.ultimateDuration > 10f) combat.ultimateDuration = 10f;
+        }
+        else if (buffName == "Mana Flow" && combat != null)
+        {
+            combat.ultimateManaDiscount += 1;
+            if (combat.ultimateManaDiscount > 2) combat.ultimateManaDiscount = 2;
+        }
+        else if (buffName == "Void Blink" && movement != null)
+        {
+            movement.teleportCooldown *= 0.8f;
+        }
+        else if (buffName == "Damage Up" && combat != null)
+        {
+            combat.bonusDamage += 3; // สะสมได้สูงสุด 5 ครั้ง
+        }
+        else if (buffName == "Health Up" && health != null)
+        {
+            if (health.maxHealth < 25)
             {
-                RemoveBuffEffects(currentActiveBuffs[i].buffName);
-                currentActiveBuffs.RemoveAt(i);
+                health.maxHealth += 1;
+                health.currentHealth += 1;
+                health.RefreshHealthStat();
             }
         }
-        UpdateBuffUI();
     }
+
+    public void OnWaveEnded() { }
 
     private void UpdateBuffUI()
     {
